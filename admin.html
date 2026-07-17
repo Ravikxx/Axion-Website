@@ -70,11 +70,11 @@
       transition: opacity .15s, background .15s;
     }
     .btn:disabled { opacity: .5; cursor: not-allowed; }
-    .btn-primary { background: var(--accent); color: #fff; width: 100%; margin-top: 4px; }
+    .btn-primary { background: var(--accent); color: var(--accent-ink); width: 100%; margin-top: 4px; }
     .btn-primary:hover:not(:disabled) { background: var(--accent-dim); }
     .btn-danger { background: transparent; color: var(--red); border: 1px solid var(--red); padding: 6px 14px; font-size: 12px; }
     .btn-danger:hover:not(:disabled) { background: rgba(248,113,113,.1); }
-    .btn-sm { background: var(--accent); color: #fff; padding: 6px 14px; font-size: 12px; }
+    .btn-sm { background: var(--accent); color: var(--accent-ink); padding: 6px 14px; font-size: 12px; }
     .btn-sm:hover:not(:disabled) { background: var(--accent-dim); }
 
     .error-msg { color: var(--red); font-size: 13px; margin-top: 10px; text-align: center; }
@@ -121,7 +121,7 @@
     }
     .logo { font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px; }
     .logo span { color: var(--accent); }
-    .admin-badge { background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; text-transform: uppercase; letter-spacing: .05em; }
+    .admin-badge { background: var(--accent); color: var(--accent-ink); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; text-transform: uppercase; letter-spacing: .05em; }
 
     .header-right { display: flex; align-items: center; gap: 12px; }
     #admin-email { color: var(--muted); font-size: 13px; }
@@ -188,7 +188,7 @@
     }
     .badge-green { background: rgba(52,211,153,.15); color: var(--green); }
     .badge-red { background: rgba(248,113,113,.15); color: var(--red); }
-    .badge-owner { background: rgba(232,96,44,.15); color: var(--accent); }
+    .badge-owner { background: rgba(184, 162, 125,.15); color: var(--accent); }
 
     .empty-row td { text-align: center; color: var(--muted); padding: 32px; }
 
@@ -720,7 +720,7 @@
       const y = PAD_T + chartH - barH
 
       // Bar
-      ctx.fillStyle = d.count > 0 ? '#e8602c' : 'rgba(255,255,255,0.06)'
+      ctx.fillStyle = d.count > 0 ? '#b8a27d' : 'rgba(255,255,255,0.06)'
       const rx = 3
       const bx = x + barW * 0.15, bw = barW * 0.7
       ctx.beginPath()
@@ -777,7 +777,7 @@
         </td>
         <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:13px" title="${esc(a.reason || '')}">${esc(a.reason || '—')}</td>
         <td>
-          ${a.status === 'pending' ? '<span class="badge" style="background:rgba(232,96,44,.12);color:#e8602c">Pending</span>' :
+          ${a.status === 'pending' ? '<span class="badge" style="background:rgba(184, 162, 125,.12);color:#b8a27d">Pending</span>' :
             a.status === 'approved' ? '<span class="badge badge-green">Approved</span>' :
             '<span class="badge badge-red">Rejected</span>'}
         </td>

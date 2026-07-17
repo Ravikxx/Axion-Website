@@ -55,7 +55,7 @@
     .new-chat-btn {
       display: flex; align-items: center; justify-content: center; gap: 8px;
       width: 100%; padding: 10px; border-radius: 9px;
-      background: var(--accent); color: #fff; border: none;
+      background: var(--accent); color: var(--accent-ink); border: none;
       font-size: 13px; font-weight: 600; cursor: pointer;
       transition: background .15s;
     }
@@ -127,8 +127,8 @@
     .topbar-title { font-size: 14px; font-weight: 600; }
     .model-badge {
       display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(232,96,44,.12); color: var(--accent);
-      border: 1px solid rgba(232,96,44,.25);
+      background: rgba(184, 162, 125,.12); color: var(--accent);
+      border: 1px solid rgba(184, 162, 125,.25);
       border-radius: 20px; padding: 4px 11px; font-size: 12px; font-weight: 600;
     }
     .model-badge .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
@@ -158,7 +158,7 @@
       font-size: 12px; font-weight: 700; margin-top: 1px; overflow: hidden;
     }
     .msg-avatar.user { background: var(--surface3); color: var(--muted2); }
-    .msg-avatar.assistant { background: var(--accent); color: #fff; }
+    .msg-avatar.assistant { background: var(--accent); color: var(--accent-ink); }
     .msg-avatar img { width: 20px; height: 20px; object-fit: contain; }
     .msg-body { flex: 1; min-width: 0; }
     .msg-role {
@@ -264,7 +264,7 @@
     .input-box::placeholder { color: var(--muted); }
     .send-btn {
       width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
-      border: none; background: var(--accent); color: #fff; cursor: pointer;
+      border: none; background: var(--accent); color: var(--accent-ink); cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       transition: background .15s, opacity .15s;
     }
@@ -314,7 +314,7 @@
     .btn-full { width: 100%; padding: 11px; font-size: 14px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; transition: opacity .2s, background .15s; }
     .btn-full:hover:not(:disabled) { opacity: .9; }
     .btn-full:disabled { opacity: .5; cursor: not-allowed; }
-    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary { background: var(--accent); color: var(--accent-ink); }
     .btn-skip { background: var(--surface2); color: var(--muted2); margin-top: 8px; border: 1px solid var(--border2); }
     .btn-skip:hover:not(:disabled) { color: var(--text); }
     .auth-error {
@@ -397,7 +397,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#e8602c">
+  <meta name="theme-color" content="#b8a27d">
 </head>
 <body>
 
@@ -824,7 +824,7 @@
     document.querySelectorAll('.chart-wrap canvas[data-chart]').forEach(el => {
       try {
         const cfg = JSON.parse(el.dataset.chart)
-        const colors = ['#e8602c','#34d399','#60a5fa','#f59e0b','#a78bfa','#f472b6','#14b8a6','#f97316']
+        const colors = ['#b8a27d','#34d399','#60a5fa','#f59e0b','#a78bfa','#f472b6','#14b8a6','#f97316']
         const defaults = {
           type: 'bar', data: { labels: [], datasets: [{ data: [] }] },
           options: {

@@ -7,7 +7,8 @@
   <link rel="stylesheet" href="/assets/theme-light.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+
+
 
     body {
       font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
@@ -28,7 +29,7 @@
     nav a.active { color: #e8e9f0; }
     .nav-right { margin-left: auto; }
     .btn-nav {
-      background: var(--accent); color: #fff !important;
+      background: var(--accent); color: var(--accent-ink) !important;
       padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600;
     }
 
@@ -40,7 +41,7 @@
       text-align: center;
     }
     .hero-badge {
-      display: inline-block; background: var(--accent); color: #fff;
+      display: inline-block; background: var(--accent); color: var(--accent-ink);
       font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
       text-transform: uppercase; padding: 5px 12px;
       border-radius: 100px; margin-bottom: 24px;
@@ -58,7 +59,7 @@
       text-decoration: none; transition: opacity 0.2s, transform 0.15s;
     }
     .btn:hover { opacity: 0.88; transform: translateY(-1px); }
-    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary { background: var(--accent); color: var(--accent-ink); }
     .btn-ghost { background: rgba(255,255,255,0.08); color: #e8e9f0; border: 1px solid rgba(255,255,255,0.12); }
 
     .stat-row {
@@ -114,7 +115,7 @@
       font-size: 13px; color: #9899a8;
       overflow-x: auto; line-height: 1.8; margin: 16px 0;
     }
-    .code-block .prompt { color: #e8602c; user-select: none; }
+    .code-block .prompt { color: #b8a27d; user-select: none; }
     .code-block .comment { color: #33241f; }
 
     /* ── Version timeline ── */
@@ -171,7 +172,7 @@
     .callout.good strong { color: var(--green); }
     .callout.warn {
       background: var(--accent-lt);
-      border: 1px solid rgba(232,96,44,0.2); border-left: 3px solid var(--accent);
+      border: 1px solid rgba(184, 162, 125,0.2); border-left: 3px solid var(--accent);
       color: var(--text-muted);
     }
     .callout.warn strong { color: var(--accent); }
