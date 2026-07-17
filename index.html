@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/theme-dark.css">
+  <link rel="stylesheet" href="/assets/paper-banner.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -172,6 +173,7 @@
     .chat-status .seg.right { margin-left: auto; border-right: none; border-left: 1px solid var(--border); }
 
     /* ── News banner ── */
+    .paper-banner-wrap { max-width: 1060px; margin: 28px auto 0; padding: 0 32px; }
     .news-wrap { max-width: 1060px; margin: 0 auto; padding: 0 32px; }
     .news-banner {
       display: flex; align-items: center; gap: 12px;
@@ -347,6 +349,16 @@
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>
+
+<div class="paper-banner-wrap">
+  <div class="paper-banner"
+       data-images="/assets/paper/paper-1.jpg,/assets/paper/paper-2.jpg,/assets/paper/paper-3.jpg,/assets/paper/paper-4.jpg"
+       data-logo="/assets/logo-axion-new.png"
+       data-logo-alt="Axion Labs AI"
+       data-interval="6000"
+       data-zoom-min="115"
+       data-zoom-max="155"></div>
+</div>
 
 <div class="hero-wrap">
   <div class="hero">
@@ -621,6 +633,7 @@
   }, { threshold: 0.08 })
   document.querySelectorAll('.reveal').forEach((el) => io.observe(el))
 </script>
+<script src="/assets/paper-banner.js"></script>
 <script src="/assets/profile.js"></script>
 
 <script>
