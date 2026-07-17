@@ -278,23 +278,62 @@
   <div class="crucible-art-frame">
     <svg id="crucible-svg" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <filter id="tame-tear" x="-30%" y="-30%" width="160%" height="160%">
-          <feTurbulence id="tame-turb" type="fractalNoise" baseFrequency="0.012 0.05" numOctaves="4" seed="7" result="noise"/>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="22" xChannelSelector="R" yChannelSelector="G"/>
-        </filter>
-        <mask id="tame-mask">
-          <rect width="800" height="450" fill="black"/>
-          <text x="400" y="270" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-weight="700" font-size="230" letter-spacing="4" fill="white" filter="url(#tame-tear)">TAME</text>
-        </mask>
+        <radialGradient id="crucible-heat" cx="50%" cy="88%" r="45%">
+          <stop offset="0%" stop-color="#ff8a4a" stop-opacity=".35"/>
+          <stop offset="100%" stop-color="#ff8a4a" stop-opacity="0"/>
+        </radialGradient>
       </defs>
       <rect width="800" height="450" fill="#1a1408"/>
-      <image href="/assets/paper/paper-4.jpg" x="0" y="0" width="800" height="450" preserveAspectRatio="xMidYMid slice" mask="url(#tame-mask)"/>
+      <ellipse cx="400" cy="390" rx="220" ry="90" fill="url(#crucible-heat)"/>
+      <!-- Hit-test shapes only (fill:none) — the vessel silhouette particles get
+           generated into, not rendered themselves. -->
+      <rect id="crucible-rim" x="275" y="58" width="250" height="34" rx="16" fill="none"/>
+      <path id="crucible-body" fill="none" d="
+        M 283,80
+        C 270,110 262,150 268,190
+        C 274,240 288,285 312,320
+        C 330,346 362,378 400,378
+        C 438,378 470,346 488,320
+        C 512,285 526,240 532,190
+        C 538,150 530,110 517,80
+        Z
+      "/>
+      <g id="crucible-particles"></g>
     </svg>
   </div>
-  <p class="crucible-art-caption">Ternary Adaptive MoE — torn, not typeset</p>
+  <p class="crucible-art-caption">−1 · 0 · +1 — ternary weights, assembled into one vessel</p>
 </div>
 <script>
-  document.getElementById('tame-turb').setAttribute('seed', Math.floor(Math.random() * 1000));
+(function () {
+  var svg = document.getElementById('crucible-svg');
+  var rim = document.getElementById('crucible-rim');
+  var body = document.getElementById('crucible-body');
+  var group = document.getElementById('crucible-particles');
+  var COLORS = ['#5b9bd9', '#e0c887', '#ff8a65']; // -1, 0, +1 — diverging, not brand-restricted on purpose
+
+  function inShape(x, y) {
+    var pt = svg.createSVGPoint();
+    pt.x = x; pt.y = y;
+    return body.isPointInFill(pt) || rim.isPointInFill(pt);
+  }
+
+  var spacing = 13, jitter = 5, html = '';
+  for (var y = 50; y <= 400; y += spacing) {
+    for (var x = 250; x <= 550; x += spacing) {
+      var jx = x + (Math.random() - 0.5) * jitter;
+      var jy = y + (Math.random() - 0.5) * jitter;
+      if (inShape(jx, jy)) {
+        var color = COLORS[Math.floor(Math.random() * 3)];
+        var s = 5 + Math.random() * 2.5;
+        var rot = (Math.random() * 30 - 15).toFixed(1);
+        html += '<rect x="' + (jx - s / 2).toFixed(1) + '" y="' + (jy - s / 2).toFixed(1) +
+          '" width="' + s.toFixed(1) + '" height="' + s.toFixed(1) + '" rx="1.5" fill="' + color +
+          '" transform="rotate(' + rot + ' ' + jx.toFixed(1) + ' ' + jy.toFixed(1) + ')"/>';
+      }
+    }
+  }
+  group.innerHTML = html;
+})();
 </script>
 
 <main>
