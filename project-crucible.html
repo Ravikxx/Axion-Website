@@ -277,21 +277,33 @@
 <div class="crucible-art">
   <div class="crucible-art-frame" id="crucible-frame">
 
-    <!-- "Forge": TAME is a living torn-paper collage. On first load the letters
-         fill in from bare; then the scraps slowly loosen and re-knit so the word
-         breathes and tatters without ever bursting apart. Everything is cut
-         through the ripped-letterform mask so the word stays crisp and legible.
-         Motion pauses when scrolled off-screen and is skipped for visitors who
-         prefer reduced motion. -->
+    <!-- TAME hero. On a visitor's FIRST ever load the letters knit together
+         from loose torn scraps (one-time intro, remembered via localStorage);
+         after that, and on every later visit, it falls back to the collage that
+         re-randomizes every half second. Everything is cut through the
+         ripped-letterform mask so the word stays crisp. Motion is skipped
+         entirely for visitors who prefer reduced motion. -->
     <svg id="crucible-tame" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs id="tame-defs">
         <radialGradient id="tame-glow" cx="50%" cy="52%" r="46%">
           <stop offset="0%" stop-color="#b8a27d" stop-opacity=".16"/>
           <stop offset="100%" stop-color="#b8a27d" stop-opacity="0"/>
         </radialGradient>
+        <pattern id="tame-p1" patternUnits="userSpaceOnUse" width="170" height="170"><image href="/assets/paper/paper-1.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/></pattern>
+        <pattern id="tame-p2" patternUnits="userSpaceOnUse" width="170" height="170"><image href="/assets/paper/paper-2.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/></pattern>
+        <pattern id="tame-p3" patternUnits="userSpaceOnUse" width="170" height="170"><image href="/assets/paper/paper-3.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/></pattern>
+        <pattern id="tame-p4" patternUnits="userSpaceOnUse" width="170" height="170"><image href="/assets/paper/paper-4.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/></pattern>
+        <pattern id="tame-p5" patternUnits="userSpaceOnUse" width="170" height="170"><image href="/assets/paper/paper-5.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/></pattern>
+        <pattern id="tame-p6" patternUnits="userSpaceOnUse" width="170" height="170"><image href="/assets/paper/paper-6.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/></pattern>
+        <pattern id="tame-p7" patternUnits="userSpaceOnUse" width="170" height="170"><image href="/assets/paper/paper-7.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/></pattern>
+        <pattern id="tame-p8" patternUnits="userSpaceOnUse" width="170" height="170"><image href="/assets/paper/paper-8.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/></pattern>
+        <filter id="tame-scrap-tear" x="-40%" y="-40%" width="180%" height="180%">
+          <feTurbulence id="tame-scrap-turb" type="fractalNoise" baseFrequency="0.06 0.09" numOctaves="2" seed="9" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="9"/>
+        </filter>
         <filter id="tame-letter-tear" x="-20%" y="-20%" width="140%" height="140%">
           <feTurbulence id="tame-letter-turb" type="fractalNoise" baseFrequency="0.012 0.05" numOctaves="4" seed="7" result="noise"/>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G"/>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="16" xChannelSelector="R" yChannelSelector="G"/>
         </filter>
         <mask id="tame-mask">
           <rect width="800" height="450" fill="black"/>
@@ -301,6 +313,7 @@
       <rect width="800" height="450" fill="#1a1408"/>
       <rect id="tame-glow-rect" width="800" height="450" fill="url(#tame-glow)" opacity="0"/>
       <g id="tame-reveal" mask="url(#tame-mask)"></g>
+      <g id="tame-intro" mask="url(#tame-mask)"></g>
     </svg>
 
   </div>
@@ -311,155 +324,126 @@
   var W = 800, H = 450, NS = 'http://www.w3.org/2000/svg';
   var defs = document.getElementById('tame-defs');
   var revealG = document.getElementById('tame-reveal');
+  var introG = document.getElementById('tame-intro');
   var glow = document.getElementById('tame-glow-rect');
   var frameEl = document.getElementById('crucible-frame');
-  var papers = ['/assets/paper/paper-1.jpg','/assets/paper/paper-2.jpg','/assets/paper/paper-3.jpg',
-                '/assets/paper/paper-4.jpg','/assets/paper/paper-5.jpg','/assets/paper/paper-6.jpg',
-                '/assets/paper/paper-7.jpg','/assets/paper/paper-8.jpg'];
-  var N = 74;
+  var scrapTurb = document.getElementById('tame-scrap-turb');
+  var letterTurb = document.getElementById('tame-letter-turb');
+  var pats = ['tame-p1','tame-p2','tame-p3','tame-p4','tame-p5','tame-p6','tame-p7','tame-p8'];
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Wait for the web font before rasterizing TAME: the canvas that finds the
-  // target points and the SVG mask that shows the letters must use the same
-  // font, or the scraps won't line up with the visible glyphs.
-  function init() {
+  // ---- Steady state: the collage that re-randomizes every half second ----
+  function regenerateTame() {
+    var html = '';
+    for (var i = 0; i < 110; i++) {
+      var x = 70 + Math.random() * 670, y = 85 + Math.random() * 270;
+      var w = 50 + Math.random() * 75, h = 50 + Math.random() * 75;
+      var rot = (Math.random() * 26 - 13).toFixed(1);
+      var pat = pats[Math.floor(Math.random() * pats.length)];
+      html += '<g filter="url(#tame-scrap-tear)" transform="rotate(' + rot + ' ' + (x + w / 2).toFixed(1) + ' ' + (y + h / 2).toFixed(1) + ')">' +
+        '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + h.toFixed(1) + '" fill="url(#' + pat + ')" ' +
+        'style="filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))"/></g>';
+    }
+    revealG.innerHTML = html;
+    scrapTurb.setAttribute('seed', Math.floor(Math.random() * 1000));
+    letterTurb.setAttribute('seed', Math.floor(Math.random() * 1000));
+  }
 
-  // Rasterize TAME to a canvas, then rejection-sample points inside the glyphs.
-  function buildTargets(count) {
+  var shuffleTimer = null;
+  function startReshuffle() {
+    regenerateTame();
+    glow.setAttribute('opacity', '0.5');
+    if (reduced) return;                       // static single frame, no interval
+    function tick() { regenerateTame(); }
+    function run() { if (!shuffleTimer) shuffleTimer = setInterval(tick, 500); }
+    function halt() { if (shuffleTimer) { clearInterval(shuffleTimer); shuffleTimer = null; } }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (e) { if (e[0].isIntersecting) run(); else halt(); }, { threshold: 0.05 }).observe(frameEl);
+    } else { run(); }
+  }
+
+  // ---- One-time first-visit intro: scraps knit together into TAME ----
+  function playIntro() {
+    // target points inside the glyphs, from a rasterized TAME
     var c = document.createElement('canvas'); c.width = W; c.height = H;
     var ctx = c.getContext('2d');
     ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
     ctx.font = '700 230px "IBM Plex Sans", sans-serif';
     ctx.fillText('TAME', W / 2, 292);
-    var data = ctx.getImageData(0, 0, W, H).data, pts = [], guard = 0;
-    while (pts.length < count && guard < count * 400) {
-      guard++;
-      var x = Math.random() * W, y = Math.random() * H;
-      if (data[((y | 0) * W + (x | 0)) * 4 + 3] > 128) pts.push({ x: x, y: y });
+    var data = ctx.getImageData(0, 0, W, H).data, targets = [], guard = 0, N = 74;
+    while (targets.length < N && guard < N * 400) {
+      guard++; var px = Math.random() * W, py = Math.random() * H;
+      if (data[((py | 0) * W + (px | 0)) * 4 + 3] > 128) targets.push({ x: px, y: py });
     }
-    return pts;
-  }
-  var targets = buildTargets(N);
-  if (targets.length < 20) { for (var q = targets.length; q < N; q++) targets.push({ x: 120 + Math.random() * 560, y: 150 + Math.random() * 150 }); }
+    if (targets.length < 20) { startReshuffle(); markSeen(); return; }  // font/canvas failed — just fall back
 
-  function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-  function tornPoly(w, h, seed) {
-    var r = mulberry(seed), pts = [], per = 4, jit = 7, i;
-    function push(px, py) { pts.push(px.toFixed(1) + ',' + py.toFixed(1)); }
-    for (i = 0; i < per; i++) push((i / per) * w + (r() * 2 - 1) * jit, (r() * 2 - 1) * jit);
-    for (i = 0; i < per; i++) push(w + (r() * 2 - 1) * jit, (i / per) * h + (r() * 2 - 1) * jit);
-    for (i = 0; i < per; i++) push((1 - i / per) * w + (r() * 2 - 1) * jit, h + (r() * 2 - 1) * jit);
-    for (i = 0; i < per; i++) push((r() * 2 - 1) * jit, (1 - i / per) * h + (r() * 2 - 1) * jit);
-    return pts.join(' ');
-  }
+    function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; var t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+    function tornPoly(w,h,seed){ var r=mulberry(seed),pts=[],per=4,jit=7,i; function push(px,py){pts.push(px.toFixed(1)+','+py.toFixed(1));}
+      for(i=0;i<per;i++)push((i/per)*w+(r()*2-1)*jit,(r()*2-1)*jit);
+      for(i=0;i<per;i++)push(w+(r()*2-1)*jit,(i/per)*h+(r()*2-1)*jit);
+      for(i=0;i<per;i++)push((1-i/per)*w+(r()*2-1)*jit,h+(r()*2-1)*jit);
+      for(i=0;i<per;i++)push((r()*2-1)*jit,(1-i/per)*h+(r()*2-1)*jit); return pts.join(' '); }
+    var papers = ['/assets/paper/paper-1.jpg','/assets/paper/paper-2.jpg','/assets/paper/paper-3.jpg','/assets/paper/paper-4.jpg','/assets/paper/paper-5.jpg','/assets/paper/paper-6.jpg','/assets/paper/paper-7.jpg','/assets/paper/paper-8.jpg'];
 
-  var scraps = [];
-  for (var i = 0; i < N; i++) {
-    var w = 62 + Math.random() * 60, h = 62 + Math.random() * 60;
-    var paper = papers[(Math.random() * papers.length) | 0];
-    var cropX = Math.random() * 90, cropY = Math.random() * 90;
-    var cid = 'tsc' + i;
+    var scraps = [];
+    for (var i = 0; i < N; i++) {
+      var w = 62 + Math.random() * 60, h = 62 + Math.random() * 60;
+      var paper = papers[(Math.random() * papers.length) | 0];
+      var cropX = Math.random() * 90, cropY = Math.random() * 90, cid = 'tsc' + i;
+      var clip = document.createElementNS(NS, 'clipPath'); clip.setAttribute('id', cid); clip.setAttribute('clipPathUnits', 'userSpaceOnUse');
+      var poly = document.createElementNS(NS, 'polygon'); var pts = tornPoly(w, h, (i * 2654435761) >>> 0);
+      poly.setAttribute('points', pts); clip.appendChild(poly); defs.appendChild(clip);
+      var g = document.createElementNS(NS, 'g');
+      var img = document.createElementNS(NS, 'image');
+      img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', paper); img.setAttribute('href', paper);
+      img.setAttribute('x', (-cropX).toFixed(1)); img.setAttribute('y', (-cropY).toFixed(1));
+      img.setAttribute('width', (w + cropX + 90).toFixed(1)); img.setAttribute('height', (h + cropY + 90).toFixed(1));
+      img.setAttribute('preserveAspectRatio', 'xMidYMid slice'); img.setAttribute('clip-path', 'url(#' + cid + ')');
+      g.appendChild(img);
+      var edge = document.createElementNS(NS, 'polygon'); edge.setAttribute('points', pts); edge.setAttribute('fill', 'none'); edge.setAttribute('stroke', 'rgba(0,0,0,.28)'); edge.setAttribute('stroke-width', '1'); g.appendChild(edge);
+      introG.appendChild(g);
+      var t = targets[i % targets.length];
+      var ang = Math.random() * Math.PI * 2, rad = 120 + Math.random() * 180;
+      scraps.push({ el: g, w: w, h: h, hx: t.x - w/2, hy: t.y - h/2, hr: Math.random()*18-9,
+        fx: (t.x - w/2) + Math.cos(ang)*rad, fy: (t.y - h/2) + Math.sin(ang)*rad*0.7, fr: Math.random()*80-40,
+        delay: Math.random()*0.5 });
+    }
+    function setT(s, x, y, r){ s.el.setAttribute('transform', 'translate('+x.toFixed(1)+' '+y.toFixed(1)+') rotate('+r.toFixed(1)+' '+(s.w/2).toFixed(1)+' '+(s.h/2).toFixed(1)+')'); }
+    function EASE(t){ return t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+    function lerp(a,b,t){ return a+(b-a)*t; }
+    function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+    scraps.forEach(function(s){ setT(s, s.fx, s.fy, s.fr); });
 
-    var clip = document.createElementNS(NS, 'clipPath');
-    clip.setAttribute('id', cid); clip.setAttribute('clipPathUnits', 'userSpaceOnUse');
-    var poly = document.createElementNS(NS, 'polygon');
-    var pts = tornPoly(w, h, (i * 2654435761) >>> 0);
-    poly.setAttribute('points', pts); clip.appendChild(poly); defs.appendChild(clip);
-
-    var g = document.createElementNS(NS, 'g');
-    var img = document.createElementNS(NS, 'image');
-    img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', paper);
-    img.setAttribute('href', paper);
-    img.setAttribute('x', (-cropX).toFixed(1)); img.setAttribute('y', (-cropY).toFixed(1));
-    img.setAttribute('width', (w + cropX + 90).toFixed(1)); img.setAttribute('height', (h + cropY + 90).toFixed(1));
-    img.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-    img.setAttribute('clip-path', 'url(#' + cid + ')');
-    g.appendChild(img);
-    var edge = document.createElementNS(NS, 'polygon');
-    edge.setAttribute('points', pts); edge.setAttribute('fill', 'none');
-    edge.setAttribute('stroke', 'rgba(0,0,0,.28)'); edge.setAttribute('stroke-width', '1');
-    g.appendChild(edge);
-    revealG.appendChild(g);
-
-    var tgt = targets[i % targets.length];
-    scraps.push({ el: g, w: w, h: h,
-      hx: tgt.x - w / 2, hy: tgt.y - h / 2, hr: (Math.random() * 18 - 9),  // home (solid)
-      lx: 0, ly: 0, lr: 0,                                                  // loose target
-      // first-load fill-in origin: just outside its home, so letters appear to knit together
-      fx: 0, fy: 0, fr: 0,
-      cx: 0, cy: 0, cr: 0, delay: Math.random() * 0.5 });
-  }
-
-  function setT(s) { s.el.setAttribute('transform', 'translate(' + s.cx.toFixed(1) + ' ' + s.cy.toFixed(1) + ') rotate(' + s.cr.toFixed(1) + ' ' + (s.w / 2).toFixed(1) + ' ' + (s.h / 2).toFixed(1) + ')'); }
-  function EASE(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
-  function lerp(a, b, t) { return a + (b - a) * t; }
-  function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
-
-  function reroll(s) {
-    var ang = Math.random() * Math.PI * 2, rad = 34 + Math.random() * 46;
-    s.lx = s.hx + Math.cos(ang) * rad;
-    s.ly = s.hy + Math.sin(ang) * rad;
-    s.lr = s.hr + (Math.random() * 60 - 30);
-  }
-  scraps.forEach(function (s) {
-    reroll(s);
-    // first-load origin: pushed outward from centre so the word knits inward
-    var ang = Math.random() * Math.PI * 2, rad = 90 + Math.random() * 150;
-    s.fx = s.hx + Math.cos(ang) * rad; s.fy = s.hy + Math.sin(ang) * rad * 0.7; s.fr = Math.random() * 80 - 40;
-    s.cx = s.fx; s.cy = s.fy; s.cr = s.fr; setT(s);
-  });
-
-  // Reduced-motion: render a single static TAME and stop.
-  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    scraps.forEach(function (s) { s.cx = s.hx; s.cy = s.hy; s.cr = s.hr; setT(s); });
-    glow.setAttribute('opacity', '0.85');
-    return;
-  }
-
-  var FILL = 1.7;            // one-time fill-in
-  var BREATHE = 3.6;         // half-period: solid -> loose (and back)
-  var T = 0, lastTs = null, rafId = null, phaseMark = -1;
-
-  function frame(ts) {
-    if (lastTs === null) lastTs = ts;
-    var dt = (ts - lastTs) / 1000; lastTs = ts;
-    if (dt > 0.1) dt = 0.1;
-    T += dt;
-
-    var loose;  // 0 = solid (home), 1 = loosened
-    if (T < FILL) {
+    var FILL = 2.1, T = 0, lastTs = null, rafId = null, stopped = false;
+    function done() {
+      if (stopped) return; stopped = true;
+      if (rafId) cancelAnimationFrame(rafId);
+      // hand off to the reshuffle, then remove the intro layer
+      startReshuffle();
+      if (introG.parentNode) introG.parentNode.removeChild(introG);
+      markSeen();
+    }
+    function frame(ts) {
+      if (lastTs === null) lastTs = ts;
+      var dt = (ts - lastTs) / 1000; lastTs = ts; if (dt > 0.1) dt = 0.1; T += dt;
       var f = EASE(clamp(T / FILL, 0, 1));
-      scraps.forEach(function (s) { s.cx = lerp(s.fx, s.hx, f); s.cy = lerp(s.fy, s.hy, f); s.cr = lerp(s.fr, s.hr, f); setT(s); });
-      loose = 1 - f;
-    } else {
-      var u = ((T - FILL) / BREATHE);          // rising each half-period
-      var cycle = Math.floor(u);
-      var tri = u - cycle;                       // 0..1 within half-period
-      var goingLoose = (cycle % 2 === 0);
-      var p = goingLoose ? tri : 1 - tri;        // triangle 0..1..0
-      // re-roll loose targets each time we pass through solid
-      if (cycle !== phaseMark) { phaseMark = cycle; if (!goingLoose) scraps.forEach(reroll); }
-      var e = EASE(p);
-      scraps.forEach(function (s) {
-        var d = clamp((e - s.delay * 0.4) / 0.6, 0, 1);
-        s.cx = lerp(s.hx, s.lx, d); s.cy = lerp(s.hy, s.ly, d); s.cr = lerp(s.hr, s.lr, d); setT(s);
-      });
-      loose = p;
+      scraps.forEach(function(s){ var d = clamp((f - s.delay*0.4)/0.6, 0, 1); setT(s, lerp(s.fx,s.hx,d), lerp(s.fy,s.hy,d), lerp(s.fr,s.hr,d)); });
+      glow.setAttribute('opacity', (f * 0.85).toFixed(3));
+      if (T >= FILL + 0.05) { done(); return; }
+      rafId = requestAnimationFrame(frame);
     }
-
-    glow.setAttribute('opacity', (0.85 - loose * 0.4).toFixed(3));
     rafId = requestAnimationFrame(frame);
   }
 
-  function startLoop() { if (!rafId) { lastTs = null; rafId = requestAnimationFrame(frame); } }
-  function stopLoop() { if (rafId) { cancelAnimationFrame(rafId); rafId = null; } }
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (entries) {
-      if (entries[0].isIntersecting) startLoop(); else stopLoop();
-    }, { threshold: 0.05 }).observe(frameEl);
-  } else { startLoop(); }
-  }
+  function seen() { try { return localStorage.getItem('axionTameIntroSeen') === '1'; } catch (e) { return false; } }
+  function markSeen() { try { localStorage.setItem('axionTameIntroSeen', '1'); } catch (e) {} }
 
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(init); else init();
+  // Reduced motion, or already seen the intro -> straight to the (static or live) collage.
+  if (reduced || seen()) { startReshuffle(); return; }
+
+  // First visit: play the knit-in once, after the font is ready so the canvas
+  // target points and the SVG mask agree on letter shapes.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(playIntro); else playIntro();
 })();
 </script>
 
