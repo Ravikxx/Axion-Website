@@ -277,141 +277,78 @@
 <div class="crucible-art">
   <div class="crucible-art-frame">
 
-    <!-- Variant A: molten pour. Shown/hidden by JS below, picked at random
-         with variant B on each page load. -->
-    <svg id="crucible-lava" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <!-- TAME, built from torn scraps of our paper photography, cut through
+         the existing ripped-letterform mask. Scrap layout + tear seeds are
+         regenerated on every load, like the paper banner above. -->
+    <svg id="crucible-tame" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="lava-fill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#7a1f1f"/>
-          <stop offset="35%" stop-color="#c8391f"/>
-          <stop offset="70%" stop-color="#ff8a3d"/>
-          <stop offset="100%" stop-color="#ffd66a"/>
-        </linearGradient>
-        <radialGradient id="lava-pour-hot" cx="30%" cy="30%" r="70%">
-          <stop offset="0%" stop-color="#fff1c2"/>
-          <stop offset="45%" stop-color="#ffb04a"/>
-          <stop offset="100%" stop-color="#e8602c"/>
-        </radialGradient>
-        <radialGradient id="lava-glow" cx="55%" cy="70%" r="55%">
-          <stop offset="0%" stop-color="#ff8a3d" stop-opacity=".5"/>
-          <stop offset="100%" stop-color="#ff8a3d" stop-opacity="0"/>
-        </radialGradient>
-        <radialGradient id="lava-heat" cx="52%" cy="94%" r="50%">
-          <stop offset="0%" stop-color="#ffb04a" stop-opacity=".6"/>
-          <stop offset="100%" stop-color="#ffb04a" stop-opacity="0"/>
-        </radialGradient>
-        <filter id="lava-wobble" x="-30%" y="-30%" width="160%" height="160%">
-          <feTurbulence id="lava-turb" type="fractalNoise" baseFrequency="0.015 0.03" numOctaves="2" seed="4" result="n"/>
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="8"/>
+        <pattern id="tame-p1" patternUnits="userSpaceOnUse" width="170" height="170">
+          <image href="/assets/paper/paper-1.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/>
+        </pattern>
+        <pattern id="tame-p2" patternUnits="userSpaceOnUse" width="170" height="170">
+          <image href="/assets/paper/paper-2.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/>
+        </pattern>
+        <pattern id="tame-p3" patternUnits="userSpaceOnUse" width="170" height="170">
+          <image href="/assets/paper/paper-3.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/>
+        </pattern>
+        <pattern id="tame-p4" patternUnits="userSpaceOnUse" width="170" height="170">
+          <image href="/assets/paper/paper-4.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/>
+        </pattern>
+        <pattern id="tame-p5" patternUnits="userSpaceOnUse" width="170" height="170">
+          <image href="/assets/paper/paper-5.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/>
+        </pattern>
+        <pattern id="tame-p6" patternUnits="userSpaceOnUse" width="170" height="170">
+          <image href="/assets/paper/paper-6.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/>
+        </pattern>
+        <pattern id="tame-p7" patternUnits="userSpaceOnUse" width="170" height="170">
+          <image href="/assets/paper/paper-7.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/>
+        </pattern>
+        <pattern id="tame-p8" patternUnits="userSpaceOnUse" width="170" height="170">
+          <image href="/assets/paper/paper-8.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/>
+        </pattern>
+
+        <filter id="tame-scrap-tear" x="-40%" y="-40%" width="180%" height="180%">
+          <feTurbulence id="tame-scrap-turb" type="fractalNoise" baseFrequency="0.06 0.09" numOctaves="2" seed="9" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="9"/>
         </filter>
+        <filter id="tame-letter-tear" x="-30%" y="-30%" width="160%" height="160%">
+          <feTurbulence id="tame-letter-turb" type="fractalNoise" baseFrequency="0.012 0.05" numOctaves="4" seed="7" result="noise"/>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="18" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+        <mask id="tame-mask">
+          <rect width="800" height="450" fill="black"/>
+          <text x="400" y="292" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-weight="700" font-size="230" letter-spacing="4" fill="white" filter="url(#tame-letter-tear)">TAME</text>
+        </mask>
       </defs>
       <rect width="800" height="450" fill="#1a1408"/>
-      <ellipse cx="410" cy="420" rx="260" ry="90" fill="url(#lava-heat)"/>
-      <ellipse cx="420" cy="260" rx="280" ry="230" fill="url(#lava-glow)"/>
-      <g filter="url(#lava-wobble)">
-        <rect x="275" y="58" width="250" height="34" rx="16" fill="url(#lava-fill)"/>
-        <path fill="url(#lava-fill)" d="
-          M 283,80 C 270,110 262,150 268,190 C 274,240 288,285 312,320
-          C 330,346 362,378 400,378 C 438,378 470,346 488,320
-          C 512,285 526,240 532,190 C 538,150 530,110 517,80 Z"/>
+      <g mask="url(#tame-mask)">
+        <g id="tame-scraps"></g>
       </g>
-      <path fill="url(#lava-pour-hot)" filter="url(#lava-wobble)" d="
-        M 512,66 C 540,64 568,72 592,90 C 616,108 634,134 642,164
-        C 648,188 646,214 636,232 C 628,246 612,248 604,236
-        C 598,226 600,212 596,198 C 588,172 570,148 546,130
-        C 528,116 512,104 505,88 Z"/>
-      <circle cx="648" cy="256" r="7" fill="url(#lava-pour-hot)"/>
-      <circle cx="662" cy="286" r="4.5" fill="url(#lava-pour-hot)"/>
-      <circle cx="654" cy="312" r="3" fill="url(#lava-pour-hot)" opacity=".8"/>
-    </svg>
-
-    <!-- Variant B: the six techniques as pinned specimens. -->
-    <svg id="crucible-specimens" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, monospace" style="display:none">
-      <rect width="800" height="450" fill="#1a1408"/>
-
-      <g transform="translate(148,120)">
-        <circle r="58" fill="none" stroke="#4a3d24" stroke-width="1.5" stroke-dasharray="2 3"/>
-        <circle r="50" fill="#20180d"/>
-        <rect x="-26" y="-7" width="14" height="14" rx="2" fill="#5b9bd9"/>
-        <rect x="-7" y="-7" width="14" height="14" rx="2" fill="#e0c887"/>
-        <rect x="12" y="-7" width="14" height="14" rx="2" fill="#ff8a65"/>
-      </g>
-      <text x="148" y="200" text-anchor="middle" font-size="12" fill="#a89a7a" letter-spacing="1">TERNARY</text>
-
-      <g transform="translate(400,120)">
-        <circle r="58" fill="none" stroke="#4a3d24" stroke-width="1.5" stroke-dasharray="2 3"/>
-        <circle r="50" fill="#20180d"/>
-        <circle cx="0" cy="0" r="9" fill="#e0c887"/>
-        <circle cx="-28" cy="-16" r="6" fill="#5b9bd9"/>
-        <circle cx="28" cy="-16" r="6" fill="#5b9bd9"/>
-        <circle cx="-28" cy="18" r="6" fill="#5b9bd9"/>
-        <circle cx="28" cy="18" r="6" fill="#5b9bd9"/>
-        <line x1="0" y1="0" x2="-28" y2="-16" stroke="#5b9bd9" stroke-width="1.5" opacity=".6"/>
-        <line x1="0" y1="0" x2="28" y2="-16" stroke="#5b9bd9" stroke-width="1.5" opacity=".6"/>
-        <line x1="0" y1="0" x2="-28" y2="18" stroke="#5b9bd9" stroke-width="1.5" opacity=".6"/>
-        <line x1="0" y1="0" x2="28" y2="18" stroke="#5b9bd9" stroke-width="1.5" opacity=".6"/>
-      </g>
-      <text x="400" y="200" text-anchor="middle" font-size="12" fill="#a89a7a" letter-spacing="1">MOE ROUTING</text>
-
-      <g transform="translate(652,120)">
-        <circle r="58" fill="none" stroke="#4a3d24" stroke-width="1.5" stroke-dasharray="2 3"/>
-        <circle r="50" fill="#20180d"/>
-        <path d="M -28,10 L -6,-14 L 16,10" fill="none" stroke="#ff8a65" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M -8,10 L 14,-14 L 36,10" fill="none" stroke="#e0c887" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/>
-      </g>
-      <text x="652" y="200" text-anchor="middle" font-size="12" fill="#a89a7a" letter-spacing="1">MULTI-TOKEN</text>
-
-      <g transform="translate(148,320)">
-        <circle r="58" fill="none" stroke="#4a3d24" stroke-width="1.5" stroke-dasharray="2 3"/>
-        <circle r="50" fill="#20180d"/>
-        <circle cx="-24" cy="-20" r="6" fill="#5b9bd9"/>
-        <circle cx="0" cy="-20" r="6" fill="#5b9bd9"/>
-        <circle cx="24" cy="-20" r="6" fill="#5b9bd9"/>
-        <circle cx="-12" cy="18" r="8" fill="#e0c887"/>
-        <circle cx="12" cy="18" r="8" fill="#e0c887"/>
-        <line x1="-24" y1="-20" x2="-12" y2="18" stroke="#5b9bd9" stroke-width="1.5" opacity=".6"/>
-        <line x1="0" y1="-20" x2="-12" y2="18" stroke="#5b9bd9" stroke-width="1.5" opacity=".6"/>
-        <line x1="0" y1="-20" x2="12" y2="18" stroke="#5b9bd9" stroke-width="1.5" opacity=".6"/>
-        <line x1="24" y1="-20" x2="12" y2="18" stroke="#5b9bd9" stroke-width="1.5" opacity=".6"/>
-      </g>
-      <text x="148" y="400" text-anchor="middle" font-size="12" fill="#a89a7a" letter-spacing="1">GQA</text>
-
-      <g transform="translate(400,320)">
-        <circle r="58" fill="none" stroke="#4a3d24" stroke-width="1.5" stroke-dasharray="2 3"/>
-        <circle r="50" fill="#20180d"/>
-        <line x1="0" y1="-24" x2="0" y2="18" stroke="#ff8a65" stroke-width="3" stroke-linecap="round"/>
-        <path d="M -30,-6 L 30,-6" stroke="#ff8a65" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="-30" cy="6" r="8" fill="none" stroke="#ff8a65" stroke-width="3"/>
-        <circle cx="30" cy="6" r="8" fill="none" stroke="#ff8a65" stroke-width="3"/>
-      </g>
-      <text x="400" y="400" text-anchor="middle" font-size="12" fill="#a89a7a" letter-spacing="1">AUX-LOSS-FREE</text>
-
-      <g transform="translate(652,320)">
-        <circle r="58" fill="none" stroke="#4a3d24" stroke-width="1.5" stroke-dasharray="2 3"/>
-        <circle r="50" fill="#20180d"/>
-        <rect x="-28" y="-24" width="56" height="10" rx="3" fill="#e0c887"/>
-        <rect x="-28" y="-8" width="56" height="10" rx="3" fill="#e0c887" opacity=".75"/>
-        <rect x="-28" y="8" width="56" height="10" rx="3" fill="#e0c887" opacity=".5"/>
-        <rect x="-28" y="24" width="56" height="10" rx="3" fill="#e0c887" opacity=".3"/>
-      </g>
-      <text x="652" y="400" text-anchor="middle" font-size="12" fill="#a89a7a" letter-spacing="1">SUBLN</text>
     </svg>
 
   </div>
-  <p class="crucible-art-caption" id="crucible-art-caption"></p>
+  <p class="crucible-art-caption" id="crucible-art-caption">Ternary Adaptive MoE — torn from our own paper</p>
 </div>
 <script>
 (function () {
-  var variants = [
-    { el: document.getElementById('crucible-lava'), caption: 'Six techniques, one melt' },
-    { el: document.getElementById('crucible-specimens'), caption: 'The six components, pinned and labeled' }
-  ];
-  var pick = variants[Math.floor(Math.random() * variants.length)];
-  pick.el.style.display = 'block';
-  document.getElementById('crucible-art-caption').textContent = pick.caption;
+  var group = document.getElementById('tame-scraps');
+  var pats = ['tame-p1', 'tame-p2', 'tame-p3', 'tame-p4', 'tame-p5', 'tame-p6', 'tame-p7', 'tame-p8'];
+  var html = '';
+  for (var i = 0; i < 110; i++) {
+    var x = 70 + Math.random() * 670;
+    var y = 85 + Math.random() * 270;
+    var w = 50 + Math.random() * 75;
+    var h = 50 + Math.random() * 75;
+    var rot = (Math.random() * 26 - 13).toFixed(1);
+    var pat = pats[Math.floor(Math.random() * pats.length)];
+    html += '<g filter="url(#tame-scrap-tear)" transform="rotate(' + rot + ' ' + (x + w / 2).toFixed(1) + ' ' + (y + h / 2).toFixed(1) + ')">' +
+      '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + h.toFixed(1) + '" fill="url(#' + pat + ')" ' +
+      'style="filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))"/></g>';
+  }
+  group.innerHTML = html;
 
-  var turb = document.getElementById('lava-turb');
-  if (turb) turb.setAttribute('seed', Math.floor(Math.random() * 1000));
+  document.getElementById('tame-scrap-turb').setAttribute('seed', Math.floor(Math.random() * 1000));
+  document.getElementById('tame-letter-turb').setAttribute('seed', Math.floor(Math.random() * 1000));
 })();
 </script>
 
