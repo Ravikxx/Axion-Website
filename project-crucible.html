@@ -332,23 +332,31 @@
 <script>
 (function () {
   var group = document.getElementById('tame-scraps');
+  var scrapTurb = document.getElementById('tame-scrap-turb');
+  var letterTurb = document.getElementById('tame-letter-turb');
   var pats = ['tame-p1', 'tame-p2', 'tame-p3', 'tame-p4', 'tame-p5', 'tame-p6', 'tame-p7', 'tame-p8'];
-  var html = '';
-  for (var i = 0; i < 110; i++) {
-    var x = 70 + Math.random() * 670;
-    var y = 85 + Math.random() * 270;
-    var w = 50 + Math.random() * 75;
-    var h = 50 + Math.random() * 75;
-    var rot = (Math.random() * 26 - 13).toFixed(1);
-    var pat = pats[Math.floor(Math.random() * pats.length)];
-    html += '<g filter="url(#tame-scrap-tear)" transform="rotate(' + rot + ' ' + (x + w / 2).toFixed(1) + ' ' + (y + h / 2).toFixed(1) + ')">' +
-      '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + h.toFixed(1) + '" fill="url(#' + pat + ')" ' +
-      'style="filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))"/></g>';
-  }
-  group.innerHTML = html;
 
-  document.getElementById('tame-scrap-turb').setAttribute('seed', Math.floor(Math.random() * 1000));
-  document.getElementById('tame-letter-turb').setAttribute('seed', Math.floor(Math.random() * 1000));
+  function regenerateTame() {
+    var html = '';
+    for (var i = 0; i < 110; i++) {
+      var x = 70 + Math.random() * 670;
+      var y = 85 + Math.random() * 270;
+      var w = 50 + Math.random() * 75;
+      var h = 50 + Math.random() * 75;
+      var rot = (Math.random() * 26 - 13).toFixed(1);
+      var pat = pats[Math.floor(Math.random() * pats.length)];
+      html += '<g filter="url(#tame-scrap-tear)" transform="rotate(' + rot + ' ' + (x + w / 2).toFixed(1) + ' ' + (y + h / 2).toFixed(1) + ')">' +
+        '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + h.toFixed(1) + '" fill="url(#' + pat + ')" ' +
+        'style="filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))"/></g>';
+    }
+    group.innerHTML = html;
+
+    scrapTurb.setAttribute('seed', Math.floor(Math.random() * 1000));
+    letterTurb.setAttribute('seed', Math.floor(Math.random() * 1000));
+  }
+
+  regenerateTame();
+  setInterval(regenerateTame, 500);
 })();
 </script>
 
