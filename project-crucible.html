@@ -277,12 +277,12 @@
 <div class="crucible-art">
   <div class="crucible-art-frame" id="crucible-frame">
 
-    <!-- "Forge": TAME assembles from a cloud of torn paper scraps, holds, then
-         dissolves back into the cloud and reforms — a short looping clip. Scraps
-         are cut through the ripped-letterform mask so the word stays crisp; a dim
-         unmasked ghost layer shows the scraps drifting outside the letters.
-         Motion pauses when scrolled off-screen and is skipped entirely for
-         visitors who prefer reduced motion. -->
+    <!-- "Forge": TAME is a living torn-paper collage. On first load the letters
+         fill in from bare; then the scraps slowly loosen and re-knit so the word
+         breathes and tatters without ever bursting apart. Everything is cut
+         through the ripped-letterform mask so the word stays crisp and legible.
+         Motion pauses when scrolled off-screen and is skipped for visitors who
+         prefer reduced motion. -->
     <svg id="crucible-tame" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs id="tame-defs">
         <radialGradient id="tame-glow" cx="50%" cy="52%" r="46%">
@@ -300,7 +300,6 @@
       </defs>
       <rect width="800" height="450" fill="#1a1408"/>
       <rect id="tame-glow-rect" width="800" height="450" fill="url(#tame-glow)" opacity="0"/>
-      <g id="tame-ghost" opacity="0.25"></g>
       <g id="tame-reveal" mask="url(#tame-mask)"></g>
     </svg>
 
@@ -311,14 +310,13 @@
 (function () {
   var W = 800, H = 450, NS = 'http://www.w3.org/2000/svg';
   var defs = document.getElementById('tame-defs');
-  var ghostG = document.getElementById('tame-ghost');
   var revealG = document.getElementById('tame-reveal');
   var glow = document.getElementById('tame-glow-rect');
   var frameEl = document.getElementById('crucible-frame');
   var papers = ['/assets/paper/paper-1.jpg','/assets/paper/paper-2.jpg','/assets/paper/paper-3.jpg',
                 '/assets/paper/paper-4.jpg','/assets/paper/paper-5.jpg','/assets/paper/paper-6.jpg',
                 '/assets/paper/paper-7.jpg','/assets/paper/paper-8.jpg'];
-  var N = 120;
+  var N = 74;
 
   // Wait for the web font before rasterizing TAME: the canvas that finds the
   // target points and the SVG mask that shows the letters must use the same
@@ -341,12 +339,11 @@
     return pts;
   }
   var targets = buildTargets(N);
-  // If the font wasn't ready and we got too few points, bail to a plain layout.
   if (targets.length < 20) { for (var q = targets.length; q < N; q++) targets.push({ x: 120 + Math.random() * 560, y: 150 + Math.random() * 150 }); }
 
   function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
   function tornPoly(w, h, seed) {
-    var r = mulberry(seed), pts = [], per = 4, jit = 6, i;
+    var r = mulberry(seed), pts = [], per = 4, jit = 7, i;
     function push(px, py) { pts.push(px.toFixed(1) + ',' + py.toFixed(1)); }
     for (i = 0; i < per; i++) push((i / per) * w + (r() * 2 - 1) * jit, (r() * 2 - 1) * jit);
     for (i = 0; i < per; i++) push(w + (r() * 2 - 1) * jit, (i / per) * h + (r() * 2 - 1) * jit);
@@ -357,10 +354,10 @@
 
   var scraps = [];
   for (var i = 0; i < N; i++) {
-    var w = 46 + Math.random() * 54, h = 46 + Math.random() * 54;
+    var w = 62 + Math.random() * 60, h = 62 + Math.random() * 60;
     var paper = papers[(Math.random() * papers.length) | 0];
     var cropX = Math.random() * 90, cropY = Math.random() * 90;
-    var cid = 'tsc' + i, gid = 'tsg' + i;
+    var cid = 'tsc' + i;
 
     var clip = document.createElementNS(NS, 'clipPath');
     clip.setAttribute('id', cid); clip.setAttribute('clipPathUnits', 'userSpaceOnUse');
@@ -368,7 +365,7 @@
     var pts = tornPoly(w, h, (i * 2654435761) >>> 0);
     poly.setAttribute('points', pts); clip.appendChild(poly); defs.appendChild(clip);
 
-    var g = document.createElementNS(NS, 'g'); g.setAttribute('id', gid);
+    var g = document.createElementNS(NS, 'g');
     var img = document.createElementNS(NS, 'image');
     img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', paper);
     img.setAttribute('href', paper);
@@ -383,84 +380,76 @@
     g.appendChild(edge);
     revealG.appendChild(g);
 
-    var use = document.createElementNS(NS, 'use');
-    use.setAttribute('href', '#' + gid);
-    use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#' + gid);
-    ghostG.appendChild(use);
-
     var tgt = targets[i % targets.length];
-    scraps.push({ el: g, w: w, h: h, tx: tgt.x - w / 2, ty: tgt.y - h / 2, tr: (Math.random() * 20 - 10),
-      sx: 0, sy: 0, sr: 0, nsx: 0, nsy: 0, nsr: 0, cx: 0, cy: 0, cr: 0, delay: Math.random() * 0.4 });
+    scraps.push({ el: g, w: w, h: h,
+      hx: tgt.x - w / 2, hy: tgt.y - h / 2, hr: (Math.random() * 18 - 9),  // home (solid)
+      lx: 0, ly: 0, lr: 0,                                                  // loose target
+      // first-load fill-in origin: just outside its home, so letters appear to knit together
+      fx: 0, fy: 0, fr: 0,
+      cx: 0, cy: 0, cr: 0, delay: Math.random() * 0.5 });
   }
 
   function setT(s) { s.el.setAttribute('transform', 'translate(' + s.cx.toFixed(1) + ' ' + s.cy.toFixed(1) + ') rotate(' + s.cr.toFixed(1) + ' ' + (s.w / 2).toFixed(1) + ' ' + (s.h / 2).toFixed(1) + ')'); }
-
-  // Reduced-motion: render a single static TAME and stop.
-  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    scraps.forEach(function (s) { s.cx = s.tx; s.cy = s.ty; s.cr = s.tr; setT(s); });
-    ghostG.setAttribute('opacity', '0.06'); glow.setAttribute('opacity', '0.9');
-    return;
-  }
-
   function EASE(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
   function lerp(a, b, t) { return a + (b - a) * t; }
   function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
-  function scatter(off) {
-    var ang = Math.random() * Math.PI * 2;
-    var rad = off ? 470 + Math.random() * 260 : 150 + Math.random() * 250;
-    return { x: 400 + Math.cos(ang) * rad, y: 225 + Math.sin(ang) * rad * (off ? 1 : 0.62), r: Math.random() * 120 - 60 };
+
+  function reroll(s) {
+    var ang = Math.random() * Math.PI * 2, rad = 34 + Math.random() * 46;
+    s.lx = s.hx + Math.cos(ang) * rad;
+    s.ly = s.hy + Math.sin(ang) * rad;
+    s.lr = s.hr + (Math.random() * 60 - 30);
+  }
+  scraps.forEach(function (s) {
+    reroll(s);
+    // first-load origin: pushed outward from centre so the word knits inward
+    var ang = Math.random() * Math.PI * 2, rad = 90 + Math.random() * 150;
+    s.fx = s.hx + Math.cos(ang) * rad; s.fy = s.hy + Math.sin(ang) * rad * 0.7; s.fr = Math.random() * 80 - 40;
+    s.cx = s.fx; s.cy = s.fy; s.cr = s.fr; setT(s);
+  });
+
+  // Reduced-motion: render a single static TAME and stop.
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    scraps.forEach(function (s) { s.cx = s.hx; s.cy = s.hy; s.cr = s.hr; setT(s); });
+    glow.setAttribute('opacity', '0.85');
+    return;
   }
 
-  var T_ASSEMBLE = 1.7, T_HOLD = 2.6, T_DISPERSE = 1.3, T_GAP = 0.5;
-  var LOOP = T_ASSEMBLE + T_HOLD + T_DISPERSE + T_GAP;
+  var FILL = 1.7;            // one-time fill-in
+  var BREATHE = 3.6;         // half-period: solid -> loose (and back)
+  var T = 0, lastTs = null, rafId = null, phaseMark = -1;
 
-  // First assemble flies in from off-canvas; later cycles breathe in from nearby.
-  scraps.forEach(function (s) { var p = scatter(true); s.sx = p.x - s.w / 2; s.sy = p.y - s.h / 2; s.sr = p.r; s.cx = s.sx; s.cy = s.sy; s.cr = s.sr; setT(s); });
-
-  var T = 0, lastTs = null, prepped = false, lastCycle = -1, rafId = null;
   function frame(ts) {
     if (lastTs === null) lastTs = ts;
     var dt = (ts - lastTs) / 1000; lastTs = ts;
-    if (dt > 0.1) dt = 0.1;   // clamp after a tab switch
+    if (dt > 0.1) dt = 0.1;
     T += dt;
-    var lt = T % LOOP, cycle = Math.floor(T / LOOP);
 
-    if (lt >= T_ASSEMBLE + T_HOLD - 0.1 && !prepped) {
-      prepped = true;
-      scraps.forEach(function (s) { var p = scatter(false); s.nsx = p.x - s.w / 2; s.nsy = p.y - s.h / 2; s.nsr = p.r; });
+    var loose;  // 0 = solid (home), 1 = loosened
+    if (T < FILL) {
+      var f = EASE(clamp(T / FILL, 0, 1));
+      scraps.forEach(function (s) { s.cx = lerp(s.fx, s.hx, f); s.cy = lerp(s.fy, s.hy, f); s.cr = lerp(s.fr, s.hr, f); setT(s); });
+      loose = 1 - f;
+    } else {
+      var u = ((T - FILL) / BREATHE);          // rising each half-period
+      var cycle = Math.floor(u);
+      var tri = u - cycle;                       // 0..1 within half-period
+      var goingLoose = (cycle % 2 === 0);
+      var p = goingLoose ? tri : 1 - tri;        // triangle 0..1..0
+      // re-roll loose targets each time we pass through solid
+      if (cycle !== phaseMark) { phaseMark = cycle; if (!goingLoose) scraps.forEach(reroll); }
+      var e = EASE(p);
+      scraps.forEach(function (s) {
+        var d = clamp((e - s.delay * 0.4) / 0.6, 0, 1);
+        s.cx = lerp(s.hx, s.lx, d); s.cy = lerp(s.hy, s.ly, d); s.cr = lerp(s.hr, s.lr, d); setT(s);
+      });
+      loose = p;
     }
-    if (lt < T_ASSEMBLE) prepped = false;
-    if (cycle !== lastCycle && cycle > 0) {
-      lastCycle = cycle;
-      scraps.forEach(function (s) { s.sx = s.nsx; s.sy = s.nsy; s.sr = s.nsr; });
-    }
 
-    scraps.forEach(function (s) {
-      var t, e;
-      if (lt < T_ASSEMBLE) {
-        t = clamp((lt - s.delay * T_ASSEMBLE) / (T_ASSEMBLE * 0.6), 0, 1); e = EASE(t);
-        s.cx = lerp(s.sx, s.tx, e); s.cy = lerp(s.sy, s.ty, e); s.cr = lerp(s.sr, s.tr, e);
-      } else if (lt < T_ASSEMBLE + T_HOLD) {
-        s.cx = s.tx; s.cy = s.ty; s.cr = s.tr;
-      } else if (lt < T_ASSEMBLE + T_HOLD + T_DISPERSE) {
-        t = clamp((lt - T_ASSEMBLE - T_HOLD - s.delay * T_DISPERSE) / (T_DISPERSE * 0.6), 0, 1); e = EASE(t);
-        s.cx = lerp(s.tx, s.nsx, e); s.cy = lerp(s.ty, s.nsy, e); s.cr = lerp(s.tr, s.nsr, e);
-      } else { s.cx = s.nsx; s.cy = s.nsy; s.cr = s.nsr; }
-      setT(s);
-    });
-
-    var lock;
-    if (lt < T_ASSEMBLE) lock = EASE(clamp(lt / T_ASSEMBLE, 0, 1));
-    else if (lt < T_ASSEMBLE + T_HOLD) lock = 1;
-    else if (lt < T_ASSEMBLE + T_HOLD + T_DISPERSE) lock = 1 - clamp((lt - T_ASSEMBLE - T_HOLD) / T_DISPERSE, 0, 1);
-    else lock = 0;
-    glow.setAttribute('opacity', (lock * 0.9).toFixed(3));
-    ghostG.setAttribute('opacity', (0.30 - lock * 0.24).toFixed(3));
-
+    glow.setAttribute('opacity', (0.85 - loose * 0.4).toFixed(3));
     rafId = requestAnimationFrame(frame);
   }
 
-  // Only animate while the hero is on screen.
   function startLoop() { if (!rafId) { lastTs = null; rafId = requestAnimationFrame(frame); } }
   function stopLoop() { if (rafId) { cancelAnimationFrame(rafId); rafId = null; } }
   if ('IntersectionObserver' in window) {
