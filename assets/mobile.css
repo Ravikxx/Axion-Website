@@ -48,13 +48,13 @@
   nav { padding: 0 16px !important; }
 
   /* Stack all grids */
-  .docs-layout { grid-template-columns: 1fr !important; gap: 0 !important; padding: 0 16px !important; }
+  .docs-layout { grid-template-columns: minmax(0, 1fr) !important; gap: 0 !important; padding: 0 16px !important; }
   .model-grid, .card-grid, .feature-grid, .features-grid,
   .mcp-grid, .announcement-grid, .info-grid, .metric-grid,
   .dashboard-grid, .keys-grid, .ecosystem {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: minmax(0, 1fr) !important;
   }
-  .hero { grid-template-columns: 1fr !important; gap: 32px !important; }
+  .hero { grid-template-columns: minmax(0, 1fr) !important; gap: 32px !important; }
 
   /* Page header */
   .page-header { padding: 32px 16px 24px !important; }
@@ -101,7 +101,7 @@
 
   /* MCP specific */
   #mcp-term { display: none !important; }
-  .mcp-cards { grid-template-columns: 1fr !important; }
+  .mcp-cards { grid-template-columns: minmax(0, 1fr) !important; }
 
   /* Reduce gaps and font sizes */
   .msg-wrap, .input-inner { max-width: 100% !important; }
@@ -132,8 +132,8 @@
   footer .footer-links { flex-direction: column !important; gap: 12px !important; }
 
   /* Lumen pages */
-  .info-grid { grid-template-columns: 1fr !important; }
-  .runs-grid { grid-template-columns: 1fr !important; }
+  .info-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .runs-grid { grid-template-columns: minmax(0, 1fr) !important; }
   .scenario { padding: 16px !important; }
   .chart-container { max-width: 100% !important; overflow-x: auto !important; }
   .chart-container canvas { max-width: 100% !important; height: auto !important; }
