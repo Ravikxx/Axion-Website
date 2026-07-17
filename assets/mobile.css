@@ -52,7 +52,10 @@
     width: 100%; text-align: center; padding: 12px 16px !important;
   }
   nav.nav-links-visible .nav-right .ax-profile { align-self: center; }
-  nav.nav-links-visible a:not(.brand):not(.nav-logo) { display: block !important; }
+  /* :not(.ax-hidden) matters here — profile.js hides "Get API key" via that
+     class when signed in, and this rule's !important would otherwise beat
+     that regardless of how the selector is scoped. */
+  nav.nav-links-visible a:not(.brand):not(.nav-logo):not(.ax-hidden) { display: block !important; }
 }
 
 /* ── Generic mobile layout ───────────────────────────────────────────────────── */
