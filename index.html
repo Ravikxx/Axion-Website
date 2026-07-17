@@ -32,12 +32,21 @@
     /* ── Nav ── */
     nav {
       border-bottom: 1px solid var(--border);
-      background: color-mix(in srgb, var(--bg) 82%, transparent);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
       padding: 0 32px;
       display: flex; align-items: center; height: 54px; gap: 24px;
       position: sticky; top: 0; z-index: 100;
+    }
+    /* Blur lives on a pseudo-element, not nav itself — backdrop-filter on
+       nav directly would make nav the containing block for any
+       position:fixed descendant (like the mobile .nav-links drawer),
+       collapsing it to nav's own height instead of the full viewport. */
+    nav::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      pointer-events: none;
     }
     .nav-logo { font-weight: 700; font-size: 15.5px; display: flex; align-items: center; gap: 9px; letter-spacing: -.01em; }
     .nav-links { display: flex; gap: 2px; margin-left: 12px; }
