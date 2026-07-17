@@ -315,9 +315,9 @@
 
     /* ── Mobile ── */
     @media (max-width: 880px) {
-      .hero { grid-template-columns: 1fr; gap: 40px; }
-      .family { grid-template-columns: 1fr; }
-      .ways, .safety-row { grid-template-columns: 1fr; }
+      .hero { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+      .family { grid-template-columns: minmax(0, 1fr); }
+      .ways, .safety-row { grid-template-columns: minmax(0, 1fr); }
     }
     @media (max-width: 720px) {
       .hero-wrap { padding: 44px 16px 40px; }
@@ -351,11 +351,13 @@
 </nav>
 
 <div class="paper-banner-wrap">
+  <!-- temporarily grainy-photo-only per request; restore full set:
+       /assets/paper/paper-1.jpg,/assets/paper/paper-2.jpg,/assets/paper/paper-3.jpg,/assets/paper/paper-4.jpg -->
   <div class="paper-banner"
-       data-images="/assets/paper/paper-1.jpg,/assets/paper/paper-2.jpg,/assets/paper/paper-3.jpg,/assets/paper/paper-4.jpg"
+       data-images="/assets/paper/paper-3.jpg"
        data-logo="/assets/logo-axion-new.png"
        data-logo-alt="Axion Labs AI"
-       data-interval="6000"
+       data-interval="500"
        data-zoom-min="115"
        data-zoom-max="155"></div>
 </div>
