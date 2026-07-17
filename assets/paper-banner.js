@@ -40,11 +40,6 @@
     var zoomMin = parseFloat(el.dataset.zoomMin) || 115;
     var zoomMax = parseFloat(el.dataset.zoomMax) || 155;
 
-    images.forEach(function (src) {
-      var preload = new Image();
-      preload.src = src;
-    });
-
     el.innerHTML = '';
 
     var layer = document.createElement('div');
@@ -59,15 +54,37 @@
       el.appendChild(logoImg);
     }
 
-    var index = 0;
-    paintLayer(layer, images[index], zoomMin, zoomMax);
+    // Only ever paint an image that has actually finished downloading —
+    // setting background-image on an unloaded URL leaves the layer with
+    // nothing to render until it decodes, flashing the container's own
+    // background color through for a frame. Track load state per image
+    // and skip forward to the next one that's actually ready.
+    var loaded = images.map(function () { return false; });
+    var index = -1;
+    var painted = false;
 
-    function cycle() {
-      index = (index + 1) % images.length;
-      paintLayer(layer, images[index], zoomMin, zoomMax);
+    function paintNext() {
+      for (var step = 1; step <= images.length; step++) {
+        var candidate = (index + step) % images.length;
+        if (loaded[candidate]) {
+          index = candidate;
+          paintLayer(layer, images[index], zoomMin, zoomMax);
+          painted = true;
+          return;
+        }
+      }
     }
 
-    window.setInterval(cycle, interval);
+    images.forEach(function (src, i) {
+      var img = new Image();
+      img.onload = function () {
+        loaded[i] = true;
+        if (!painted) paintNext();
+      };
+      img.src = src;
+    });
+
+    window.setInterval(paintNext, interval);
   }
 
   function init() {
