@@ -52,6 +52,14 @@
     width: 100%; text-align: center; padding: 12px 16px !important;
   }
   nav.nav-links-visible .nav-right .ax-profile { align-self: center; }
+  /* The avatar sits pinned near the bottom of the screen here, so its
+     dropdown (normally top:42px, opening downward) would render below the
+     viewport and be unreachable. Flip it to open upward instead. */
+  nav.nav-links-visible .nav-right .ax-menu {
+    top: auto !important; bottom: 42px !important;
+    transform: translateY(4px);
+  }
+  nav.nav-links-visible .nav-right .ax-menu.open { transform: translateY(0); }
   /* :not(.ax-hidden) matters here — profile.js hides "Get API key" via that
      class when signed in, and this rule's !important would otherwise beat
      that regardless of how the selector is scoped. */
