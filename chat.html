@@ -83,7 +83,6 @@
     }
     .chat-item:hover { background: var(--surface2); color: var(--text); }
     .chat-item.active { background: var(--surface2); color: var(--text); }
-    .chat-item-icon { flex-shrink: 0; opacity: .6; font-size: 13px; }
     .chat-item-title {
       flex: 1; min-width: 0; white-space: nowrap;
       overflow: hidden; text-overflow: ellipsis;
@@ -643,7 +642,6 @@
     const sorted = [...filtered].sort((a, b) => b.updated - a.updated)
     list.innerHTML = sorted.map(c => `
       <div class="chat-item ${c.id === currentId ? 'active' : ''}" onclick="switchChat('${c.id}')">
-        <span class="chat-item-icon">💬</span>
         <span class="chat-item-title">${escHtml(c.title)}</span>
         <button class="chat-item-del" onclick="renameChat('${c.id}', event)" title="Rename">✎</button>
         <button class="chat-item-del" onclick="deleteChat('${c.id}', event)" title="Delete">✕</button>
@@ -1112,7 +1110,6 @@
       if (data.pending) {
         document.getElementById('auth-overlay').innerHTML = `
           <div class="auth-card" style="text-align:center">
-            <div style="font-size:40px;margin-bottom:16px">📬</div>
             <div class="auth-title">Check your inbox</div>
             <p class="auth-sub" style="margin-bottom:0">We sent a verification link to <strong>${email}</strong>. Click it to activate your account.</p>
           </div>`

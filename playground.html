@@ -200,7 +200,6 @@
       align-items: center; justify-content: center;
       color: var(--muted); text-align: center; padding: 40px;
     }
-    .empty-icon { font-size: 36px; margin-bottom: 14px; opacity: .6; }
     .empty-title { font-size: 16px; font-weight: 600; color: var(--muted2); margin-bottom: 6px; }
     .empty-sub { font-size: 13px; max-width: 320px; }
 
@@ -397,18 +396,10 @@
   </a>
   <div class="nav-section">
     <div class="nav-label">API</div>
-    <a href="/chat" class="nav-item">
-      <span class="nav-icon">💬</span> Chat
-    </a>
-    <a href="/keys" class="nav-item">
-      <span class="nav-icon">⬡</span> API Keys
-    </a>
-    <div class="nav-item active">
-      <span class="nav-icon">💬</span> Playground
-    </div>
-    <a href="/docs" class="nav-item">
-      <span class="nav-icon">◻</span> Docs
-    </a>
+    <a href="/chat" class="nav-item">Chat</a>
+    <a href="/keys" class="nav-item">API Keys</a>
+    <div class="nav-item active">Playground</div>
+    <a href="/docs" class="nav-item">Docs</a>
   </div>
   <div class="nav-section">
     <div class="nav-label">Links</div>
@@ -416,9 +407,7 @@
       <span class="nav-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.809 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></span>
       GitHub
     </a>
-    <a href="https://www.npmjs.com/package/@axion-labs-ai/quark-cli" class="nav-item">
-      <span class="nav-icon">📦</span> npm
-    </a>
+    <a href="https://www.npmjs.com/package/@axion-labs-ai/quark-cli" class="nav-item">npm</a>
   </div>
   <div class="sidebar-bottom">
     <div class="sidebar-email" id="sidebar-email"></div>
@@ -435,8 +424,8 @@
     <div class="params-header">Settings</div>
 
     <div class="param-group mobile-nav">
-      <a href="/keys" class="nav-item"><span class="nav-icon">⬡</span> API Keys</a>
-      <a href="/docs" class="nav-item"><span class="nav-icon">◻</span> Docs</a>
+      <a href="/keys" class="nav-item">API Keys</a>
+      <a href="/docs" class="nav-item">Docs</a>
       <button class="sidebar-signout" onclick="logout()" style="margin-top:4px">Sign out</button>
     </div>
 
@@ -484,7 +473,6 @@
 
     <div class="messages" id="messages">
       <div class="empty-state" id="empty-state">
-        <div class="empty-icon">💬</div>
         <div class="empty-title">Start a conversation</div>
         <div class="empty-sub">Type a message below to chat with our models. Adjust the system prompt and parameters on the left.</div>
       </div>
@@ -561,7 +549,6 @@
       if (data.pending) {
         document.getElementById('auth-overlay').innerHTML = `
           <div class="auth-card" style="text-align:center">
-            <div style="font-size:40px;margin-bottom:16px">📬</div>
             <div class="auth-title">Check your inbox</div>
             <p class="auth-sub" style="margin-bottom:0">We sent a verification link to <strong>${email}</strong>. Click it to activate your account.</p>
           </div>`
@@ -630,7 +617,7 @@
   function clearChat() {
     messages = []
     const container = document.getElementById('messages')
-    container.innerHTML = '<div class="empty-state" id="empty-state"><div class="empty-icon">💬</div><div class="empty-title">Start a conversation</div><div class="empty-sub">Type a message below to chat with our models. Adjust the system prompt and parameters on the left.</div></div>'
+    container.innerHTML = '<div class="empty-state" id="empty-state"><div class="empty-title">Start a conversation</div><div class="empty-sub">Type a message below to chat with our models. Adjust the system prompt and parameters on the left.</div></div>'
     document.getElementById('copy-btn').style.display = 'none'
   }
 
