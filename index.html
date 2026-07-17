@@ -42,13 +42,13 @@
        collapsing it to nav's own height instead of the full viewport. */
     nav::before {
       content: '';
-      position: absolute; inset: 0;
+      position: absolute; inset: 0; z-index: -1;
       background: color-mix(in srgb, var(--bg) 82%, transparent);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       pointer-events: none;
     }
-    .nav-logo { font-weight: 700; font-size: 15.5px; display: flex; align-items: center; gap: 9px; letter-spacing: -.01em; }
+    .nav-logo { position: relative; z-index: 1; font-weight: 700; font-size: 15.5px; display: flex; align-items: center; gap: 9px; letter-spacing: -.01em; }
     .nav-links { display: flex; gap: 2px; margin-left: 12px; }
     .nav-link {
       padding: 6px 11px; border-radius: 6px; font-size: 13.5px;
