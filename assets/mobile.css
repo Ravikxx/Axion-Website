@@ -36,9 +36,22 @@
   nav .nav-right { display: none !important; }
   nav .hamburger-nav { margin-left: auto !important; }
 
-  /* When drawer is open (.nav-links-visible on <nav>), show everything */
+  /* When drawer is open (.nav-links-visible on <nav>), show everything.
+     nav-right is pinned to the bottom of the drawer (not left in the thin
+     top bar it lives in on desktop) so it reads as part of one menu. */
   nav.nav-links-visible .nav-links { display: flex !important; }
-  nav.nav-links-visible .nav-right { display: flex !important; }
+  nav.nav-links-visible .nav-right {
+    display: flex !important;
+    position: fixed !important; left: 16px !important; right: 16px !important; bottom: 16px !important;
+    top: auto !important; margin-left: 0 !important;
+    flex-direction: column !important; align-items: stretch !important; gap: 8px !important;
+    z-index: 95;
+  }
+  nav.nav-links-visible .nav-right .nav-btn,
+  nav.nav-links-visible .nav-right .nav-btn-ghost {
+    width: 100%; text-align: center; padding: 12px 16px !important;
+  }
+  nav.nav-links-visible .nav-right .ax-profile { align-self: center; }
   nav.nav-links-visible a:not(.brand):not(.nav-logo) { display: block !important; }
 }
 
