@@ -12,7 +12,7 @@
   overflow: hidden;
   border-radius: 16px;
   border: 1px solid var(--border, #23242f);
-  background: #14201a;
+  background: #2c4a30;
   isolation: isolate;
 }
 
@@ -46,7 +46,6 @@
   width: min(42%, 340px);
   height: auto;
   filter:
-    brightness(.4) contrast(1.15)
     drop-shadow(0 0 14px rgba(247, 245, 240, .4))
     drop-shadow(0 2px 3px rgba(0, 0, 0, .6));
   pointer-events: none;
