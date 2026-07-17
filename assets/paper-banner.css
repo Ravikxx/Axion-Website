@@ -1,0 +1,72 @@
+/* Paper banner — reusable "logo on textured paper" masthead.
+   Template usage: drop a `.paper-banner` element with data-images /
+   data-logo / data-interval attributes anywhere; paper-banner.js does
+   the rest. Swap data-images to reuse this with a different photo set. */
+
+.paper-banner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 21 / 7;
+  min-height: 200px;
+  max-height: 440px;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid var(--border, #23242f);
+  background: #14201a;
+  isolation: isolate;
+}
+
+.paper-banner-layer {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-size: 130%;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+  will-change: opacity;
+}
+
+.paper-banner-layer.is-visible {
+  opacity: 1;
+}
+
+.paper-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 70% at 50% 50%, rgba(0, 0, 0, .12) 0%, rgba(0, 0, 0, 0) 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.paper-banner-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(42%, 340px);
+  height: auto;
+  filter:
+    drop-shadow(0 0 18px rgba(247, 245, 240, .45))
+    drop-shadow(0 3px 10px rgba(0, 0, 0, .35));
+  pointer-events: none;
+  z-index: 2;
+}
+
+@media (max-width: 720px) {
+  .paper-banner {
+    aspect-ratio: 4 / 3;
+    max-height: 320px;
+    border-radius: 12px;
+  }
+  .paper-banner-logo {
+    width: 60%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paper-banner-layer {
+    transition: none;
+  }
+}
