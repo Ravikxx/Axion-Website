@@ -77,11 +77,26 @@
 
     images.forEach(function (src, i) {
       var img = new Image();
-      img.onload = function () {
+      img.src = src;
+
+      function markReady() {
         loaded[i] = true;
         if (!painted) paintNext();
-      };
-      img.src = src;
+      }
+
+      // decode() guarantees the image is fully decoded and paintable with
+      // zero cost — the plain 'load' event fires once the bytes are in,
+      // but some browsers (notably Safari) still pay a decode cost the
+      // first time it's actually drawn, which is exactly the flash this
+      // is trying to avoid. Fall back to onload where decode() isn't
+      // available.
+      if (img.decode) {
+        img.decode().then(markReady, function () {
+          img.onload = markReady;
+        });
+      } else {
+        img.onload = markReady;
+      }
     });
 
     window.setInterval(paintNext, interval);
