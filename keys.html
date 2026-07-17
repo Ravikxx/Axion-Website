@@ -46,7 +46,7 @@
 
     .btn-full { width: 100%; padding: 11px; font-size: 14px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; transition: opacity .2s, background .15s; font-family: inherit; }
     .btn-full:hover { opacity: .88; }
-    .btn-primary-full { background: var(--accent); color: #fff; }
+    .btn-primary-full { background: var(--accent); color: var(--accent-ink); }
     .btn-primary-full:disabled { opacity: .5; cursor: not-allowed; }
 
     .auth-toggle { margin-top: 16px; text-align: center; font-size: 13px; color: var(--muted); }
@@ -150,7 +150,7 @@
     .topbar-right { margin-left: auto; }
     .btn-new {
       display: inline-flex; align-items: center; gap: 6px;
-      background: var(--accent); color: #fff;
+      background: var(--accent); color: var(--accent-ink);
       padding: 7px 14px; border-radius: 7px;
       font-size: 13px; font-weight: 600; border: none; cursor: pointer;
       transition: background .15s; font-family: inherit;
@@ -283,7 +283,7 @@
     .modal-actions button { flex: 1; padding: 9px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: background .15s; }
     .modal-cancel { background: var(--surface2); color: var(--muted2); }
     .modal-cancel:hover { background: var(--border2); color: var(--text); }
-    .modal-create { background: var(--accent); color: #fff; }
+    .modal-create { background: var(--accent); color: var(--accent-ink); }
     .modal-create:hover { background: var(--accent-d); }
 
     .key-reveal {
@@ -294,7 +294,7 @@
     }
     .key-reveal-warning {
       font-size: 12px; color: var(--accent);
-      background: rgba(232,96,44,.08); border: 1px solid rgba(232,96,44,.2);
+      background: rgba(184, 162, 125,.08); border: 1px solid rgba(184, 162, 125,.2);
       border-radius: 6px; padding: 9px 12px; margin-bottom: 10px;
     }
 
@@ -330,7 +330,7 @@
     .org-nav-item.active { background: var(--surface2); color: var(--text); }
     .org-avatar {
       width: 18px; height: 18px; border-radius: 4px;
-      background: var(--accent); color: #fff;
+      background: var(--accent); color: var(--accent-ink);
       font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
@@ -375,7 +375,7 @@
       font-size: 11px; font-weight: 600;
       background: var(--surface2); color: var(--muted2);
     }
-    .role-badge.owner { background: rgba(232,96,44,.12); color: var(--accent); }
+    .role-badge.owner { background: rgba(184, 162, 125,.12); color: var(--accent); }
 
     /* ── Danger zone ── */
     .danger-zone {
@@ -389,7 +389,7 @@
 
     /* ── Invite accept banner ── */
     .invite-banner {
-      background: rgba(232,96,44,.08); border: 1px solid rgba(232,96,44,.3);
+      background: rgba(184, 162, 125,.08); border: 1px solid rgba(184, 162, 125,.3);
       border-radius: 10px; padding: 16px 20px; margin-bottom: 20px;
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
     }
@@ -1187,7 +1187,7 @@
     const ctx = canvas.getContext('2d')
     ctx.scale(dpr, dpr)
 
-    const accent = '#e8602c'
+    const accent = '#b8a27d'
     const muted = '#6b6d80'
     const max = Math.max(...daily.map(d => d.count), 1)
     const barW = Math.floor((W - 28) / daily.length) - 3
