@@ -38,33 +38,6 @@
   z-index: 1;
 }
 
-/* Torn-paper cutout behind the logo — two jagged layers (a light fibrous
-   rim under a darker recessed "hole") whose clip-paths are randomized
-   per photo in paper-banner.js. */
-.paper-banner-rip {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60%;
-  height: 62%;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.paper-banner-rip-rim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(155deg, #f2ecd9 0%, #cfc6ab 55%, #a89d80 100%);
-}
-
-.paper-banner-rip-hole {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 50% 42%, rgba(6, 7, 5, .95) 0%, rgba(8, 9, 6, .88) 42%, rgba(10, 11, 8, .6) 74%, rgba(10, 11, 8, 0) 100%);
-}
-
 .paper-banner-logo {
   position: absolute;
   top: 50%;
@@ -74,6 +47,7 @@
   height: auto;
   filter:
     brightness(.4) contrast(1.15)
+    drop-shadow(0 0 14px rgba(247, 245, 240, .4))
     drop-shadow(0 2px 3px rgba(0, 0, 0, .6));
   pointer-events: none;
   z-index: 3;
