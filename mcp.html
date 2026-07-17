@@ -227,14 +227,6 @@
 <script>
   const CATALOG_URL = 'mcp-catalog.json'
 
-  const ICONS = {
-    github: '🐙', filesystem: '📁', fetch: '🌐', postgres: '🐘',
-    sqlite: '🗃️', notion: '📝', slack: '💬', puppeteer: '🤖',
-    playwright: '🎭', memory: '🧠', 'brave-search': '🔍', exa: '🔎',
-    'google-maps': '🗺️', 'sequential-thinking': '🔗', everything: '✨',
-  }
-  const DEFAULT_ICON = '🔌'
-
   let catalog = []
   let categories = {}
   let activeCategory = 'all'
@@ -294,7 +286,7 @@
       <div class="card">
         <div class="card-top">
           <div style="flex:1">
-            <div class="card-name">${ICONS[s.id] || DEFAULT_ICON} ${esc(s.name)}</div>
+            <div class="card-name">${esc(s.name)}</div>
             <div class="card-desc">${esc(s.description)}</div>
           </div>
           <div class="cat-badge">${esc(categories[s.category] || s.category)}</div>
