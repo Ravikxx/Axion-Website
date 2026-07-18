@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lumen 1.2.1 — Axion Labs</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="/assets/theme-light.css">
+  <link rel="stylesheet" href="/assets/theme-adaptive.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -19,16 +19,16 @@
     }
 
     nav {
-      background: #0a0b0f;
+      background: var(--dark);
       padding: 0 32px;
       display: flex;
       align-items: center;
       height: 56px;
       gap: 24px;
     }
-    nav a { color: #9899a8; text-decoration: none; font-size: 14px; transition: color 0.2s; }
-    nav a:hover { color: #e8e9f0; }
-    nav a.brand { color: #e8e9f0; font-weight: 600; font-size: 16px; margin-right: 16px; }
+    nav a { color: var(--text-muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    nav a:hover { color: var(--text); }
+    nav a.brand { color: var(--text); font-weight: 600; font-size: 16px; margin-right: 16px; }
 
     .hero {
       background: linear-gradient(160deg, #0a0b0f 0%, #181019 60%, #2a1712 100%);
@@ -38,8 +38,8 @@
     }
     .hero-badge {
       display: inline-block;
-      background: var(--accent);
-      color: var(--accent-ink);
+      background: #b8a27d;
+      color: #1a1408;
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.1em;
@@ -55,7 +55,7 @@
       line-height: 1.1;
       margin-bottom: 16px;
     }
-    .hero h1 span { color: var(--accent); }
+    .hero h1 span { color: #b8a27d; }
     .hero p {
       font-size: 17px;
       color: #9899a8;
@@ -77,7 +77,7 @@
     .stat-num { font-size: 40px; font-weight: 700; line-height: 1; }
     .stat-num.good { color: #4ade80; }
     .stat-num.bad  { color: #f87171; }
-    .stat-num.neutral { color: var(--accent); }
+    .stat-num.neutral { color: #b8a27d; }
     .stat-label { font-size: 13px; color: #7c7e92; margin-top: 6px; }
     .stat-sub { font-size: 11px; color: #6b6d80; margin-top: 2px; }
 
@@ -138,10 +138,10 @@
     }
     .benchmark-table tr:last-child td { border-bottom: none; }
     .score-good { color: var(--green); font-weight: 700; }
-    .score-bad  { color: #f87171; font-weight: 700; }
+    .score-bad  { color: var(--red); font-weight: 700; }
     .score-neutral { color: var(--accent); font-weight: 700; }
     .delta-up   { display: inline-block; background: var(--green-light); color: var(--green); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
-    .delta-down { display: inline-block; background: rgba(248,113,113,.12); color: #f87171; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+    .delta-down { display: inline-block; background: rgba(248,113,113,.12); color: var(--red); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
 
     .callout {
       border-radius: 10px;
@@ -163,7 +163,7 @@
     .callout.warn {
       background: rgba(251,191,36,.12);
       border: 1px solid rgba(245,158,11,0.25);
-      border-left: 4px solid #fbbf24;
+      border-left: 4px solid var(--yellow);
     }
     .callout strong { color: inherit; }
 
@@ -181,12 +181,12 @@
       border: 1px solid var(--border);
     }
     .rec-card.coding {
-      background: #1a1b24;
+      background: var(--surface2);
       border-color: var(--accent);
     }
     .rec-card.general {
       background: rgba(52,211,153,.12);
-      border-color: #86efac;
+      border-color: var(--green-bright);
     }
     .rec-card .rec-label {
       font-size: 11px;
@@ -223,7 +223,7 @@
     }
     .timeline-item.done::before { background: var(--green); }
     .timeline-item.current::before { background: var(--accent); }
-    .timeline-item.upcoming::before { background: #9899a8; }
+    .timeline-item.upcoming::before { background: var(--text-muted); }
     .timeline-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
     .timeline-item.done .timeline-label { color: var(--green); }
     .timeline-item.current .timeline-label { color: var(--accent); }
@@ -231,15 +231,15 @@
     .timeline-desc { font-size: 14px; color: var(--text-muted); }
 
     footer {
-      background: #0a0b0f;
-      color: #6b6d80;
+      background: var(--dark);
+      color: var(--muted);
       text-align: center;
       padding: 32px;
       font-size: 13px;
       margin-top: 80px;
     }
-    footer a { color: #7c7e92; text-decoration: none; }
-    footer a:hover { color: #9899a8; }
+    footer a { color: var(--muted3); text-decoration: none; }
+    footer a:hover { color: var(--text-muted); }
 
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
@@ -478,16 +478,16 @@
   const baseOpts = {
     responsive: true,
     plugins: {
-      legend: { display: true, position: 'bottom', labels: { color: '#6b6d80', font: { size: 12 }, usePointStyle: true, padding: 16 } },
+      legend: { display: true, position: 'bottom', labels: { color: 'var(--muted)', font: { size: 12 }, usePointStyle: true, padding: 16 } },
       tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` } }
     },
     scales: {
-      x: { grid: { display: false }, border: { display: false }, ticks: { color: '#6b6d80', font: { size: 12 } } },
+      x: { grid: { display: false }, border: { display: false }, ticks: { color: 'var(--muted)', font: { size: 12 } } },
       y: {
         min: 0, max: 100,
         grid: { color: gridColor },
         border: { display: false },
-        ticks: { color: '#6b6d80', font: { size: 12 }, callback: v => v + '%' }
+        ticks: { color: 'var(--muted)', font: { size: 12 }, callback: v => v + '%' }
       }
     },
     animation: { duration: 900, easing: 'easeOutQuart' }
