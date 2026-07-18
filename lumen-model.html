@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lumen — Axion Labs</title>
-  <link rel="stylesheet" href="/assets/theme-light.css">
+  <link rel="stylesheet" href="/assets/theme-adaptive.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -23,10 +23,10 @@
       padding: 0 32px; display: flex; align-items: center;
       height: 56px; gap: 24px; position: sticky; top: 0; z-index: 100;
     }
-    nav a { color: #9899a8; text-decoration: none; font-size: 14px; transition: color 0.2s; }
-    nav a:hover { color: #e8e9f0; }
-    nav a.brand { color: #e8e9f0; font-weight: 700; font-size: 16px; margin-right: 16px; }
-    nav a.active { color: #e8e9f0; }
+    nav a { color: var(--text-muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    nav a:hover { color: var(--text); }
+    nav a.brand { color: var(--text); font-weight: 700; font-size: 16px; margin-right: 16px; }
+    nav a.active { color: var(--text); }
     .nav-right { margin-left: auto; }
     .btn-nav {
       background: var(--accent); color: var(--accent-ink) !important;
@@ -41,7 +41,7 @@
       text-align: center;
     }
     .hero-badge {
-      display: inline-block; background: var(--accent); color: var(--accent-ink);
+      display: inline-block; background: #b8a27d; color: #1a1408;
       font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
       text-transform: uppercase; padding: 5px 12px;
       border-radius: 100px; margin-bottom: 24px;
@@ -50,7 +50,7 @@
       font-size: clamp(36px, 6vw, 64px); font-weight: 800;
       letter-spacing: -0.03em; line-height: 1.08; margin-bottom: 16px;
     }
-    .hero h1 span { color: var(--accent); }
+    .hero h1 span { color: #b8a27d; }
     .hero-sub { font-size: 17px; color: #b3a08a; max-width: 520px; margin: 0 auto 32px; line-height: 1.65; }
     .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .btn {
@@ -60,7 +60,7 @@
     }
     .btn:hover { opacity: 0.88; transform: translateY(-1px); }
     .btn-primary { background: var(--accent); color: var(--accent-ink); }
-    .btn-ghost { background: rgba(255,255,255,0.08); color: #e8e9f0; border: 1px solid rgba(255,255,255,0.12); }
+    .btn-ghost { background: rgba(255,255,255,0.08); color: var(--text); border: 1px solid rgba(255,255,255,0.12); }
 
     .stat-row {
       display: flex; justify-content: center; gap: 48px; flex-wrap: wrap;
@@ -70,7 +70,7 @@
     .stat { text-align: center; }
     .stat-num { font-size: 38px; font-weight: 700; line-height: 1; }
     .stat-num.good { color: #4ade80; }
-    .stat-num.accent { color: var(--accent); }
+    .stat-num.accent { color: #b8a27d; }
     .stat-label { font-size: 13px; color: #7c7e92; margin-top: 6px; }
     .stat-sub { font-size: 11px; color: #6b6d80; margin-top: 2px; }
 
@@ -108,14 +108,14 @@
     .use-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
 
     .code-block {
-      background: #0a0b0f; border: 1px solid #1f1416;
+      background: var(--surface2); border: 1px solid var(--border);
       border-radius: 10px; padding: 18px 22px;
       font-family: "IBM Plex Mono", "SF Mono", "Fira Code", monospace;
-      font-size: 13px; color: #9899a8;
+      font-size: 13px; color: var(--text-muted);
       overflow-x: auto; line-height: 1.8; margin: 16px 0;
     }
-    .code-block .prompt { color: #b8a27d; user-select: none; }
-    .code-block .comment { color: #33241f; }
+    .code-block .prompt { color: var(--accent); user-select: none; }
+    .code-block .comment { color: var(--muted); }
 
     /* ── Version timeline ── */
     .timeline { position: relative; padding-left: 28px; }
@@ -143,7 +143,7 @@
     }
     .tl-badge.current { background: var(--accent-lt); color: var(--accent); }
     .tl-badge.stable  { background: var(--green-lt); color: var(--green); }
-    .tl-badge.old     { background: #1a1b24; color: var(--text-muted); }
+    .tl-badge.old     { background: var(--surface2); color: var(--text-muted); }
     .tl-desc { font-size: 14px; color: var(--text-muted); line-height: 1.65; max-width: 600px; }
     .tl-link { font-size: 13px; color: var(--accent); text-decoration: none; font-weight: 600; margin-top: 8px; display: inline-block; }
     .tl-link:hover { text-decoration: underline; }
@@ -156,7 +156,7 @@
     }
     .safety-score { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
     .safety-score.good { color: var(--green); }
-    .safety-score.bad  { color: #f87171; }
+    .safety-score.bad  { color: var(--red); }
     .safety-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
 
     .callout {
@@ -178,11 +178,11 @@
 
     /* ── Footer ── */
     footer {
-      background: var(--dark); color: #6b6d80;
+      background: var(--dark); color: var(--muted);
       text-align: center; padding: 28px; font-size: 13px;
     }
-    footer a { color: #7c7e92; text-decoration: none; }
-    footer a:hover { color: #9899a8; }
+    footer a { color: var(--muted3); text-decoration: none; }
+    footer a:hover { color: var(--text-muted); }
 
     /* ── Mobile ── */
     @media (max-width: 640px) {

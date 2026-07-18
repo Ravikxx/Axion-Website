@@ -47,6 +47,7 @@
   --yellow:      #fbbf24;
   --blue:        #60a5fa;
   --purple:      #a78bfa;
+  --green-bright: #4ade80;   /* vivid "pass/good" status, distinct from --green */
 
   /* a third muted tone used for meta/date text on several pages, between
      --muted (dimmest) and --muted2/--text-muted (lightest) */
@@ -104,6 +105,7 @@
     --yellow:      #b8860b;
     --blue:        #2563eb;
     --purple:      #7c3aed;
+    --green-bright: #16a34a;
 
     --muted3:      #817a6b;
     --accent-rgb:  138, 106, 47;
