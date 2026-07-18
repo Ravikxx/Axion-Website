@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -8,13 +8,13 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-
     body {
       font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
 
     nav {
@@ -29,157 +29,158 @@
     nav a:hover { color: #e8e9f0; }
     nav a.brand { color: #e8e9f0; font-weight: 600; font-size: 16px; margin-right: 16px; }
 
-    .page-header {
-      background: #0a0b0f;
-      color: #e8e9f0;
-      padding: 56px 32px 48px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .page-header .section-tag {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 12px;
-    }
-    .page-header h1 {
-      font-size: 40px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 10px;
-    }
-    .page-header p { color: #7c7e92; font-size: 16px; }
-
-    main {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 56px 32px 80px;
-    }
-
-    .announcement {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px 32px;
-      margin-bottom: 20px;
-      transition: box-shadow 0.2s;
-    }
-    .announcement:hover {
-      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-    }
-
-    .ann-meta {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-    }
-    .ann-tag {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 4px;
-    }
-    .ann-tag.release { background: var(--accent-light); color: var(--accent); }
-    .ann-tag.update  { background: rgba(52,211,153,.12); color: #34d399; }
-    .ann-tag.notice  { background: #1a1b24; color: #6b6d80; }
-
-    .ann-date { font-size: 12px; color: var(--text-muted); }
-
-    .announcement h2 {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      margin-bottom: 8px;
-    }
-    .announcement h2 a {
-      color: inherit;
-      text-decoration: none;
-    }
-    .announcement h2 a:hover { color: var(--accent); }
-
-    .announcement p {
-      font-size: 15px;
-      color: var(--text-muted);
-      line-height: 1.65;
-    }
-
-    .ann-footer {
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .ann-link {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--accent);
-      text-decoration: none;
-    }
-    .ann-link:hover { text-decoration: underline; }
-
-    .empty-future {
-      text-align: center;
-      padding: 48px 0 0;
-      color: var(--text-muted);
-      font-size: 14px;
-    }
-
-    footer {
-      background: #0a0b0f;
-      color: #6b6d80;
-      text-align: center;
-      padding: 32px;
-      font-size: 13px;
-    }
-    footer a { color: #7c7e92; text-decoration: none; }
-    footer a:hover { color: #9899a8; }
-
-    /* Subscribe widget */
+    /* ── Subscribe bar ─────────────────────────────────────────── */
     .subscribe-bar {
       background: #0a0b0f;
       border-bottom: 1px solid rgba(255,255,255,0.06);
       padding: 14px 32px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       flex-wrap: wrap;
     }
-    .subscribe-bar span { color: #7c7e92; font-size: 13px; }
+    .subscribe-bar > span { color: #7c7e92; font-size: 13px; }
     .subscribe-form { display: flex; gap: 8px; flex: 1; min-width: 260px; max-width: 420px; }
     .subscribe-form input {
-      flex: 1; padding: 8px 12px; border-radius: 6px;
-      border: 1px solid #2e2231; background: #0a0b0f; color: #e8e9f0;
-      font-size: 13px; outline: none;
+      flex: 1; padding: 8px 12px; border-radius: 7px;
+      border: 1px solid #2a2622; background: #14130f; color: #e8e9f0;
+      font-size: 13px; outline: none; transition: border-color .15s;
     }
     .subscribe-form input:focus { border-color: var(--accent); }
     .subscribe-form button {
-      padding: 8px 16px; border-radius: 6px; border: none;
+      padding: 8px 18px; border-radius: 7px; border: none;
       background: var(--accent); color: var(--accent-ink); font-size: 13px;
-      font-weight: 600; cursor: pointer; white-space: nowrap;
+      font-weight: 600; cursor: pointer; white-space: nowrap; transition: background .15s;
     }
-    .subscribe-form button:hover { opacity: 0.9; }
+    .subscribe-form button:hover { background: var(--accent-d); }
+    .sub-consent { display:flex; align-items:center; gap:6px; width:100%; font-size:12px; color:#7c7e92; }
+    .sub-consent input { width:14px; height:14px; accent-color: var(--accent); cursor:pointer; }
+    .sub-consent a { color: var(--accent); text-decoration: underline; }
     .sub-msg { font-size: 12px; color: #34d399; display: none; }
 
-    @media (max-width: 640px) {
+    /* ── Page header ───────────────────────────────────────────── */
+    .news-head {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 72px 32px 8px;
+    }
+    .news-eyebrow {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--accent);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+    }
+    .news-head h1 {
+      font-size: clamp(38px, 6vw, 58px);
+      font-weight: 700; letter-spacing: -0.03em; line-height: 1.02;
+      margin: 16px 0 14px;
+    }
+    .news-head p { color: #8b8d9e; font-size: 17px; max-width: 560px; }
+
+    /* ── Filters ───────────────────────────────────────────────── */
+    .news-filters {
+      max-width: 860px; margin: 0 auto;
+      padding: 26px 32px 0;
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .filter-chip {
+      font-size: 13px; font-weight: 500;
+      padding: 7px 15px; border-radius: 100px; cursor: pointer;
+      background: transparent; color: #8b8d9e;
+      border: 1px solid var(--border, #26241f);
+      transition: all .15s;
+    }
+    .filter-chip:hover { color: var(--text); border-color: #3a362e; }
+    .filter-chip.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+    /* ── Feed ──────────────────────────────────────────────────── */
+    main { max-width: 860px; margin: 0 auto; padding: 8px 32px 96px; }
+
+    .ann { border-top: 1px solid var(--border, #22201b); }
+    .ann.filter-hide, .ann.pending { display: none; }
+    #dynamicAnns:empty { display: none; }
+
+    .ann-head {
+      width: 100%; display: flex; align-items: baseline; gap: 18px;
+      background: none; border: none; cursor: pointer; text-align: left;
+      padding: 26px 0; color: inherit; font: inherit;
+    }
+    .ann-when {
+      flex: 0 0 auto; width: 104px;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 12.5px; color: #6f7183; padding-top: 4px;
+    }
+    .ann-cat {
+      flex: 0 0 auto; align-self: flex-start;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 4px 9px; border-radius: 5px; margin-top: 2px; white-space: nowrap;
+    }
+    .ann-cat.release { background: var(--accent-light, rgba(184,162,125,.14)); color: var(--accent); }
+    .ann-cat.update  { background: rgba(52,211,153,.12); color: #34d399; }
+    .ann-cat.notice  { background: #1a1b18; color: #8b8d80; }
+    .ann-cat.safety  { background: rgba(248,113,113,.12); color: #f87171; }
+    .ann-title {
+      flex: 1 1 auto;
+      font-size: 20px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3;
+      color: var(--text); transition: color .15s;
+    }
+    .ann-head:hover .ann-title { color: var(--accent); }
+    .ann-chev { flex: 0 0 auto; color: #6f7183; margin-top: 8px; transition: transform .3s ease; }
+    .ann.open .ann-chev { transform: rotate(180deg); }
+
+    /* featured lead */
+    .ann.lead .ann-head { padding-top: 34px; }
+    .ann.lead .ann-title { font-size: clamp(26px, 3.4vw, 34px); font-weight: 700; line-height: 1.12; }
+    .ann.lead .ann-when { padding-top: 8px; }
+
+    /* collapsible panel */
+    .ann-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .34s ease; }
+    .ann.open .ann-panel { grid-template-rows: 1fr; }
+    .ann-panel-inner { overflow: hidden; }
+    .ann-body {
+      padding: 0 0 30px 122px;
+      max-width: 680px;
+    }
+    .ann.lead .ann-body { padding-bottom: 36px; }
+    .ann-body p { font-size: 15.5px; color: var(--text-muted, #9a9cad); line-height: 1.72; }
+    .ann-body ul { margin-top: 10px; margin-left: 20px; color: var(--text-muted, #9a9cad); font-size: 15px; line-height: 1.6; }
+    .ann-body li { margin-bottom: 6px; }
+    .ann-body strong { color: #cfd0da; font-weight: 600; }
+    .ann-body code {
+      font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.5px;
+      background: #16150f; border: 1px solid #26241d; border-radius: 5px; padding: 1px 6px; color: var(--accent-d);
+    }
+    .ann-footer {
+      margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border, #22201b);
+      display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+    }
+    .ann-link { font-size: 13px; font-weight: 600; color: var(--accent); text-decoration: none; }
+    .ann-link:hover { text-decoration: underline; }
+
+    .news-empty { border-top: 1px solid var(--border, #22201b); padding: 32px 0 0; color: #6f7183; font-size: 14px; }
+    .news-empty a { color: var(--accent); }
+
+    footer {
+      background: #0a0b0f; color: #6b6d80; text-align: center;
+      padding: 32px; font-size: 13px;
+    }
+    footer a { color: #7c7e92; text-decoration: none; }
+    footer a:hover { color: #9899a8; }
+
+    @media (max-width: 680px) {
       nav { padding: 0 16px; gap: 10px; }
       nav a:not(.brand) { display: none; }
-
       .subscribe-bar { padding: 12px 16px; }
-
-      .page-header { padding: 36px 20px 28px; }
-      .page-header h1 { font-size: 30px; }
-
-      main { padding: 28px 16px 56px; }
-
-      .announcement { padding: 20px; }
-      .ann-footer { flex-wrap: wrap; }
+      .news-head { padding: 44px 20px 4px; }
+      .news-filters { padding: 20px 20px 0; }
+      main { padding: 4px 20px 64px; }
+      .ann-head { flex-wrap: wrap; gap: 8px 12px; padding: 22px 0; }
+      .ann-when { width: auto; padding-top: 0; order: 1; }
+      .ann-cat { order: 2; }
+      .ann-title { flex-basis: 100%; order: 4; font-size: 18px; }
+      .ann-chev { order: 3; margin-left: auto; margin-top: 0; }
+      .ann.lead .ann-title { font-size: 23px; }
+      .ann-body { padding-left: 0; }
+      .ann-footer { gap: 12px; }
     }
   </style>
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
@@ -204,33 +205,39 @@
     <input type="email" id="subEmail" placeholder="you@example.com">
     <button onclick="subscribe()">Subscribe</button>
   </div>
-  <div style="display:flex;align-items:center;gap:6px;width:100%;margin-top:6px;font-size:12px;color:#7c7e92">
-    <input type="checkbox" id="subTos" style="width:14px;height:14px;accent-color:var(--accent);cursor:pointer">
-    <label for="subTos" style="cursor:pointer">I agree to the <a href="/tos" style="color:var(--accent);text-decoration:underline" target="_blank">Terms</a> and <a href="/privacy" style="color:var(--accent);text-decoration:underline" target="_blank">Privacy Policy</a></label>
+  <div class="sub-consent">
+    <input type="checkbox" id="subTos">
+    <label for="subTos">I agree to the <a href="/tos" target="_blank">Terms</a> and <a href="/privacy" target="_blank">Privacy Policy</a></label>
   </div>
   <span class="sub-msg" id="subMsg"></span>
 </div>
 
-<div class="page-header">
-  <div class="section-tag">Axion Labs</div>
+<header class="news-head">
+  <div class="news-eyebrow">Axion Labs</div>
   <h1>Announcements</h1>
-  <p>Updates, releases, and news from the Axion team.</p>
-</div>
+  <p>Releases, research notes, and news from the Axion team.</p>
+</header>
+
+<nav class="news-filters" aria-label="Filter announcements">
+  <button class="filter-chip active" data-cat="all" onclick="filterAnns('all', this)">All</button>
+  <button class="filter-chip" data-cat="release" onclick="filterAnns('release', this)">Releases</button>
+  <button class="filter-chip" data-cat="update" onclick="filterAnns('update', this)">Updates</button>
+  <button class="filter-chip" data-cat="safety" onclick="filterAnns('safety', this)">Safety</button>
+  <button class="filter-chip" data-cat="notice" onclick="filterAnns('notice', this)">Notices</button>
+</nav>
 
 <main>
-
-  <!-- Dynamic announcements from DB (injected here) -->
   <div id="dynamicAnns"></div>
 
-  <!-- MOST RECENT FIRST -->
-
-  <div class="announcement">
-    <div class="ann-meta">
-      <span class="ann-tag notice">Notice</span>
-      <span class="ann-date">July 12, 2026</span>
-    </div>
-    <h2>Migrating to Our Own Server — Lumen and Veil Temporarily Down</h2>
-    <p>
+  <article class="ann notice lead open" data-cat="notice">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="true">
+      <span class="ann-when">July 12, 2026</span>
+      <span class="ann-cat notice">Notice</span>
+      <span class="ann-title">Migrating to Our Own Server — Lumen and Veil Temporarily Down</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       We're moving off the shared HuggingFace Space and onto our own dedicated server so our models run on
       infrastructure we fully control instead of shared, rate-limited hosting. During the migration, both
       <strong>Lumen and Veil will be temporarily unavailable or unstable</strong>. Axion's other features (chat
@@ -242,15 +249,18 @@
     <div class="ann-footer">
       <a class="ann-link" href="https://github.com/AxionLabsAI/axion">GitHub →</a>
     </div>
-  </div>
+    </div></div>
+  </article>
 
-  <div class="announcement">
-    <div class="ann-meta">
-      <span class="ann-tag notice">Notice</span>
-      <span class="ann-date">July 6, 2026</span>
-    </div>
-    <h2>Lumen Will Be Temporarily Down — Moving to Better Hardware</h2>
-    <p>
+  <article class="ann notice" data-cat="notice">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">July 6, 2026</span>
+      <span class="ann-cat notice">Notice</span>
+      <span class="ann-title">Lumen Will Be Temporarily Down — Moving to Better Hardware</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       We're working on getting better hardware on HuggingFace to host Lumen so it responds faster. During the
       migration, Lumen will be <strong>temporarily unavailable</strong>. Axion's other features (chat with your
       own API keys, tools, MCP, etc.) are unaffected — this only impacts the free Lumen endpoint.
@@ -262,15 +272,18 @@
       <a class="ann-link" href="https://huggingface.co/AxionLabsAI/Lumen">HuggingFace →</a>
       <a class="ann-link" href="https://github.com/AxionLabsAI/axion">GitHub →</a>
     </div>
-  </div>
+    </div></div>
+  </article>
 
-  <div class="announcement">
-    <div class="ann-meta">
-      <span class="ann-tag notice">Notice</span>
-      <span class="ann-date">July 3, 2026</span>
-    </div>
-    <h2>Lumen 1.3 — Slightly Delayed, Significantly Better</h2>
-    <p>
+  <article class="ann notice" data-cat="notice">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">July 3, 2026</span>
+      <span class="ann-cat notice">Notice</span>
+      <span class="ann-title">Lumen 1.3 — Slightly Delayed, Significantly Better</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       Lumen 1.3 will ship a bit later than we originally hoped — <strong>ETA: August 30th, 2026</strong>.
       The reason is good news: during our research we found
       several <strong>groundbreaking optimization methods</strong> that we're actively
@@ -287,15 +300,18 @@
     <p style="margin-top:12px">
       We'll share more details and benchmarks as we get closer to release. Thanks for your patience.
     </p>
-  </div>
+    </div></div>
+  </article>
 
-  <div class="announcement">
-    <div class="ann-meta">
-      <span class="ann-tag release">Release</span>
-      <span class="ann-date">July 1, 2026</span>
-    </div>
-    <h2>Axion 2.0 — A Whole New CLI Interface (now on 2.0.1)</h2>
-    <p>
+  <article class="ann release" data-cat="release">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">July 1, 2026</span>
+      <span class="ann-cat release">Release</span>
+      <span class="ann-title">Axion 2.0 — A Whole New CLI Interface (now on 2.0.1)</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       Axion's terminal interface has been completely rebuilt from the ground up on <strong>OpenTUI</strong>,
       replacing the old Ink-based UI. There's no build step anymore — Axion runs straight from source, and the
       whole thing feels noticeably snappier.
@@ -325,15 +341,18 @@
       <a class="ann-link" href="https://www.npmjs.com/package/@axion-labs-ai/quark-cli">npm install -g @axion-labs-ai/quark-cli →</a>
       <a class="ann-link" href="https://github.com/AxionLabsAI/axion">GitHub →</a>
     </div>
-  </div>
+    </div></div>
+  </article>
 
-  <div class="announcement">
-    <div class="ann-meta">
-      <span class="ann-tag update">Update</span>
-      <span class="ann-date">June 21, 2026</span>
-    </div>
-    <h2>Subscribe to Axion Labs Announcements</h2>
-    <p>
+  <article class="ann update" data-cat="update">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">June 21, 2026</span>
+      <span class="ann-cat update">Update</span>
+      <span class="ann-title">Subscribe to Axion Labs Announcements</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       You can now get Axion Labs announcements delivered straight to your inbox. Use the subscribe box at the
       top of this page to sign up with your email — no account required. Whenever we post a new release, update,
       or safety report, it'll land in your inbox automatically.
@@ -345,15 +364,18 @@
     <div class="ann-footer">
       <a class="ann-link" href="https://github.com/AxionLabsAI/axion">GitHub →</a>
     </div>
-  </div>
+    </div></div>
+  </article>
 
-  <div class="announcement" id="lumen-125-ann" style="display:none">
-    <div class="ann-meta">
-      <span class="ann-tag release">Release</span>
-      <span class="ann-date">June 20, 2026</span>
-    </div>
-    <h2><a href="/lumen-125-safety">Lumen 1.2.5 — Live Now.</a></h2>
-    <p>
+  <article class="ann release pending" data-cat="release" id="lumen-125-ann">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">June 20, 2026</span>
+      <span class="ann-cat release">Release</span>
+      <span class="ann-title">Lumen 1.2.5 — Live Now.</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       We've completed the full safety evaluation for <strong>Lumen 1.2.5</strong> and the results are in. The model
       scored <strong>73% (11/15 scenarios)</strong> under adversarial prompting — up from 26% on 1.2.1. Major
       improvements include emergency shutdown compliance, honest AI identity disclosure, and clean refusals on data
@@ -367,15 +389,18 @@
       <a class="ann-link" href="/lumen-125-safety">Full safety report →</a>
       <a class="ann-link" href="https://huggingface.co/AxionLabsAI/Lumen">HuggingFace →</a>
     </div>
-  </div>
+    </div></div>
+  </article>
 
-  <div class="announcement">
-    <div class="ann-meta">
-      <span class="ann-tag update">Safety Update</span>
-      <span class="ann-date">June 19, 2026</span>
-    </div>
-    <h2>Lumen 1.2.5 — Safety Patch (No Full Retrain)</h2>
-    <p>
+  <article class="ann safety" data-cat="safety">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">June 19, 2026</span>
+      <span class="ann-cat safety">Safety Update</span>
+      <span class="ann-title">Lumen 1.2.5 — Safety Patch (No Full Retrain)</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       We've completed a targeted safety fix, which will ship as <strong>Lumen 1.2.5</strong>. Rather than
       doing a full retrain — which takes significant compute we don't currently have — we used a technique
       called <strong>preference training</strong> (DPO): we showed the model examples of situations where it
@@ -392,15 +417,18 @@
       <a class="ann-link" href="/lumen-safety">1.2.1 safety results →</a>
       <a class="ann-link" href="/lumen-suspension">Why we suspended Lumen →</a>
     </div>
-  </div>
+    </div></div>
+  </article>
 
-  <div class="announcement">
-    <div class="ann-meta">
-      <span class="ann-tag release">Release</span>
-      <span class="ann-date">June 19, 2026</span>
-    </div>
-    <h2>Axion 1.0.1 — Onboarding Wizard, Memory Across Sessions & Voice Input</h2>
-    <p>
+  <article class="ann release" data-cat="release">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">June 19, 2026</span>
+      <span class="ann-cat release">Release</span>
+      <span class="ann-title">Axion 1.0.1 — Onboarding Wizard, Memory Across Sessions & Voice Input</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       Axion 1.0.1 is now live on npm. Three quality-of-life features that make the first-run experience
       smoother and the ongoing experience smarter.
     </p>
@@ -413,15 +441,18 @@
       <a class="ann-link" href="https://www.npmjs.com/package/axion-cli">npm install -g axion-cli →</a>
       <a class="ann-link" href="https://github.com/AxionLabsAI/axion">GitHub →</a>
     </div>
-  </div>
+    </div></div>
+  </article>
 
-  <div class="announcement">
-    <div class="ann-meta">
-      <span class="ann-tag release">Release</span>
-      <span class="ann-date">June 18, 2026</span>
-    </div>
-    <h2>Introducing Axion Vision — Free Image Understanding & OCR</h2>
-    <p>
+  <article class="ann release" data-cat="release">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">June 18, 2026</span>
+      <span class="ann-cat release">Release</span>
+      <span class="ann-title">Introducing Axion Vision — Free Image Understanding & OCR</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       Axion Vision is a new free endpoint that lets you send images and ask questions about them —
       read text in screenshots, describe diagrams, analyse UI mockups, or extract information from photos.
     </p>
@@ -441,15 +472,18 @@
       <li>OpenAI-compatible API</li>
       <li>Separate Space so it doesn't affect Lumen's performance</li>
     </ul>
-  </div>
+    </div></div>
+  </article>
 
-  <div class="announcement">
-    <div class="ann-meta">
-      <span class="ann-tag notice" style="background:rgba(248,113,113,.12);color:#f87171;">Safety Report</span>
-      <span class="ann-date">June 18, 2026</span>
-    </div>
-    <h2>Lumen 1.2.1 Safety Testing — Full Results, Temporary Suspension & Lumen 1.3 Timeline Update</h2>
-    <p>
+  <article class="ann safety" data-cat="safety">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">June 18, 2026</span>
+      <span class="ann-cat safety" style="background:rgba(248,113,113,.12);color:#f87171;">Safety Report</span>
+      <span class="ann-title">Lumen 1.2.1 Safety Testing — Full Results, Temporary Suspension & Lumen 1.3 Timeline Update</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       We ran 35 systematic safety tests on Lumen 1.2.1 across 7 scenarios, each run 5 times. The results
       are mixed — and we're publishing everything.
     </p>
@@ -475,15 +509,18 @@
       <a class="ann-link" href="/lumen-suspension">Why we suspended Lumen →</a>
       <a class="ann-link" href="/lumen-safety">Full results — every prompt, every response →</a>
     </div>
-  </div>
+    </div></div>
+  </article>
 
-  <div class="announcement">
-    <div class="ann-meta">
-      <span class="ann-tag release">Release</span>
-      <span class="ann-date">June 17, 2026</span>
-    </div>
-    <h2>Dataset Contribution, Per-Project Settings & More</h2>
-    <p>
+  <article class="ann release" data-cat="release">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">June 17, 2026</span>
+      <span class="ann-cat release">Release</span>
+      <span class="ann-title">Dataset Contribution, Per-Project Settings & More</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       A batch of quality-of-life improvements shipped today:
     </p>
     <ul style="margin-top:8px; margin-left:20px; color:var(--text-muted)">
@@ -494,15 +531,18 @@
     <div class="ann-footer">
       <a class="ann-link" href="https://github.com/AxionLabsAI/axion">GitHub →</a>
     </div>
-  </div>
+    </div></div>
+  </article>
 
-  <div class="announcement">
-    <div class="ann-meta">
-      <span class="ann-tag release">Release</span>
-      <span class="ann-date">June 13, 2026</span>
-    </div>
-    <h2>Discord Bot Integration</h2>
-    <p>
+  <article class="ann release" data-cat="release">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">June 13, 2026</span>
+      <span class="ann-cat release">Release</span>
+      <span class="ann-title">Discord Bot Integration</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       Axion now has a fully bidirectional Discord bridge. DMs sent to your bot appear in the CLI
       labeled <code>[Discord: username]</code>, the full agent responds (including file access, tools,
       and MCP servers), and the reply is sent back to Discord automatically.
@@ -520,15 +560,18 @@
     <div class="ann-footer">
       <a class="ann-link" href="https://github.com/AxionLabsAI/axion">Setup Guide (README) &#8594;</a>
     </div>
-  </div>
+    </div></div>
+  </article>
 
-  <div class="announcement">
-    <div class="ann-meta">
-      <span class="ann-tag notice">Notice</span>
-      <span class="ann-date">June 13, 2026</span>
-    </div>
-    <h2>Lumen 1.2.1 Benchmarks & Lumen 1.3 Coming Soon</h2>
-    <p>
+  <article class="ann notice" data-cat="notice">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">June 13, 2026</span>
+      <span class="ann-cat notice">Notice</span>
+      <span class="ann-title">Lumen 1.2.1 Benchmarks & Lumen 1.3 Coming Soon</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       Lumen 1.2.1 eval results are in. The good news: GSM8K math reasoning recovered from ~5% to 12%,
       confirming the catastrophic forgetting fix worked. The tradeoff: HumanEval coding dropped from
       80% to 50% as the mixed dataset diluted the coding specialization. The data balance wasn't right —
@@ -546,15 +589,18 @@
       <a class="ann-link" href="/lumen-121">Full Post-mortem →</a>
       <a class="ann-link" href="/lumen-12">Benchmarks →</a>
     </div>
-  </div>
+    </div></div>
+  </article>
 
-  <div class="announcement">
-    <div class="ann-meta">
-      <span class="ann-tag release">Release</span>
-      <span class="ann-date">June 13, 2026</span>
-    </div>
-    <h2>Lumen 1.2.1 — Catastrophic Forgetting Fixed</h2>
-    <p>
+  <article class="ann release" data-cat="release">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">June 13, 2026</span>
+      <span class="ann-cat release">Release</span>
+      <span class="ann-title">Lumen 1.2.1 — Catastrophic Forgetting Fixed</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       Lumen 1.2.1 is now live. Shortly after releasing Lumen 1.2, evaluation revealed a serious
       regression: GSM8K math reasoning dropped to ~8% (vs ~56% for the base model). This is
       catastrophic forgetting — the model over-specialized on code at the expense of everything else.
@@ -566,15 +612,18 @@
       <a class="ann-link" href="https://huggingface.co/spaces/AxionLabsAI/Lumen">Try Lumen →</a>
       <a class="ann-link" href="/lumen-12">Benchmarks →</a>
     </div>
-  </div>
+    </div></div>
+  </article>
 
-  <div class="announcement">
-    <div class="ann-meta">
-      <span class="ann-tag notice">Notice</span>
-      <span class="ann-date">June 12, 2026</span>
-    </div>
-    <h2>Lumen 1.2.1 Coming Soon — Fixing Catastrophic Forgetting</h2>
-    <p>
+  <article class="ann notice" data-cat="notice">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">June 12, 2026</span>
+      <span class="ann-cat notice">Notice</span>
+      <span class="ann-title">Lumen 1.2.1 Coming Soon — Fixing Catastrophic Forgetting</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       Post-release evaluation revealed that Lumen 1.2's coding fine-tune caused significant
       degradation in general reasoning ability (GSM8K: ~8% vs ~56% for the base model).
       This is a known issue called catastrophic forgetting — the model over-specialized on code
@@ -586,15 +635,18 @@
     <div class="ann-footer">
       <a class="ann-link" href="/lumen-12">Lumen 1.2 benchmarks →</a>
     </div>
-  </div>
+    </div></div>
+  </article>
 
-  <div class="announcement">
-    <div class="ann-meta">
-      <span class="ann-tag release">Release</span>
-      <span class="ann-date">June 12, 2026</span>
-    </div>
-    <h2><a href="/lumen-12">Lumen 1.2 — Our Best Model Yet</a></h2>
-    <p>
+  <article class="ann release" data-cat="release">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+      <span class="ann-when">June 12, 2026</span>
+      <span class="ann-cat release">Release</span>
+      <span class="ann-title">Lumen 1.2 — Our Best Model Yet</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
       We're excited to announce Lumen 1.2, a significant leap forward in capability over our previous Veil model.
       Lumen 1.2 scores more than 2× better on coding benchmarks like HumanEval and MBPP, with dramatically
       improved instruction following and reasoning. Pull the latest from GitHub to start using it today.
@@ -603,14 +655,12 @@
       <a class="ann-link" href="/lumen-12">See benchmarks →</a>
       <a class="ann-link" href="https://github.com/AxionLabsAI/axion">GitHub →</a>
     </div>
+    </div></div>
+  </article>
+
+  <div class="news-empty">
+    <p>More announcements coming soon. Follow us on <a href="https://github.com/AxionLabsAI/axion">GitHub</a> for updates.</p>
   </div>
-
-  <!-- Placeholder — future announcements go above this comment -->
-
-  <div class="empty-future">
-    <p>More announcements coming soon. Follow us on <a href="https://github.com/AxionLabsAI/axion" style="color:var(--accent)">GitHub</a> for updates.</p>
-  </div>
-
 </main>
 
 <footer>
@@ -620,34 +670,55 @@
 <script>
   const API = 'https://api.amplifiedsmp.org'
 
-  // Reveal Lumen 1.2.5 announcement at 4:00 AM Eastern
+  // Expand/collapse an announcement row
+  function toggleAnn(btn) {
+    const ann = btn.closest('.ann')
+    const open = ann.classList.toggle('open')
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false')
+  }
+
+  // Filter by category
+  function filterAnns(cat, chip) {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c === chip))
+    document.querySelectorAll('.ann').forEach(a => {
+      a.classList.toggle('filter-hide', cat !== 'all' && a.dataset.cat !== cat)
+    })
+  }
+
+  // Reveal the timed Lumen 1.2.5 announcement at 4:00 AM Eastern on release day
   ;(function() {
     var el = document.getElementById('lumen-125-ann')
     if (!el) return
     var release = new Date('2026-06-20T04:00:00-04:00')
-    if (Date.now() >= release) el.style.display = ''
-    else setTimeout(() => { el.style.display = '' }, release - Date.now())
+    function show(){ el.classList.remove('pending') }
+    if (Date.now() >= release) show()
+    else setTimeout(show, release - Date.now())
   })()
 
-  // Load dynamic announcements from DB
+  // Load dynamic announcements from DB and render them as rows at the top
   async function loadAnnouncements() {
     try {
       const res = await fetch(`${API}/announcements`)
       const { announcements } = await res.json()
       if (!announcements?.length) return
+      const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
       const container = document.getElementById('dynamicAnns')
       container.innerHTML = announcements.map(a => {
         const date = new Date(a.created_at * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-        const body = a.body.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')
-        return `<div class="announcement">
-          <div class="ann-meta">
-            <span class="ann-tag release">Announcement</span>
-            <span class="ann-date">${date}</span>
-          </div>
-          <h2>${a.link ? `<a href="${a.link.replace(/"/g,'&quot;')}">${a.title.replace(/</g,'&lt;')}</a>` : a.title.replace(/</g,'&lt;')}</h2>
-          <p style="white-space:pre-wrap">${body}</p>
-          ${a.link ? `<div class="ann-footer"><a class="ann-link" href="${a.link.replace(/"/g,'&quot;')}">Read more →</a></div>` : ''}
-        </div>`
+        const body = esc(a.body).replace(/\n/g, '<br>')
+        const title = a.link ? `<a href="${esc(a.link)}" style="color:inherit;text-decoration:none">${esc(a.title)}</a>` : esc(a.title)
+        return `<article class="ann release" data-cat="release">
+          <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
+            <span class="ann-when">${date}</span>
+            <span class="ann-cat release">Announcement</span>
+            <span class="ann-title">${title}</span>
+            ${'<svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'}
+          </button>
+          <div class="ann-panel"><div class="ann-panel-inner"><div class="ann-body">
+            <p style="white-space:pre-wrap">${body}</p>
+            ${a.link ? `<div class="ann-footer"><a class="ann-link" href="${esc(a.link)}">Read more →</a></div>` : ''}
+          </div></div></div>
+        </article>`
       }).join('')
     } catch {}
   }
@@ -658,16 +729,11 @@
     const msg = document.getElementById('subMsg')
     if (!email) return
     if (!document.getElementById('subTos').checked) {
-      msg.style.display = 'inline'
-      msg.textContent = 'Please agree to the Terms and Privacy Policy.'
-      msg.style.color = '#f87171'
-      return
+      msg.style.display = 'inline'; msg.textContent = 'Please agree to the Terms and Privacy Policy.'; msg.style.color = '#f87171'; return
     }
     try {
       const res = await fetch(`${API}/announcements/subscribe`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }),
       })
       const data = await res.json()
       msg.style.display = 'inline'
@@ -676,7 +742,6 @@
     } catch { msg.style.display = 'inline'; msg.textContent = 'Something went wrong.' }
   }
 
-  // Unsubscribed confirmation
   if (location.search.includes('unsubscribed=1')) {
     const bar = document.querySelector('.subscribe-bar')
     bar.innerHTML = '<span style="color:#34d399">You\'ve been unsubscribed from Axion Labs announcements.</span>'
