@@ -487,10 +487,51 @@
     requestAnimationFrame(fr);
   }
 
+  // ---- Scene C: Trailer — a rhythmic cold-open that title-cards into TAME ----
+  function sceneTrailer(scraps) {
+    function EOUT(t){ return 1 - Math.pow(1 - t, 3); }
+    function maskOn(on){ if (on) introG.setAttribute('mask','url(#tame-mask)'); else introG.removeAttribute('mask'); }
+    function curSet(s,x,y,r){ s.cx=x; s.cy=y; s.cr=r; setT(s,x,y,r); }
+    function spread(s){ s.qx=60+Math.random()*(W-120)-s.w/2; s.qy=60+Math.random()*(H-120)-s.h/2; s.qr=Math.random()*120-60; }
+    scraps.forEach(spread);
+    var flFrom={x:400,y:-90}, flTo={x:398,y:205};
+    var stages=[
+      {n:'flutterIn',d:0.95},{n:'flutterHold',d:0.5},{n:'flurry',d:0.34},
+      {n:'card',d:1.15,word:'1.58-BIT'},{n:'flurry',d:0.3},
+      {n:'card',d:0.98,word:'3-WEEK SPRINT'},{n:'flurry',d:0.24},
+      {n:'slam',d:0.5,word:'TAME'}
+    ];
+    var starts=[],acc=0; for(var i=0;i<stages.length;i++){ starts.push(acc); acc+=stages[i].d; } var TOTAL=acc;
+    var T=0,last=null,cur=-1,fin=false;
+    function enter(idx){
+      var st=stages[idx];
+      if(st.n==='flutterIn'){ maskOn(false); scraps.forEach(function(s){ curSet(s,-600,-600,0); }); }
+      else if(st.n==='flurry'){ maskOn(false); scraps.forEach(function(s){ s.px=s.cx; s.py=s.cy; s.pr=s.cr; spread(s); }); }
+      else if(st.n==='card'||st.n==='slam'){ maskOn(true); applyWord(st.word,scraps,0,0); }
+    }
+    function frame(ts){
+      if(last===null)last=ts; var dt=(ts-last)/1000; last=ts; if(dt>0.1)dt=0.1; T+=dt;
+      if(T>=TOTAL){ if(!fin){ fin=true; maskOn(true); popThenFinish(scraps); } return; }
+      var idx=0; while(idx<stages.length-1 && T>=starts[idx+1]) idx++;
+      if(idx!==cur){ cur=idx; enter(idx); }
+      var st=stages[idx], lt=T-starts[idx], p=clamp(lt/st.d,0,1), lock=0;
+      if(st.n==='flutterIn'){ var s0=scraps[0], e=EOUT(p);
+        var x=lerp(flFrom.x,flTo.x,e)+Math.sin(p*Math.PI*3)*26*(1-p), y=lerp(flFrom.y,flTo.y,e), rot=lerp(-40,-6,e)+Math.sin(p*Math.PI*4)*10*(1-p);
+        curSet(s0,x-s0.w/2,y-s0.h/2,rot); lock=0.15*p; }
+      else if(st.n==='flutterHold'){ var b=scraps[0]; curSet(b,flTo.x-b.w/2,flTo.y-b.h/2,-6); lock=0.15; }
+      else if(st.n==='flurry'){ var e2=EASE(p); scraps.forEach(function(s){ curSet(s,lerp(s.px,s.qx,e2),lerp(s.py,s.qy,e2),lerp(s.pr,s.qr,e2)); }); lock=0.05; }
+      else if(st.n==='card'){ var fp=clamp(p/0.32,0,1),e3=EOUT(fp); scraps.forEach(function(s){ var d=clamp((e3-s.delay*0.3)/0.7,0,1); curSet(s,lerp(s.qx,s.hx,d),lerp(s.qy,s.hy,d),lerp(s.qr,s.hr,d)); }); lock=fp; }
+      else if(st.n==='slam'){ var e4=EOUT(clamp(p/0.7,0,1)); scraps.forEach(function(s){ var d=clamp((e4-s.delay*0.15)/0.85,0,1); curSet(s,lerp(s.qx,s.hx,d),lerp(s.qy,s.hy,d),lerp(s.qr,s.hr,d)); }); lock=Math.min(1,p*1.3); }
+      glow.setAttribute('opacity',(lock*0.82).toFixed(3));
+      requestAnimationFrame(frame);
+    }
+    enter(0); requestAnimationFrame(frame);
+  }
+
   function boot() {
     var tr = rasterizeWord('TAME'); tameData = tr.data; setMask('TAME', tr.S, tr.baseY);
     if (reduced) { startReshuffle(); return; }              // static collage, no animation
-    var scenes = [sceneForge, sceneCycle];                  // random scene each load
+    var scenes = [sceneForge, sceneCycle, sceneTrailer];    // random scene each load
     var scraps = buildScraps(82);
     scenes[(Math.random() * scenes.length) | 0](scraps);
   }
