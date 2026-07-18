@@ -307,7 +307,7 @@
         </filter>
         <mask id="tame-mask">
           <rect width="800" height="450" fill="black"/>
-          <text x="400" y="292" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-weight="700" font-size="230" letter-spacing="4" fill="white" filter="url(#tame-letter-tear)">TAME</text>
+          <text id="tame-mtext" x="400" y="292" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-weight="700" font-size="230" letter-spacing="4" fill="white" filter="url(#tame-letter-tear)">TAME</text>
         </mask>
       </defs>
       <rect width="800" height="450" fill="#1a1408"/>
@@ -329,139 +329,159 @@
   var frameEl = document.getElementById('crucible-frame');
   var scrapTurb = document.getElementById('tame-scrap-turb');
   var letterTurb = document.getElementById('tame-letter-turb');
+  var mtext = document.getElementById('tame-mtext');
   var pats = ['tame-p1','tame-p2','tame-p3','tame-p4','tame-p5','tame-p6','tame-p7','tame-p8'];
+  var papers = ['/assets/paper/paper-1.jpg','/assets/paper/paper-2.jpg','/assets/paper/paper-3.jpg','/assets/paper/paper-4.jpg','/assets/paper/paper-5.jpg','/assets/paper/paper-6.jpg','/assets/paper/paper-7.jpg','/assets/paper/paper-8.jpg'];
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Rasterize TAME once; its alpha channel tells us which pixels are inside a
-  // glyph, so we can drop every scrap ON the letters (no wasted scraps outside,
-  // which is what used to leave holes).
-  function rasterize() {
+  // ---- Rasterize a word to learn which pixels are inside its glyphs ----
+  var canvas = document.createElement('canvas'); canvas.width = W; canvas.height = H;
+  var cctx = canvas.getContext('2d');
+  function fitFont(word) { cctx.font = '700 200px "IBM Plex Sans", sans-serif'; var m = cctx.measureText(word).width || 400; return Math.min(210, 700 / m * 200); }
+  function rasterizeWord(word) {
     try {
-      var c = document.createElement('canvas'); c.width = W; c.height = H;
-      var ctx = c.getContext('2d');
-      ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-      ctx.font = '700 230px "IBM Plex Sans", sans-serif';
-      ctx.fillText('TAME', W / 2, 292);
-      var data = ctx.getImageData(0, 0, W, H).data;
-      // sanity: enough opaque pixels to be a real render
+      var S = fitFont(word), baseY = 225 + 0.34 * S;
+      cctx.clearRect(0, 0, W, H);
+      cctx.fillStyle = '#fff'; cctx.textAlign = 'center'; cctx.textBaseline = 'alphabetic';
+      cctx.font = '700 ' + S + 'px "IBM Plex Sans", sans-serif';
+      cctx.fillText(word, W / 2, baseY);
+      var data = cctx.getImageData(0, 0, W, H).data;
       var hit = 0; for (var k = 3; k < data.length; k += 4 * 97) { if (data[k] > 128) hit++; }
-      return hit > 8 ? data : null;
-    } catch (e) { return null; }
+      return { S: S, baseY: baseY, data: hit > 8 ? data : null };
+    } catch (e) { return { S: 200, baseY: 293, data: null }; }
   }
   function pointInside(data) {
     if (!data) return { x: 70 + Math.random() * 660, y: 90 + Math.random() * 260 };
-    for (var i = 0; i < 60; i++) {
-      var x = Math.random() * W, y = Math.random() * H;
-      if (data[((y | 0) * W + (x | 0)) * 4 + 3] > 128) return { x: x, y: y };
-    }
+    for (var i = 0; i < 60; i++) { var x = Math.random() * W, y = Math.random() * H; if (data[((y | 0) * W + (x | 0)) * 4 + 3] > 128) return { x: x, y: y }; }
     return { x: 70 + Math.random() * 660, y: 90 + Math.random() * 260 };
   }
+  function setMask(word, S, baseY) { mtext.textContent = word; mtext.setAttribute('font-size', S.toFixed(1)); mtext.setAttribute('y', baseY.toFixed(1)); }
 
-  // ---- Steady state: the collage that re-randomizes every half second ----
-  function regenerateTame(data) {
+  // ---- Steady state: collage that re-randomizes every half second (TAME) ----
+  var tameData = null;
+  function regenerateTame() {
     var html = '';
     for (var i = 0; i < 118; i++) {
-      var p = pointInside(data);
+      var p = pointInside(tameData);
       var w = 58 + Math.random() * 64, h = 58 + Math.random() * 64;
-      var x = p.x - w / 2 + (Math.random() * 2 - 1) * 12;
-      var y = p.y - h / 2 + (Math.random() * 2 - 1) * 12;
+      var x = p.x - w / 2 + (Math.random() * 2 - 1) * 12, y = p.y - h / 2 + (Math.random() * 2 - 1) * 12;
       var rot = (Math.random() * 26 - 13).toFixed(1);
       var pat = pats[Math.floor(Math.random() * pats.length)];
       html += '<g filter="url(#tame-scrap-tear)" transform="rotate(' + rot + ' ' + (x + w / 2).toFixed(1) + ' ' + (y + h / 2).toFixed(1) + ')">' +
-        '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + h.toFixed(1) + '" fill="url(#' + pat + ')" ' +
-        'style="filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))"/></g>';
+        '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + h.toFixed(1) + '" fill="url(#' + pat + ')" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))"/></g>';
     }
     revealG.innerHTML = html;
     scrapTurb.setAttribute('seed', Math.floor(Math.random() * 1000));
     letterTurb.setAttribute('seed', Math.floor(Math.random() * 1000));
   }
-
   var shuffleTimer = null;
-  function startReshuffle(data) {
-    regenerateTame(data);
-    glow.setAttribute('opacity', '0.5');
-    if (reduced) return;                       // static single frame, no interval
-    function tick() { regenerateTame(data); }
-    function run() { if (!shuffleTimer) shuffleTimer = setInterval(tick, 500); }
+  function startReshuffle() {
+    regenerateTame(); glow.setAttribute('opacity', '0.5');
+    if (reduced) return;
+    function run() { if (!shuffleTimer) shuffleTimer = setInterval(regenerateTame, 500); }
     function halt() { if (shuffleTimer) { clearInterval(shuffleTimer); shuffleTimer = null; } }
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (e) { if (e[0].isIntersecting) run(); else halt(); }, { threshold: 0.05 }).observe(frameEl);
-    } else { run(); }
+    if ('IntersectionObserver' in window) { new IntersectionObserver(function (e) { if (e[0].isIntersecting) run(); else halt(); }, { threshold: 0.05 }).observe(frameEl); }
+    else { run(); }
   }
 
-  // ---- One-time first-visit intro: scraps knit together into TAME ----
-  function playIntro(data) {
-    var targets = [], N = 78;
-    for (var s = 0; s < N; s++) targets.push(pointInside(data));
+  // ---- Shared animated-scrap pool (clipped paper images that can move) ----
+  function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; var t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+  function tornPoly(w,h,seed){ var r=mulberry(seed),pts=[],per=4,jit=7,i; function push(px,py){pts.push(px.toFixed(1)+','+py.toFixed(1));}
+    for(i=0;i<per;i++)push((i/per)*w+(r()*2-1)*jit,(r()*2-1)*jit);
+    for(i=0;i<per;i++)push(w+(r()*2-1)*jit,(i/per)*h+(r()*2-1)*jit);
+    for(i=0;i<per;i++)push((1-i/per)*w+(r()*2-1)*jit,h+(r()*2-1)*jit);
+    for(i=0;i<per;i++)push((r()*2-1)*jit,(1-i/per)*h+(r()*2-1)*jit); return pts.join(' '); }
+  function setT(s,x,y,r){ s.el.setAttribute('transform','translate('+x.toFixed(1)+' '+y.toFixed(1)+') rotate('+r.toFixed(1)+' '+(s.w/2).toFixed(1)+' '+(s.h/2).toFixed(1)+')'); }
+  function EASE(t){ return t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2; }
+  function lerp(a,b,t){ return a+(b-a)*t; }
+  function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
 
-    function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; var t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
-    function tornPoly(w,h,seed){ var r=mulberry(seed),pts=[],per=4,jit=7,i; function push(px,py){pts.push(px.toFixed(1)+','+py.toFixed(1));}
-      for(i=0;i<per;i++)push((i/per)*w+(r()*2-1)*jit,(r()*2-1)*jit);
-      for(i=0;i<per;i++)push(w+(r()*2-1)*jit,(i/per)*h+(r()*2-1)*jit);
-      for(i=0;i<per;i++)push((1-i/per)*w+(r()*2-1)*jit,h+(r()*2-1)*jit);
-      for(i=0;i<per;i++)push((r()*2-1)*jit,(1-i/per)*h+(r()*2-1)*jit); return pts.join(' '); }
-    var papers = ['/assets/paper/paper-1.jpg','/assets/paper/paper-2.jpg','/assets/paper/paper-3.jpg','/assets/paper/paper-4.jpg','/assets/paper/paper-5.jpg','/assets/paper/paper-6.jpg','/assets/paper/paper-7.jpg','/assets/paper/paper-8.jpg'];
-
-    var scraps = [];
+  function buildScraps(N) {
+    var arr = [];
     for (var i = 0; i < N; i++) {
-      var w = 62 + Math.random() * 60, h = 62 + Math.random() * 60;
+      var w = 58 + Math.random() * 62, h = 58 + Math.random() * 62;
       var paper = papers[(Math.random() * papers.length) | 0];
       var cropX = Math.random() * 90, cropY = Math.random() * 90, cid = 'tsc' + i;
-      var clip = document.createElementNS(NS, 'clipPath'); clip.setAttribute('id', cid); clip.setAttribute('clipPathUnits', 'userSpaceOnUse');
-      var poly = document.createElementNS(NS, 'polygon'); var pts = tornPoly(w, h, (i * 2654435761) >>> 0);
-      poly.setAttribute('points', pts); clip.appendChild(poly); defs.appendChild(clip);
-      var g = document.createElementNS(NS, 'g');
-      var img = document.createElementNS(NS, 'image');
-      img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', paper); img.setAttribute('href', paper);
-      img.setAttribute('x', (-cropX).toFixed(1)); img.setAttribute('y', (-cropY).toFixed(1));
-      img.setAttribute('width', (w + cropX + 90).toFixed(1)); img.setAttribute('height', (h + cropY + 90).toFixed(1));
-      img.setAttribute('preserveAspectRatio', 'xMidYMid slice'); img.setAttribute('clip-path', 'url(#' + cid + ')');
+      var clip = document.createElementNS(NS,'clipPath'); clip.setAttribute('id',cid); clip.setAttribute('clipPathUnits','userSpaceOnUse');
+      var poly = document.createElementNS(NS,'polygon'); var pts = tornPoly(w,h,(i*2654435761)>>>0);
+      poly.setAttribute('points',pts); clip.appendChild(poly); defs.appendChild(clip);
+      var g = document.createElementNS(NS,'g');
+      var img = document.createElementNS(NS,'image');
+      img.setAttributeNS('http://www.w3.org/1999/xlink','href',paper); img.setAttribute('href',paper);
+      img.setAttribute('x',(-cropX).toFixed(1)); img.setAttribute('y',(-cropY).toFixed(1));
+      img.setAttribute('width',(w+cropX+90).toFixed(1)); img.setAttribute('height',(h+cropY+90).toFixed(1));
+      img.setAttribute('preserveAspectRatio','xMidYMid slice'); img.setAttribute('clip-path','url(#'+cid+')');
       g.appendChild(img);
-      var edge = document.createElementNS(NS, 'polygon'); edge.setAttribute('points', pts); edge.setAttribute('fill', 'none'); edge.setAttribute('stroke', 'rgba(0,0,0,.28)'); edge.setAttribute('stroke-width', '1'); g.appendChild(edge);
+      var edge = document.createElementNS(NS,'polygon'); edge.setAttribute('points',pts); edge.setAttribute('fill','none'); edge.setAttribute('stroke','rgba(0,0,0,.28)'); edge.setAttribute('stroke-width','1'); g.appendChild(edge);
       introG.appendChild(g);
-      var t = targets[i % targets.length];
-      var ang = Math.random() * Math.PI * 2, rad = 120 + Math.random() * 180;
-      scraps.push({ el: g, w: w, h: h, hx: t.x - w/2, hy: t.y - h/2, hr: Math.random()*18-9,
-        fx: (t.x - w/2) + Math.cos(ang)*rad, fy: (t.y - h/2) + Math.sin(ang)*rad*0.7, fr: Math.random()*80-40,
-        delay: Math.random()*0.5 });
+      arr.push({ el:g, w:w, h:h, hx:0,hy:0,hr:0, fx:0,fy:0,fr:0, dx:0,dy:0,dr:0, delay:Math.random()*0.45 });
     }
-    function setT(sc, x, y, r){ sc.el.setAttribute('transform', 'translate('+x.toFixed(1)+' '+y.toFixed(1)+') rotate('+r.toFixed(1)+' '+(sc.w/2).toFixed(1)+' '+(sc.h/2).toFixed(1)+')'); }
-    function EASE(t){ return t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
-    function lerp(a,b,t){ return a+(b-a)*t; }
-    function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
-    scraps.forEach(function(sc){ setT(sc, sc.fx, sc.fy, sc.fr); });
-
-    var FILL = 2.1, T = 0, lastTs = null, rafId = null, stopped = false;
-    function done() {
-      if (stopped) return; stopped = true;
-      if (rafId) cancelAnimationFrame(rafId);
-      startReshuffle(data);
-      if (introG.parentNode) introG.parentNode.removeChild(introG);
-      markSeen();
+    return arr;
+  }
+  // Point each scrap at a fresh spot inside `word`, with fly-in + disperse origins.
+  function applyWord(word, scraps, fillBase, dispBase) {
+    var r = rasterizeWord(word); setMask(word, r.S, r.baseY);
+    for (var i = 0; i < scraps.length; i++) {
+      var p = pointInside(r.data), s = scraps[i];
+      s.hx = p.x - s.w/2; s.hy = p.y - s.h/2; s.hr = Math.random()*18-9;
+      var a = Math.random()*Math.PI*2, rr = fillBase*(0.6+Math.random()*0.9);
+      s.fx = s.hx + Math.cos(a)*rr; s.fy = s.hy + Math.sin(a)*rr*0.7; s.fr = Math.random()*80-40;
+      var a2 = Math.random()*Math.PI*2, rr2 = dispBase*(0.6+Math.random()*0.9);
+      s.dx = s.hx + Math.cos(a2)*rr2; s.dy = s.hy + Math.sin(a2)*rr2*0.7; s.dr = Math.random()*80-40;
     }
-    function frame(ts) {
-      if (lastTs === null) lastTs = ts;
-      var dt = (ts - lastTs) / 1000; lastTs = ts; if (dt > 0.1) dt = 0.1; T += dt;
-      var f = EASE(clamp(T / FILL, 0, 1));
-      scraps.forEach(function(sc){ var d = clamp((f - sc.delay*0.4)/0.6, 0, 1); setT(sc, lerp(sc.fx,sc.hx,d), lerp(sc.fy,sc.hy,d), lerp(sc.fr,sc.hr,d)); });
-      glow.setAttribute('opacity', (f * 0.85).toFixed(3));
-      if (T >= FILL + 0.05) { done(); return; }
-      rafId = requestAnimationFrame(frame);
-    }
-    rafId = requestAnimationFrame(frame);
+  }
+  function finish() {
+    if (introG.parentNode) introG.parentNode.removeChild(introG);
+    startReshuffle();
   }
 
-  function seen() { try { return localStorage.getItem('axionTameIntroSeen') === '1'; } catch (e) { return false; } }
-  function markSeen() { try { localStorage.setItem('axionTameIntroSeen', '1'); } catch (e) {} }
+  // ---- Scene A: Forge — TAME knits together from loose scraps, once ----
+  function sceneForge(scraps) {
+    applyWord('TAME', scraps, 170, 0);
+    scraps.forEach(function(s){ setT(s, s.fx, s.fy, s.fr); });
+    var FILL = 2.0, T = 0, last = null, fin = false;
+    function fr(ts) {
+      if (last === null) last = ts; var dt = (ts-last)/1000; last = ts; if (dt>0.1) dt=0.1; T += dt;
+      var f = EASE(clamp(T/FILL,0,1));
+      scraps.forEach(function(s){ var d = clamp((f - s.delay*0.4)/0.6,0,1); setT(s, lerp(s.fx,s.hx,d), lerp(s.fy,s.hy,d), lerp(s.fr,s.hr,d)); });
+      glow.setAttribute('opacity',(f*0.85).toFixed(3));
+      if (T >= FILL + 0.05) { if (!fin) { fin = true; finish(); } return; }
+      requestAnimationFrame(fr);
+    }
+    requestAnimationFrame(fr);
+  }
+
+  // ---- Scene B: Cycle — the name assembles itself word by word ----
+  function sceneCycle(scraps) {
+    var words = ['TERNARY','ADAPTIVE','MOE','TAME'];
+    var FILL = 1.0, HOLD = 1.5, DISP = 0.85, WORD = FILL + HOLD + DISP;
+    var T = 0, last = null, cur = -1, fin = false;
+    function fr(ts) {
+      if (last === null) last = ts; var dt = (ts-last)/1000; last = ts; if (dt>0.1) dt=0.1; T += dt;
+      var gi = Math.floor(T / WORD);
+      if (gi >= words.length) { if (!fin) { fin = true; scraps.forEach(function(s){ setT(s, s.hx, s.hy, s.hr); }); finish(); } return; }
+      var lt = T % WORD, isLast = (gi === words.length - 1);
+      if (gi !== cur) { cur = gi; applyWord(words[gi], scraps, 85, 115); }
+      var lock;
+      if (lt < FILL) { var f = EASE(clamp(lt/FILL,0,1)); scraps.forEach(function(s){ var d = clamp((f - s.delay*0.4)/0.6,0,1); setT(s, lerp(s.fx,s.hx,d), lerp(s.fy,s.hy,d), lerp(s.fr,s.hr,d)); }); lock = f; }
+      else if (lt < FILL + HOLD || isLast) { scraps.forEach(function(s){ setT(s, s.hx, s.hy, s.hr); }); lock = 1; }
+      else { var e = EASE(clamp((lt-FILL-HOLD)/DISP,0,1)); scraps.forEach(function(s){ var d = clamp((e - s.delay*0.3)/0.7,0,1); setT(s, lerp(s.hx,s.dx,d), lerp(s.hy,s.dy,d), lerp(s.hr,s.dr,d)); }); lock = 1 - e; }
+      glow.setAttribute('opacity',(lock*0.82).toFixed(3));
+      requestAnimationFrame(fr);
+    }
+    requestAnimationFrame(fr);
+  }
 
   function boot() {
-    var data = rasterize();
-    if (reduced || seen()) { startReshuffle(data); return; }
-    playIntro(data);
+    var tr = rasterizeWord('TAME'); tameData = tr.data; setMask('TAME', tr.S, tr.baseY);
+    if (reduced) { startReshuffle(); return; }              // static collage, no animation
+    var scenes = [sceneForge, sceneCycle];                  // random scene each load
+    var scraps = buildScraps(82);
+    scenes[(Math.random() * scenes.length) | 0](scraps);
   }
 
-  // Gate on the web font so the canvas (which places the scraps) and the SVG
-  // mask (which shows the letters) agree on the exact glyph shapes.
+  // Gate on the web font so the canvas (which places scraps) and the SVG mask
+  // (which shows the letters) agree on the exact glyph shapes.
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(boot); else boot();
 })();
 </script>
