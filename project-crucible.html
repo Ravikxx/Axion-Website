@@ -289,6 +289,10 @@
           <stop offset="0%" stop-color="#b8a27d" stop-opacity=".16"/>
           <stop offset="100%" stop-color="#b8a27d" stop-opacity="0"/>
         </radialGradient>
+        <linearGradient id="tame-area-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#b8a27d" stop-opacity=".28"/>
+          <stop offset="100%" stop-color="#b8a27d" stop-opacity="0"/>
+        </linearGradient>
         <pattern id="tame-p1" patternUnits="userSpaceOnUse" width="170" height="170"><image href="/assets/paper/paper-1.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/></pattern>
         <pattern id="tame-p2" patternUnits="userSpaceOnUse" width="170" height="170"><image href="/assets/paper/paper-2.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/></pattern>
         <pattern id="tame-p3" patternUnits="userSpaceOnUse" width="170" height="170"><image href="/assets/paper/paper-3.jpg" x="0" y="0" width="170" height="170" preserveAspectRatio="xMidYMid slice"/></pattern>
@@ -314,6 +318,7 @@
       <rect id="tame-glow-rect" width="800" height="450" fill="url(#tame-glow)" opacity="0"/>
       <g id="tame-reveal" mask="url(#tame-mask)"></g>
       <g id="tame-intro" mask="url(#tame-mask)"></g>
+      <g id="tame-chart"></g>
     </svg>
 
   </div>
@@ -528,17 +533,80 @@
     enter(0); requestAnimationFrame(frame);
   }
 
+  // ---- Scene D: Telemetry — a training run's loss curve resolves into TAME ----
+  function sceneTelemetry(scraps) {
+    var chartG = document.getElementById('tame-chart');
+    function EL(tag, attrs) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); return e; }
+    // loss-curve geometry: exponential decay with settling noise
+    var CN = 46, x0 = 60, x1 = 740, y0 = 120, y1 = 330, rnd = mulberry((Math.random() * 1e9) | 0), curve = [];
+    for (var i = 0; i < CN; i++) { var t = i / (CN - 1); curve.push({ x: x0 + (x1 - x0) * t, y: y0 + (y1 - y0) * (1 - Math.exp(-3.1 * t)) + (rnd() * 2 - 1) * 16 * (1 - t * 0.7), t: t }); }
+    var axis = EL('line', { x1: 55, y1: 362, x2: 745, y2: 362, stroke: '#4a3d24', 'stroke-width': 1.5 });
+    var area = EL('polygon', { points: '', fill: 'url(#tame-area-grad)' });
+    var line = EL('polyline', { points: '', fill: 'none', stroke: '#ecdfb0', 'stroke-width': 3.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
+    chartG.appendChild(axis); chartG.appendChild(area); chartG.appendChild(line);
+    var flagDefs = [{ t: 0.26, l: '14.5M' }, { t: 0.56, l: '102M' }, { t: 0.85, l: '300M' }];
+    var flags = flagDefs.map(function (f) {
+      var k = Math.round(f.t * (CN - 1)), g = EL('g', { opacity: 0, transform: 'translate(' + curve[k].x + ' ' + curve[k].y + ')', 'font-family': 'IBM Plex Mono, monospace' });
+      g.appendChild(EL('line', { x1: 0, y1: 0, x2: 0, y2: -30, stroke: '#b8a27d', 'stroke-width': 1.5 }));
+      g.appendChild(EL('circle', { cx: 0, cy: 0, r: 3.5, fill: '#d9ca9c' }));
+      var lbl = EL('text', { x: 0, y: -36, 'text-anchor': 'middle', 'font-size': 12, fill: '#a89a7a', 'letter-spacing': 0.5 }); lbl.textContent = f.l; g.appendChild(lbl);
+      chartG.appendChild(g); return { g: g, t: f.t };
+    });
+    function drawCurve(pr) {
+      var k = Math.max(1, Math.floor(pr * (CN - 1))), pts = [];
+      for (var i = 0; i <= k; i++) pts.push(curve[i].x.toFixed(1) + ',' + curve[i].y.toFixed(1));
+      line.setAttribute('points', pts.join(' '));
+      area.setAttribute('points', pts.join(' ') + ' ' + curve[k].x.toFixed(1) + ',362 60,362');
+    }
+    function setTs(s, x, y, r, sc) { s.el.setAttribute('transform', 'translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ') scale(' + (sc || 1).toFixed(3) + ') rotate(' + r.toFixed(1) + ' ' + (s.w / 2).toFixed(1) + ' ' + (s.h / 2).toFixed(1) + ')'); }
+    function maskOn(on) { if (on) introG.setAttribute('mask', 'url(#tame-mask)'); else introG.removeAttribute('mask'); }
+    // set up rain: only a couple dozen fall visibly; the rest wait above and pour in at convergence
+    scraps.forEach(function (s, i) {
+      s.active = i < 24; s.rx = 20 + Math.random() * 760; s.ry = s.active ? (Math.random() * H - 30) : (-400 - Math.random() * 1400);
+      s.vy = 55 + Math.random() * 70; s.rot = Math.random() * 360; s.vr = Math.random() * 50 - 25; s.sc = 0.3 + Math.random() * 0.18;
+      setTs(s, s.rx, s.ry, s.rot, s.sc);
+    });
+    maskOn(false);
+    var DRAW = 2.3, HOLD = 1.2, CONV = 1.6, TOTAL = DRAW + HOLD + CONV;
+    var T = 0, last = null, convInit = false, fin = false;
+    function frame(ts) {
+      if (last === null) last = ts; var dt = (ts - last) / 1000; last = ts; if (dt > 0.1) dt = 0.1; T += dt;
+      if (T >= TOTAL) { if (!fin) { fin = true; if (chartG.parentNode) chartG.innerHTML = ''; popThenFinish(scraps); } return; }
+      if (T < DRAW + HOLD) {
+        var pr = clamp(T / DRAW, 0, 1); drawCurve(pr);
+        flags.forEach(function (f) { f.g.setAttribute('opacity', pr >= f.t ? clamp((pr - f.t) / 0.08, 0, 1).toFixed(2) : '0'); });
+        scraps.forEach(function (s) { if (!s.active) return; s.ry += s.vy * dt; if (s.ry > H + 40) { s.ry = -40; s.rx = 20 + Math.random() * 760; } s.rot += s.vr * dt; setTs(s, s.rx, s.ry, s.rot, s.sc); });
+        glow.setAttribute('opacity', '0.12');
+      } else {
+        if (!convInit) { convInit = true; maskOn(true); applyWord('TAME', scraps, 0, 0); scraps.forEach(function (s) { s.cx0 = s.rx; s.cy0 = s.ry; s.cr0 = s.rot; s.cs0 = s.sc; }); }
+        var cp = clamp((T - DRAW - HOLD) / CONV, 0, 1), e = EASE(cp);
+        chartG.setAttribute('opacity', (1 - clamp(cp * 1.4, 0, 1)).toFixed(2));
+        scraps.forEach(function (s) { setTs(s, lerp(s.cx0, s.hx, e), lerp(s.cy0, s.hy, e), lerp(s.cr0, s.hr, e), lerp(s.cs0, 1, e)); });
+        glow.setAttribute('opacity', (0.12 + cp * 0.7).toFixed(3));
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
   function boot() {
     var tr = rasterizeWord('TAME'); tameData = tr.data; setMask('TAME', tr.S, tr.baseY);
     if (reduced) { startReshuffle(); return; }              // static collage, no animation
-    var scenes = [sceneForge, sceneCycle, sceneTrailer];    // random scene each load
+    var scenes = [sceneForge, sceneCycle, sceneTrailer, sceneTelemetry];   // random scene each load
     var scraps = buildScraps(82);
     scenes[(Math.random() * scenes.length) | 0](scraps);
   }
 
   // Gate on the web font so the canvas (which places scraps) and the SVG mask
   // (which shows the letters) agree on the exact glyph shapes.
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(boot); else boot();
+  // Prefer waiting for the web font (so the canvas and the SVG mask agree on
+  // glyph shapes), but never block forever on it: if the font stalls — slow
+  // CDN, offline, blocked — fall back after a short delay so the hero always
+  // initializes instead of sitting blank.
+  var booted = false;
+  function go() { if (booted) return; booted = true; boot(); }
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(go); setTimeout(go, 1500); }
+  else { go(); }
 })();
 </script>
 
