@@ -434,6 +434,21 @@
     if (introG.parentNode) introG.parentNode.removeChild(introG);
     startReshuffle();
   }
+  // A little emphasis when the word lands on TAME: scale the whole masked word
+  // up slightly about its centre and settle back, then hand off to the reshuffle.
+  function popThenFinish(scraps) {
+    scraps.forEach(function (s) { setT(s, s.hx, s.hy, s.hr); });   // ensure solid TAME
+    var DUR = 0.52, T = 0, last = null;
+    function fr(ts) {
+      if (last === null) last = ts; var dt = (ts - last) / 1000; last = ts; if (dt > 0.1) dt = 0.1; T += dt;
+      var u = clamp(T / DUR, 0, 1);
+      var s = 1 + 0.09 * Math.sin(Math.PI * u);                    // 1 -> 1.09 -> 1
+      introG.setAttribute('transform', 'translate(400 223) scale(' + s.toFixed(4) + ') translate(-400 -223)');
+      if (u >= 1) { introG.removeAttribute('transform'); finish(); return; }
+      requestAnimationFrame(fr);
+    }
+    requestAnimationFrame(fr);
+  }
 
   // ---- Scene A: Forge — TAME knits together from loose scraps, once ----
   function sceneForge(scraps) {
@@ -445,7 +460,7 @@
       var f = EASE(clamp(T/FILL,0,1));
       scraps.forEach(function(s){ var d = clamp((f - s.delay*0.4)/0.6,0,1); setT(s, lerp(s.fx,s.hx,d), lerp(s.fy,s.hy,d), lerp(s.fr,s.hr,d)); });
       glow.setAttribute('opacity',(f*0.85).toFixed(3));
-      if (T >= FILL + 0.05) { if (!fin) { fin = true; finish(); } return; }
+      if (T >= FILL + 0.05) { if (!fin) { fin = true; popThenFinish(scraps); } return; }
       requestAnimationFrame(fr);
     }
     requestAnimationFrame(fr);
@@ -459,7 +474,7 @@
     function fr(ts) {
       if (last === null) last = ts; var dt = (ts-last)/1000; last = ts; if (dt>0.1) dt=0.1; T += dt;
       var gi = Math.floor(T / WORD);
-      if (gi >= words.length) { if (!fin) { fin = true; scraps.forEach(function(s){ setT(s, s.hx, s.hy, s.hr); }); finish(); } return; }
+      if (gi >= words.length) { if (!fin) { fin = true; popThenFinish(scraps); } return; }
       var lt = T % WORD, isLast = (gi === words.length - 1);
       if (gi !== cur) { cur = gi; applyWord(words[gi], scraps, 85, 115); }
       var lock;
