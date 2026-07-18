@@ -30,6 +30,9 @@
       --cat-update-bg:  rgba(52,211,153,.12);  --cat-update-fg:  #34d399;
       --cat-safety-bg:  rgba(248,113,113,.12); --cat-safety-fg:  #f87171;
       --cat-notice-bg:  #1a1b18;               --cat-notice-fg:  #8b8d80;
+      --chrome-bg:    #0a0b0f;  --chrome-text: #9899a8;  --chrome-mut: #7c7e92;
+      --chrome-strong:#e8e9f0;  --chrome-border: rgba(255,255,255,0.06);
+      --input-bg:     #14130f;  --input-border: #2a2622;  --input-text: #e8e9f0;
     }
     @media (prefers-color-scheme: light) {
       :root {
@@ -50,6 +53,9 @@
         --cat-update-bg:  rgba(16,140,95,.12);  --cat-update-fg:  #0f8c5f;
         --cat-safety-bg:  rgba(200,50,50,.10);  --cat-safety-fg:  #c23232;
         --cat-notice-bg:  #ece8dd;              --cat-notice-fg:  #857c6a;
+        --chrome-bg:    #f3f0e7;  --chrome-text: #6f695c;  --chrome-mut: #857c6a;
+        --chrome-strong:#1c1710;  --chrome-border: rgba(0,0,0,0.08);
+        --input-bg:     #ffffff;  --input-border: #ded8c8;  --input-text: #1c1710;
       }
     }
 
@@ -65,31 +71,31 @@
 
     /* Chrome (fixed dark) */
     nav {
-      background: #0a0b0f;
+      background: var(--chrome-bg);
       padding: 0 32px;
       display: flex;
       align-items: center;
       height: 56px;
       gap: 24px;
     }
-    nav a { color: #9899a8; text-decoration: none; font-size: 14px; transition: color 0.2s; }
-    nav a:hover { color: #e8e9f0; }
-    nav a.brand { color: #e8e9f0; font-weight: 600; font-size: 16px; margin-right: 16px; }
+    nav a { color: var(--chrome-text); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    nav a:hover { color: var(--chrome-strong); }
+    nav a.brand { color: var(--chrome-strong); font-weight: 600; font-size: 16px; margin-right: 16px; }
 
     .subscribe-bar {
-      background: #0a0b0f;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: var(--chrome-bg);
+      border-bottom: 1px solid var(--chrome-border);
       padding: 14px 32px;
       display: flex;
       align-items: center;
       gap: 14px;
       flex-wrap: wrap;
     }
-    .subscribe-bar > span { color: #7c7e92; font-size: 13px; }
+    .subscribe-bar > span { color: var(--chrome-mut); font-size: 13px; }
     .subscribe-form { display: flex; gap: 8px; flex: 1; min-width: 260px; max-width: 420px; }
     .subscribe-form input {
       flex: 1; padding: 8px 12px; border-radius: 7px;
-      border: 1px solid #2a2622; background: #14130f; color: #e8e9f0;
+      border: 1px solid var(--input-border); background: var(--input-bg); color: var(--input-text);
       font-size: 13px; outline: none; transition: border-color .15s;
     }
     .subscribe-form input:focus { border-color: var(--acc); }
@@ -99,7 +105,7 @@
       font-weight: 600; cursor: pointer; white-space: nowrap; transition: background .15s;
     }
     .subscribe-form button:hover { background: var(--acc-d); }
-    .sub-consent { display:flex; align-items:center; gap:6px; width:100%; font-size:12px; color:#7c7e92; }
+    .sub-consent { display:flex; align-items:center; gap:6px; width:100%; font-size:12px; color:var(--chrome-mut); }
     .sub-consent input { width:14px; height:14px; accent-color: var(--acc); cursor:pointer; }
     .sub-consent a { color: #b8a27d; text-decoration: underline; }
     .sub-msg { font-size: 12px; color: #34d399; display: none; }
@@ -192,9 +198,9 @@
     .news-empty { border-top: 1px solid var(--hair); padding: 32px 0 0; color: var(--ink-faint); font-size: 14px; }
     .news-empty a { color: var(--acc); }
 
-    footer { background: #0a0b0f; color: #6b6d80; text-align: center; padding: 32px; font-size: 13px; }
-    footer a { color: #7c7e92; text-decoration: none; }
-    footer a:hover { color: #9899a8; }
+    footer { background: var(--chrome-bg); color: var(--chrome-mut); text-align: center; padding: 32px; font-size: 13px; }
+    footer a { color: var(--chrome-mut); text-decoration: none; }
+    footer a:hover { color: var(--chrome-strong); }
 
     @media (max-width: 680px) {
       nav { padding: 0 16px; gap: 10px; }
@@ -222,7 +228,7 @@
 
 <nav>
   <a href="/" class="brand"><img src="/assets/logo.png" alt="Axion" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Axion</a>
-  <a href="/announcements" style="color:#e8e9f0">Announcements</a>
+  <a href="/announcements" style="color:var(--chrome-strong)">Announcements</a>
   <a href="/lumen-12">Lumen 1.2</a>
   <a href="https://github.com/AxionLabsAI/axion">GitHub</a>
   <span style="margin-left:auto"></span>
