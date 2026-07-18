@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/theme-dark.css">
+  <link rel="stylesheet" href="/assets/theme-adaptive.css">
   <link rel="stylesheet" href="/assets/paper-banner.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -127,7 +127,7 @@
 
     /* ── Chat window (signature) ── */
     .chat {
-      background: linear-gradient(180deg, #101118 0%, #0e0f15 100%);
+      background: linear-gradient(180deg, var(--surface) 0%, var(--bg-card) 100%);
       border: 1px solid var(--border2);
       border-radius: 14px;
       box-shadow:
@@ -157,7 +157,7 @@
     .msg.lumen .who { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-bottom: 5px; letter-spacing: .05em; }
     .msg.lumen pre {
       font-family: var(--mono); font-size: 12px; line-height: 1.7;
-      background: #0a0b0f; border: 1px solid var(--border);
+      background: var(--surface2); border: 1px solid var(--border);
       border-radius: 8px; padding: 12px 14px; margin-top: 8px;
       overflow-x: auto; color: var(--text);
     }
@@ -171,7 +171,7 @@
     .chat-status {
       display: flex; align-items: center;
       font-family: var(--mono); font-size: 11.5px;
-      background: #0a0b0f;
+      background: var(--surface2);
       border-top: 1px solid var(--border);
       color: var(--muted);
       overflow-x: auto;
@@ -245,7 +245,7 @@
 
     /* ── API quickstart ── */
     .code-block {
-      background: #101118; border: 1px solid var(--border);
+      background: var(--surface2); border: 1px solid var(--border);
       border-radius: 11px; padding: 20px 24px;
       font-family: var(--mono);
       font-size: 12.5px; color: var(--muted2); overflow-x: auto; line-height: 1.9;
