@@ -6,26 +6,49 @@
  *        data-images="/assets/paper/paper-1.jpg,/assets/paper/paper-2.jpg"
  *        data-logo="/assets/logo-axion-new.png"
  *        data-interval="500"
- *        data-zoom-min="115"
- *        data-zoom-max="155"></div>
+ *        data-zoom-min="100"
+ *        data-zoom-max="106"></div>
  *
  * Each cycle advances to the next image in data-images (looping back to
  * the first, or re-cropping the same one if only one is given) and snaps
- * to a new random crop (zoom % + position) for it — an instant cut, not
- * a fade.
+ * to a new random crop (zoom + position) for it — an instant cut, not a
+ * fade.
+ *
+ * The fill size is computed from the image's *actual* natural dimensions
+ * and the container's *actual* rendered box (the same math as CSS
+ * `background-size: cover`), not a fixed percentage. That guarantees full
+ * coverage — no sliver of the container ever shows through — regardless
+ * of a photo's aspect ratio or the container's size, and it re-fits on
+ * resize/orientation-change instead of assuming a fixed viewport. The
+ * zoom range is just a small *extra* multiplier on top of that guaranteed
+ * cover scale, so it only ever crops in further, never under.
  */
 (function () {
   function rand(min, max) {
     return min + Math.random() * (max - min);
   }
 
-  function paintLayer(layer, src, zoomMin, zoomMax) {
-    var zoom = rand(zoomMin, zoomMax);
+  function paintLayer(layer, container, imgEl, zoomMin, zoomMax) {
+    var cw = container.clientWidth, ch = container.clientHeight;
+    var nw = imgEl.naturalWidth, nh = imgEl.naturalHeight;
     var posX = rand(20, 80);
     var posY = rand(20, 80);
-    layer.style.backgroundImage = 'url(' + src + ')';
-    layer.style.backgroundSize = zoom + '%';
+
+    layer.style.backgroundImage = 'url(' + imgEl.src + ')';
     layer.style.backgroundPosition = posX + '% ' + posY + '%';
+
+    if (cw && ch && nw && nh) {
+      var coverScale = Math.max(cw / nw, ch / nh);   // CSS `cover` formula
+      var extra = rand(zoomMin, zoomMax) / 100;        // >= 1: crop in only
+      var scale = coverScale * Math.max(extra, 1);
+      layer.style.backgroundSize = Math.ceil(nw * scale) + 'px ' + Math.ceil(nh * scale) + 'px';
+    } else {
+      // Dimensions not measurable yet (shouldn't happen post-load) — a
+      // generous percentage still beats leaving no size at all.
+      layer.style.backgroundSize = '160%';
+    }
+
+    layer.dataset.currentImg = imgEl.src;
   }
 
   function initBanner(el) {
@@ -37,8 +60,8 @@
 
     var logo = el.dataset.logo;
     var interval = parseInt(el.dataset.interval, 10) || 500;
-    var zoomMin = parseFloat(el.dataset.zoomMin) || 115;
-    var zoomMax = parseFloat(el.dataset.zoomMax) || 155;
+    var zoomMin = parseFloat(el.dataset.zoomMin) || 100;
+    var zoomMax = parseFloat(el.dataset.zoomMax) || 106;
 
     el.innerHTML = '';
 
@@ -59,6 +82,7 @@
     // nothing to render until it decodes, flashing the container's own
     // background color through for a frame. Track load state per image
     // and skip forward to the next one that's actually ready.
+    var imgEls = new Array(images.length);
     var loaded = images.map(function () { return false; });
     var index = -1;
     var painted = false;
@@ -68,16 +92,34 @@
         var candidate = (index + step) % images.length;
         if (loaded[candidate]) {
           index = candidate;
-          paintLayer(layer, images[index], zoomMin, zoomMax);
+          paintLayer(layer, el, imgEls[index], zoomMin, zoomMax);
           painted = true;
           return;
         }
       }
     }
 
+    // Re-fit the currently visible image (same crop position, recomputed
+    // size) whenever the container's rendered box changes — window resize,
+    // orientation change, or a responsive layout shift — so coverage stays
+    // guaranteed instead of being frozen to the size at paint time.
+    var resizeTimer = null;
+    window.addEventListener('resize', function () {
+      if (!painted) return;
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        var cw = el.clientWidth, ch = el.clientHeight;
+        var img = imgEls[index];
+        if (!cw || !ch || !img) return;
+        var coverScale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+        layer.style.backgroundSize = Math.ceil(img.naturalWidth * coverScale) + 'px ' + Math.ceil(img.naturalHeight * coverScale) + 'px';
+      }, 120);
+    });
+
     images.forEach(function (src, i) {
       var img = new Image();
       img.src = src;
+      imgEls[i] = img;
 
       function markReady() {
         loaded[i] = true;
