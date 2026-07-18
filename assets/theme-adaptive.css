@@ -45,6 +45,16 @@
   --red:         #f87171;
   --red-light:   rgba(248,113,113,.10);
   --yellow:      #fbbf24;
+  --blue:        #60a5fa;
+  --purple:      #a78bfa;
+
+  /* a third muted tone used for meta/date text on several pages, between
+     --muted (dimmest) and --muted2/--text-muted (lightest) */
+  --muted3:      #7c7e92;
+
+  /* accent as an r,g,b triplet, for rgba(var(--accent-rgb), alpha) glow /
+     dust effects that need a variable opacity */
+  --accent-rgb:  184, 162, 125;
 
   /* chat bubbles */
   --user-bg:     #1e1f2e;
@@ -92,6 +102,11 @@
     --red:         #c23232;
     --red-light:   rgba(200,50,50,.10);
     --yellow:      #b8860b;
+    --blue:        #2563eb;
+    --purple:      #7c3aed;
+
+    --muted3:      #817a6b;
+    --accent-rgb:  138, 106, 47;
 
     /* chat bubbles */
     --user-bg:     #efe9db;
