@@ -332,12 +332,39 @@
   var pats = ['tame-p1','tame-p2','tame-p3','tame-p4','tame-p5','tame-p6','tame-p7','tame-p8'];
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Rasterize TAME once; its alpha channel tells us which pixels are inside a
+  // glyph, so we can drop every scrap ON the letters (no wasted scraps outside,
+  // which is what used to leave holes).
+  function rasterize() {
+    try {
+      var c = document.createElement('canvas'); c.width = W; c.height = H;
+      var ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+      ctx.font = '700 230px "IBM Plex Sans", sans-serif';
+      ctx.fillText('TAME', W / 2, 292);
+      var data = ctx.getImageData(0, 0, W, H).data;
+      // sanity: enough opaque pixels to be a real render
+      var hit = 0; for (var k = 3; k < data.length; k += 4 * 97) { if (data[k] > 128) hit++; }
+      return hit > 8 ? data : null;
+    } catch (e) { return null; }
+  }
+  function pointInside(data) {
+    if (!data) return { x: 70 + Math.random() * 660, y: 90 + Math.random() * 260 };
+    for (var i = 0; i < 60; i++) {
+      var x = Math.random() * W, y = Math.random() * H;
+      if (data[((y | 0) * W + (x | 0)) * 4 + 3] > 128) return { x: x, y: y };
+    }
+    return { x: 70 + Math.random() * 660, y: 90 + Math.random() * 260 };
+  }
+
   // ---- Steady state: the collage that re-randomizes every half second ----
-  function regenerateTame() {
+  function regenerateTame(data) {
     var html = '';
-    for (var i = 0; i < 110; i++) {
-      var x = 70 + Math.random() * 670, y = 85 + Math.random() * 270;
-      var w = 50 + Math.random() * 75, h = 50 + Math.random() * 75;
+    for (var i = 0; i < 118; i++) {
+      var p = pointInside(data);
+      var w = 58 + Math.random() * 64, h = 58 + Math.random() * 64;
+      var x = p.x - w / 2 + (Math.random() * 2 - 1) * 12;
+      var y = p.y - h / 2 + (Math.random() * 2 - 1) * 12;
       var rot = (Math.random() * 26 - 13).toFixed(1);
       var pat = pats[Math.floor(Math.random() * pats.length)];
       html += '<g filter="url(#tame-scrap-tear)" transform="rotate(' + rot + ' ' + (x + w / 2).toFixed(1) + ' ' + (y + h / 2).toFixed(1) + ')">' +
@@ -350,11 +377,11 @@
   }
 
   var shuffleTimer = null;
-  function startReshuffle() {
-    regenerateTame();
+  function startReshuffle(data) {
+    regenerateTame(data);
     glow.setAttribute('opacity', '0.5');
     if (reduced) return;                       // static single frame, no interval
-    function tick() { regenerateTame(); }
+    function tick() { regenerateTame(data); }
     function run() { if (!shuffleTimer) shuffleTimer = setInterval(tick, 500); }
     function halt() { if (shuffleTimer) { clearInterval(shuffleTimer); shuffleTimer = null; } }
     if ('IntersectionObserver' in window) {
@@ -363,19 +390,9 @@
   }
 
   // ---- One-time first-visit intro: scraps knit together into TAME ----
-  function playIntro() {
-    // target points inside the glyphs, from a rasterized TAME
-    var c = document.createElement('canvas'); c.width = W; c.height = H;
-    var ctx = c.getContext('2d');
-    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-    ctx.font = '700 230px "IBM Plex Sans", sans-serif';
-    ctx.fillText('TAME', W / 2, 292);
-    var data = ctx.getImageData(0, 0, W, H).data, targets = [], guard = 0, N = 74;
-    while (targets.length < N && guard < N * 400) {
-      guard++; var px = Math.random() * W, py = Math.random() * H;
-      if (data[((py | 0) * W + (px | 0)) * 4 + 3] > 128) targets.push({ x: px, y: py });
-    }
-    if (targets.length < 20) { startReshuffle(); markSeen(); return; }  // font/canvas failed — just fall back
+  function playIntro(data) {
+    var targets = [], N = 78;
+    for (var s = 0; s < N; s++) targets.push(pointInside(data));
 
     function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; var t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
     function tornPoly(w,h,seed){ var r=mulberry(seed),pts=[],per=4,jit=7,i; function push(px,py){pts.push(px.toFixed(1)+','+py.toFixed(1));}
@@ -408,18 +425,17 @@
         fx: (t.x - w/2) + Math.cos(ang)*rad, fy: (t.y - h/2) + Math.sin(ang)*rad*0.7, fr: Math.random()*80-40,
         delay: Math.random()*0.5 });
     }
-    function setT(s, x, y, r){ s.el.setAttribute('transform', 'translate('+x.toFixed(1)+' '+y.toFixed(1)+') rotate('+r.toFixed(1)+' '+(s.w/2).toFixed(1)+' '+(s.h/2).toFixed(1)+')'); }
+    function setT(sc, x, y, r){ sc.el.setAttribute('transform', 'translate('+x.toFixed(1)+' '+y.toFixed(1)+') rotate('+r.toFixed(1)+' '+(sc.w/2).toFixed(1)+' '+(sc.h/2).toFixed(1)+')'); }
     function EASE(t){ return t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
     function lerp(a,b,t){ return a+(b-a)*t; }
     function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
-    scraps.forEach(function(s){ setT(s, s.fx, s.fy, s.fr); });
+    scraps.forEach(function(sc){ setT(sc, sc.fx, sc.fy, sc.fr); });
 
     var FILL = 2.1, T = 0, lastTs = null, rafId = null, stopped = false;
     function done() {
       if (stopped) return; stopped = true;
       if (rafId) cancelAnimationFrame(rafId);
-      // hand off to the reshuffle, then remove the intro layer
-      startReshuffle();
+      startReshuffle(data);
       if (introG.parentNode) introG.parentNode.removeChild(introG);
       markSeen();
     }
@@ -427,7 +443,7 @@
       if (lastTs === null) lastTs = ts;
       var dt = (ts - lastTs) / 1000; lastTs = ts; if (dt > 0.1) dt = 0.1; T += dt;
       var f = EASE(clamp(T / FILL, 0, 1));
-      scraps.forEach(function(s){ var d = clamp((f - s.delay*0.4)/0.6, 0, 1); setT(s, lerp(s.fx,s.hx,d), lerp(s.fy,s.hy,d), lerp(s.fr,s.hr,d)); });
+      scraps.forEach(function(sc){ var d = clamp((f - sc.delay*0.4)/0.6, 0, 1); setT(sc, lerp(sc.fx,sc.hx,d), lerp(sc.fy,sc.hy,d), lerp(sc.fr,sc.hr,d)); });
       glow.setAttribute('opacity', (f * 0.85).toFixed(3));
       if (T >= FILL + 0.05) { done(); return; }
       rafId = requestAnimationFrame(frame);
@@ -438,12 +454,15 @@
   function seen() { try { return localStorage.getItem('axionTameIntroSeen') === '1'; } catch (e) { return false; } }
   function markSeen() { try { localStorage.setItem('axionTameIntroSeen', '1'); } catch (e) {} }
 
-  // Reduced motion, or already seen the intro -> straight to the (static or live) collage.
-  if (reduced || seen()) { startReshuffle(); return; }
+  function boot() {
+    var data = rasterize();
+    if (reduced || seen()) { startReshuffle(data); return; }
+    playIntro(data);
+  }
 
-  // First visit: play the knit-in once, after the font is ready so the canvas
-  // target points and the SVG mask agree on letter shapes.
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(playIntro); else playIntro();
+  // Gate on the web font so the canvas (which places the scraps) and the SVG
+  // mask (which shows the letters) agree on the exact glyph shapes.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(boot); else boot();
 })();
 </script>
 
