@@ -900,7 +900,7 @@
       const endpoint = authMode === 'signin' ? '/auth/login' : '/auth/register';
       const body = { email, password, turnstile: _turnstileToken };
       if (authMode === 'signup') body.name = document.getElementById('input-name')?.value || '';
-      const res = await fetch(API + endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const res = await fetch(API + endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), credentials: 'include' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Something went wrong.');
       if (data.pending) {
