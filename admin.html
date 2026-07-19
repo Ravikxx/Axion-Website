@@ -157,7 +157,7 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
-      overflow: hidden;
+      overflow-x: auto;
     }
 
     table { width: 100%; border-collapse: collapse; }
@@ -272,6 +272,45 @@
     }
     .credit-variable input { accent-color: var(--accent); }
     @media (max-width: 760px) { .credit-create-grid { grid-template-columns: 1fr 1fr; } }
+
+    /* ── Account testing editor ── */
+    .account-email { font-weight: 600; }
+    .account-meta { color: var(--muted); font-size: 11px; margin-top: 2px; }
+    .usage-value { white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .usage-value small { color: var(--muted); }
+    .account-dialog {
+      width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 32px);
+      margin: auto; padding: 0; color: var(--text); background: var(--surface);
+      border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 24px 80px rgba(0,0,0,.55);
+    }
+    .account-dialog::backdrop { background: rgba(0,0,0,.72); backdrop-filter: blur(3px); }
+    .account-dialog-inner { padding: 26px; overflow-y: auto; }
+    .account-dialog-head { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 4px; }
+    .account-dialog-head h2 { margin: 0; }
+    .dialog-close { background: none; color: var(--muted); border: 0; cursor: pointer; font-size: 22px; line-height: 1; }
+    .dialog-close:hover { color: var(--text); }
+    .account-dialog-email { color: var(--muted); margin-bottom: 18px; overflow-wrap: anywhere; }
+    .account-warning {
+      padding: 11px 13px; margin-bottom: 18px; border-radius: 8px;
+      color: var(--muted); background: rgba(255,255,255,.035); border: 1px solid var(--border); font-size: 12px;
+    }
+    .account-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .account-field label { display: block; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 5px; }
+    .account-field input, .account-field select {
+      width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 11px; color: var(--text); font: inherit; outline: none;
+    }
+    .account-field input:focus, .account-field select:focus { border-color: var(--accent); }
+    .field-hint { color: var(--muted); font-size: 11px; margin-top: 4px; }
+    .account-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+    .account-actions-left, .account-actions-right { display: flex; gap: 8px; flex-wrap: wrap; }
+    .account-save { width: auto; margin: 0; }
+    @media (max-width: 620px) {
+      main { padding: 24px 16px; }
+      .account-fields { grid-template-columns: 1fr; }
+      .account-actions, .account-actions-left, .account-actions-right { width: 100%; }
+      .account-actions button { flex: 1; }
+    }
 
     /* ── Loading ── */
     .loading { color: var(--muted); padding: 24px; text-align: center; }
@@ -400,19 +439,22 @@
     <!-- Users -->
     <section>
       <h2>Users</h2>
+      <p style="color:var(--muted);font-size:13px;margin:-12px 0 14px">Inspect current cost-based allowance usage and apply admin-only testing overrides.</p>
       <div class="table-wrap">
-        <table>
+        <table style="min-width:920px">
           <thead>
             <tr>
-              <th>Email</th>
-              <th>Verified</th>
-              <th>Keys</th>
-              <th>Total Req</th>
-              <th>Joined</th>
+              <th>Account</th>
+              <th>Plan</th>
+              <th>Monthly usage</th>
+              <th>2-hour usage</th>
+              <th>Credits</th>
+              <th>Total requests</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="users-body">
-            <tr class="empty-row"><td colspan="5">Loading…</td></tr>
+            <tr class="empty-row"><td colspan="7">Loading…</td></tr>
           </tbody>
         </table>
       </div>
@@ -497,10 +539,64 @@
   </main>
 </div>
 
+<dialog class="account-dialog" id="account-editor" aria-labelledby="account-editor-title">
+  <div class="account-dialog-inner">
+    <div class="account-dialog-head">
+      <h2 id="account-editor-title">Account testing override</h2>
+      <button class="dialog-close" type="button" onclick="closeAccountEditor()" aria-label="Close">×</button>
+    </div>
+    <div class="account-dialog-email" id="account-editor-email"></div>
+    <div class="account-warning">
+      This changes live enforcement counters and the displayed plan for testing. It does not create or cancel a Square subscription, and it does not rewrite request history.
+    </div>
+    <div id="account-editor-msg" class="invite-msg" style="display:none"></div>
+    <div class="account-fields">
+      <div class="account-field">
+        <label for="account-plan">Testing plan</label>
+        <select id="account-plan" onchange="syncAccountLimits()">
+          <option value="free">Free</option>
+          <option value="pro">Pro</option>
+        </select>
+      </div>
+      <div class="account-field">
+        <label for="account-credits">Extra usage credits (USD)</label>
+        <input id="account-credits" type="number" min="0" max="10000" step="0.000001">
+        <div class="field-hint">Set to $0 to test a hard allowance block.</div>
+      </div>
+      <div class="account-field">
+        <label for="account-month-used">Monthly usage used (USD)</label>
+        <input id="account-month-used" type="number" min="0" max="10000" step="0.000001">
+        <div class="field-hint" id="account-month-hint"></div>
+      </div>
+      <div class="account-field">
+        <label for="account-window-used">Current 2-hour usage used (USD)</label>
+        <input id="account-window-used" type="number" min="0" max="10000" step="0.000001">
+        <div class="field-hint" id="account-window-hint"></div>
+      </div>
+    </div>
+    <div class="account-actions">
+      <div class="account-actions-left">
+        <button class="btn-outline" type="button" onclick="setAccountAtLimit()">Set exactly at limit</button>
+        <button class="btn-outline" type="button" onclick="resetAccountUsage()">Reset usage</button>
+      </div>
+      <div class="account-actions-right">
+        <button class="btn-outline" type="button" onclick="closeAccountEditor()">Cancel</button>
+        <button class="btn btn-primary account-save" id="account-save" type="button" onclick="saveAccountOverride()">Save override</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
 <script>
   const API = 'https://api.amplifiedsmp.org'
   const OWNER = 'fearlessaviatorclan@gmail.com'
   let _token = null
+  let _adminUsers = []
+  let _editingUserId = null
+  const ACCOUNT_LIMITS = {
+    free: { monthly: 500000, window: 50000 },
+    pro: { monthly: 5000000, window: 500000 },
+  }
 
   // ── Auth ──────────────────────────────────────────────────────────────────
   let authMode = 'signin'
@@ -665,19 +761,120 @@
     const res = await apiFetch('/admin/users')
     if (!res.ok) return
     const { users } = await res.json()
+    _adminUsers = users || []
     const tbody = document.getElementById('users-body')
     if (!users || !users.length) {
-      tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No users yet</td></tr>'
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No users yet</td></tr>'
       return
     }
     tbody.innerHTML = users.map(u => `
       <tr>
-        <td>${esc(u.email)}</td>
-        <td>${u.verified ? '<span class="badge badge-green">Verified</span>' : '<span class="badge badge-red">Unverified</span>'}</td>
-        <td>${u.key_count}</td>
+        <td>
+          <div class="account-email">${esc(u.email)}</div>
+          <div class="account-meta">${u.verified ? 'Verified' : 'Unverified'} · ${fmt(u.key_count)} key${Number(u.key_count) === 1 ? '' : 's'}</div>
+        </td>
+        <td><span class="badge ${u.plan === 'pro' ? 'badge-green' : 'badge-owner'}">${u.plan === 'pro' ? 'Pro' : 'Free'}</span></td>
+        <td class="usage-value">${formatUsdMicro(u.included_month_cost)} <small>/ ${formatUsdMicro(u.monthly_limit)}</small></td>
+        <td class="usage-value">${formatUsdMicro(u.included_window_cost)} <small>/ ${formatUsdMicro(u.window_limit)}</small></td>
+        <td class="usage-value">${formatUsdMicro(u.credit_balance)}</td>
         <td>${fmt(u.total_requests)}</td>
-        <td style="color:var(--muted)">${fmtDate(u.created_at)}</td>
+        <td><button class="btn-outline" type="button" onclick="openAccountEditor('${u.id}')">Edit</button></td>
       </tr>`).join('')
+  }
+
+  function formatUsdMicro(value) {
+    return `$${((Number(value) || 0) / 1000000).toFixed(2)}`
+  }
+
+  function microToInput(value) {
+    return ((Number(value) || 0) / 1000000).toFixed(6).replace(/\.?0+$/, '') || '0'
+  }
+
+  function inputToMicro(id) {
+    const value = Number(document.getElementById(id).value)
+    if (!Number.isFinite(value) || value < 0 || value > 10000) return null
+    return Math.round(value * 1000000)
+  }
+
+  function openAccountEditor(id) {
+    const user = _adminUsers.find(item => item.id === id)
+    if (!user) return
+    _editingUserId = id
+    document.getElementById('account-editor-email').textContent = user.email
+    document.getElementById('account-plan').value = user.plan === 'pro' ? 'pro' : 'free'
+    document.getElementById('account-credits').value = microToInput(user.credit_balance)
+    document.getElementById('account-month-used').value = microToInput(user.included_month_cost)
+    document.getElementById('account-window-used').value = microToInput(user.included_window_cost)
+    document.getElementById('account-editor-msg').style.display = 'none'
+    syncAccountLimits()
+    document.getElementById('account-editor').showModal()
+  }
+
+  function closeAccountEditor() {
+    document.getElementById('account-editor').close()
+    _editingUserId = null
+  }
+
+  function syncAccountLimits() {
+    const plan = document.getElementById('account-plan').value
+    const limits = ACCOUNT_LIMITS[plan]
+    document.getElementById('account-month-hint').textContent = `${plan === 'pro' ? 'Pro' : 'Free'} limit: ${formatUsdMicro(limits.monthly)} per month.`
+    document.getElementById('account-window-hint').textContent = `${plan === 'pro' ? 'Pro' : 'Free'} limit: ${formatUsdMicro(limits.window)} per two-hour window.`
+  }
+
+  function setAccountAtLimit() {
+    const limits = ACCOUNT_LIMITS[document.getElementById('account-plan').value]
+    document.getElementById('account-month-used').value = microToInput(limits.monthly)
+    document.getElementById('account-window-used').value = microToInput(limits.window)
+    document.getElementById('account-credits').value = '0'
+  }
+
+  function resetAccountUsage() {
+    document.getElementById('account-month-used').value = '0'
+    document.getElementById('account-window-used').value = '0'
+  }
+
+  function showAccountMsg(text, type) {
+    const el = document.getElementById('account-editor-msg')
+    el.textContent = text
+    el.className = `invite-msg ${type}`
+    el.style.display = 'block'
+  }
+
+  async function saveAccountOverride() {
+    const user = _adminUsers.find(item => item.id === _editingUserId)
+    if (!user) return
+    const plan = document.getElementById('account-plan').value
+    const included_month_cost = inputToMicro('account-month-used')
+    const included_window_cost = inputToMicro('account-window-used')
+    const credit_balance = inputToMicro('account-credits')
+    if ([included_month_cost, included_window_cost, credit_balance].includes(null)) {
+      showAccountMsg('Enter dollar values from $0 to $10,000.', 'error')
+      return
+    }
+
+    const summary = `${user.email}\nPlan: ${plan === 'pro' ? 'Pro' : 'Free'}\nMonthly used: ${formatUsdMicro(included_month_cost)}\n2-hour used: ${formatUsdMicro(included_window_cost)}\nCredits: ${formatUsdMicro(credit_balance)}`
+    if (!confirm(`Apply this live testing override?\n\n${summary}\n\nThis does not change Square billing or request history.`)) return
+
+    const btn = document.getElementById('account-save')
+    btn.disabled = true
+    btn.textContent = 'Saving…'
+    try {
+      const res = await apiFetch(`/admin/users/${encodeURIComponent(user.id)}/account-testing`, {
+        method: 'PUT',
+        body: JSON.stringify({ plan, included_month_cost, included_window_cost, credit_balance }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Unable to update account')
+      await loadUsers()
+      const state = data.user.blocked_without_credits ? ' Requests are now blocked by the included allowance.' : ''
+      showAccountMsg(`Saved.${state}`, 'success')
+    } catch (error) {
+      showAccountMsg(error.message || 'Unable to update account.', 'error')
+    } finally {
+      btn.disabled = false
+      btn.textContent = 'Save override'
+    }
   }
 
   async function loadAllowlist() {
