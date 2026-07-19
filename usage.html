@@ -96,6 +96,14 @@
     .card-head h2 { margin-bottom: 3px; font-size: 14px; font-weight: 650; }
     .card-head p { color: var(--muted); font-size: 12px; }
     .card-total { color: var(--muted2); font-size: 12px; white-space: nowrap; }
+    .card-head-actions { display: flex; align-items: center; gap: 10px; }
+    .exact-toggle {
+      padding: 6px 11px; border: 1px solid var(--border2); border-radius: 6px;
+      background: var(--surface2); color: var(--muted2); font-size: 11.5px;
+      font-weight: 600; cursor: pointer; transition: border-color .12s, color .12s;
+    }
+    .exact-toggle:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .exact-toggle:disabled { opacity: .5; cursor: default; }
 
     .meter { padding: 17px 0; border-top: 1px solid var(--border); }
     .meter:first-of-type { padding-top: 0; border-top: 0; }
@@ -138,6 +146,21 @@
     .text-link { color: var(--accent); font-size: 12px; font-weight: 600; }
     .text-link:hover { color: var(--accent-d); }
 
+    .exact-panel {
+      margin-bottom: 16px; padding: 22px 24px;
+      border: 1px solid var(--border); border-radius: 11px; background: var(--surface);
+    }
+    .exact-panel[hidden] { display: none; }
+    .exact-panel-head { margin-bottom: 17px; }
+    .exact-panel-head h2 { margin-bottom: 3px; font-size: 14px; }
+    .exact-panel-head p { color: var(--muted); font-size: 12px; }
+    .exact-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .exact-stat { padding: 14px 15px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); }
+    .exact-stat-label { margin-bottom: 5px; color: var(--muted); font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; }
+    .exact-stat-value { color: var(--text); font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .exact-stat-meta { margin-top: 3px; color: var(--muted); font-size: 10.5px; font-variant-numeric: tabular-nums; }
+    .exact-pricing { margin-top: 14px; color: var(--muted); font-size: 11px; line-height: 1.6; }
+
     .status-panel {
       display: none; align-items: center; justify-content: space-between; gap: 16px;
       padding: 18px 20px; border: 1px solid var(--border); border-radius: 10px;
@@ -164,6 +187,9 @@
       .usage-card { padding: 19px 18px; }
       .page-heading h1 { font-size: 24px; }
       .card-head, .extra-summary { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .card-head-actions { width: 100%; justify-content: space-between; }
+      .exact-panel { padding: 19px 18px; }
+      .exact-grid { grid-template-columns: 1fr; }
       .meter-labels, .meter-meta { gap: 8px; }
       .meter-meta { flex-direction: column; }
       .meter-meta span:last-child { text-align: left; }
@@ -236,7 +262,10 @@
             <h2 id="included-heading">Included usage</h2>
             <p>Shared across every API key on your account.</p>
           </div>
-          <span class="card-total" id="allowance-state">Loading account</span>
+          <div class="card-head-actions">
+            <span class="card-total" id="allowance-state">Loading account</span>
+            <button class="exact-toggle" id="exact-toggle" type="button" aria-expanded="false" aria-controls="exact-usage" onclick="toggleExactUsage()" disabled>See exact usage</button>
+          </div>
         </div>
 
         <div class="meter">
@@ -268,6 +297,31 @@
         </div>
       </section>
 
+      <section class="exact-panel" id="exact-usage" aria-labelledby="exact-heading" hidden>
+        <div class="exact-panel-head">
+          <h2 id="exact-heading">Exact billed usage</h2>
+          <p>Axion billing-ledger values, shown to the nearest microdollar.</p>
+        </div>
+        <div class="exact-grid">
+          <div class="exact-stat">
+            <div class="exact-stat-label">Monthly allowance used</div>
+            <div class="exact-stat-value" id="exact-monthly">$0.000000</div>
+            <div class="exact-stat-meta" id="exact-monthly-meta">0 microdollars</div>
+          </div>
+          <div class="exact-stat">
+            <div class="exact-stat-label">Two-hour allowance used</div>
+            <div class="exact-stat-value" id="exact-window">$0.000000</div>
+            <div class="exact-stat-meta" id="exact-window-meta">0 microdollars</div>
+          </div>
+          <div class="exact-stat">
+            <div class="exact-stat-label">Extra credits remaining</div>
+            <div class="exact-stat-value" id="exact-credits">$0.000000</div>
+            <div class="exact-stat-meta" id="exact-credits-meta">0 microdollars</div>
+          </div>
+        </div>
+        <p class="exact-pricing" id="exact-pricing">Loading metering details.</p>
+      </section>
+
       <section class="usage-card" aria-labelledby="extra-heading">
         <div class="card-head">
           <div>
@@ -291,6 +345,7 @@
           <span id="extra-note">Balance, not a percentage</span>
         </div>
       </section>
+
     </div>
 
     <div class="status-panel error" id="error-panel" role="alert">
@@ -321,6 +376,72 @@
     return Number(value || 0).toLocaleString('en-US', {
       style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 3,
     });
+  }
+
+  function exactUsd(microdollars) {
+    return `$${(microdollars / 1000000).toFixed(6)}`;
+  }
+
+  function exactMicrodollars(value) {
+    const parsed = Number(value);
+    return Number.isSafeInteger(parsed) && parsed >= 0 ? parsed : null;
+  }
+
+  function renderExactUsage(data) {
+    const monthlyUsed = exactMicrodollars(data.usage?.monthly_included_used_microdollars);
+    const monthlyLimit = exactMicrodollars(data.usage?.monthly_included_limit_microdollars);
+    const windowUsed = exactMicrodollars(data.usage?.window_included_used_microdollars);
+    const windowLimit = exactMicrodollars(data.usage?.window_included_limit_microdollars);
+    const credits = exactMicrodollars(data.credits?.balance_microdollars);
+    const exactValues = [monthlyUsed, monthlyLimit, windowUsed, windowLimit, credits];
+    const button = document.getElementById('exact-toggle');
+
+    if (exactValues.some(value => value === null)) {
+      button.disabled = true;
+      button.title = 'Exact metering data is temporarily unavailable';
+      return;
+    }
+
+    const setValue = (prefix, used, limit = null) => {
+      document.getElementById(prefix).textContent = exactUsd(used);
+      document.getElementById(`${prefix}-meta`).textContent = limit === null
+        ? `${used.toLocaleString()} microdollars`
+        : `${used.toLocaleString()} of ${limit.toLocaleString()} microdollars · ${exactUsd(Math.max(0, limit - used))} remaining`;
+    };
+    setValue('exact-monthly', monthlyUsed, monthlyLimit);
+    setValue('exact-window', windowUsed, windowLimit);
+    setValue('exact-credits', credits);
+
+    const inputRate = Number(data.metering?.input_per_million_tokens_usd);
+    const outputRate = Number(data.metering?.output_per_million_tokens_usd);
+    document.getElementById('exact-pricing').textContent = Number.isFinite(inputRate) && Number.isFinite(outputRate)
+      ? `Input: $${inputRate.toFixed(2)} per million tokens · Output: $${outputRate.toFixed(2)} per million tokens · Each request is rounded to the nearest $0.000001. Streamed responses may use character-based token estimates.`
+      : 'Each request is rounded to the nearest $0.000001. Streamed responses may use character-based token estimates.';
+    button.disabled = false;
+    button.removeAttribute('title');
+  }
+
+  async function toggleExactUsage() {
+    const panel = document.getElementById('exact-usage');
+    const button = document.getElementById('exact-toggle');
+    const opening = panel.hidden;
+    if (!opening) {
+      panel.hidden = true;
+      button.setAttribute('aria-expanded', 'false');
+      button.textContent = 'See exact usage';
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = 'Calculating…';
+    const loaded = await loadUsage();
+    if (!loaded || button.disabled) {
+      button.textContent = 'See exact usage';
+      return;
+    }
+    panel.hidden = false;
+    button.setAttribute('aria-expanded', 'true');
+    button.textContent = 'Hide exact usage';
   }
 
   const resetTargets = { monthly: null, window: null };
@@ -393,6 +514,7 @@
   }
 
   function renderUsage(data) {
+    renderExactUsage(data);
     const monthly = renderMeter(
       'monthly', data.usage?.monthly_included_used_usd, data.usage?.monthly_included_limit_usd,
       data.usage?.monthly_reset_at, nextMonthlyReset,
@@ -432,16 +554,18 @@
         document.getElementById('sidebar').style.display = 'none';
         document.getElementById('main-panel').style.display = 'none';
         document.getElementById('signin-prompt').style.display = 'flex';
-        return;
+        return false;
       }
       if (!response.ok) throw new Error(`Usage service returned ${response.status}`);
       renderUsage(await response.json());
+      return true;
     } catch (error) {
       document.getElementById('usage-content').style.display = 'none';
       document.getElementById('error-message').textContent = error.name === 'AbortError'
         ? 'Usage took too long to load. Please try again.'
         : "Couldn't load your usage right now.";
       document.getElementById('error-panel').style.display = 'flex';
+      return false;
     }
   }
 
