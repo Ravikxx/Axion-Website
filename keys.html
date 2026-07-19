@@ -763,6 +763,7 @@
   let sessionToken = localStorage.getItem('axion_token') || null;
   let keys = [];
   let accountState = null;
+  let usageCountdownTimer = null;
   let revokeTarget = null;
 
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -1065,19 +1066,23 @@
     const windowLimit = Number(accountState.usage?.window_included_limit_usd) || 0;
     const creditBalance = Number(accountState.credits?.balance_usd) || 0;
     const formatUsd = value => '$' + Number(value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
-    const formatResetAt = value => {
-      if (!value) return '';
+    const formatResetAt = (value, fallbackFactory) => {
       const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return '';
-      return `Resets ${date.toLocaleString([], {
-        year: 'numeric', month: 'short', day: 'numeric',
-        hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
-      })}`;
+      const target = !Number.isNaN(date.getTime()) && date.getTime() > Date.now() ? date : fallbackFactory();
+      const totalMinutes = Math.ceil((target.getTime() - Date.now()) / 60000);
+      if (totalMinutes <= 0) return 'Resetting now';
+      const days = Math.floor(totalMinutes / 1440);
+      const hours = Math.floor((totalMinutes % 1440) / 60);
+      const minutes = totalMinutes % 60;
+      const unit = (amount, name) => `${amount} ${name}${amount === 1 ? '' : 's'}`;
+      if (days > 0) return `Resets in ${unit(days, 'day')}${hours ? ` ${unit(hours, 'hour')}` : ''}`;
+      if (hours > 0) return `Resets in ${unit(hours, 'hour')}${minutes ? ` ${unit(minutes, 'minute')}` : ''}`;
+      return `Resets in ${unit(minutes, 'minute')}`;
     };
-    const usageBar = (label, used, limit, resetAt) => {
+    const usageBar = (label, used, limit, resetAt, fallbackFactory) => {
       const pct = limit > 0 ? Math.min((used / limit) * 100, 100) : 0;
       const color = pct > 90 ? 'var(--red)' : pct > 70 ? '#fbbf24' : 'var(--accent)';
-      const resetLabel = formatResetAt(resetAt);
+      const resetLabel = formatResetAt(resetAt, fallbackFactory);
       return `
         <div class="usage-bar-item">
           <div class="usage-bar-label">
@@ -1088,10 +1093,19 @@
           ${resetLabel ? `<div class="usage-bar-reset">${resetLabel}</div>` : ''}
         </div>`;
     };
+    const nextMonthlyReset = () => {
+      const now = new Date();
+      return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
+    };
+    const nextWindowReset = () => {
+      const windowMs = 2 * 60 * 60 * 1000;
+      return new Date((Math.floor(Date.now() / windowMs) + 1) * windowMs);
+    };
     document.getElementById('usage-bars').innerHTML =
-      usageBar(`${accountState.plan === 'pro' ? 'Pro' : 'Free'} monthly allowance`, monthlyUsed, monthlyLimit, accountState.usage?.monthly_reset_at) +
-      usageBar('Two-hour allowance', windowUsed, windowLimit, accountState.usage?.window_reset_at) +
+      usageBar(`${accountState.plan === 'pro' ? 'Pro' : 'Free'} monthly allowance`, monthlyUsed, monthlyLimit, accountState.usage?.monthly_reset_at, nextMonthlyReset) +
+      usageBar('Two-hour allowance', windowUsed, windowLimit, accountState.usage?.window_reset_at, nextWindowReset) +
       `<div class="usage-bar-item"><div class="usage-bar-label"><span>Redeemable credits</span><span>${formatUsd(creditBalance)}</span></div></div>`;
+    if (!usageCountdownTimer) usageCountdownTimer = setInterval(renderUsage, 30000);
   }
 
   // ── New key modal ─────────────────────────────────────────────────────────
