@@ -41,6 +41,11 @@
       transition: background .15s;
     }
     .nav-btn:hover { background: var(--accent-d); }
+    .nav-btn-ghost {
+      padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500;
+      color: var(--muted2); border: 1px solid var(--border2); transition: color .12s, border-color .12s;
+    }
+    .nav-btn-ghost:hover { color: var(--text); border-color: var(--muted); }
 
     /* ── Hero ── */
     .hero {
@@ -187,13 +192,15 @@
 <nav>
   <a href="/" class="nav-logo"><img src="/assets/logo.png" alt="Axion" style="height:22px;width:auto;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:0"> <span>Axion</span></a>
   <div class="nav-links">
-    <a href="/" class="nav-link">Home</a>
+    <a href="/models" class="nav-link">Models</a>
+    <a href="/chat" class="nav-link">Chat</a>
+    <a href="/playground" class="nav-link">Playground</a>
     <a href="/docs" class="nav-link">Docs</a>
     <a href="/mcp" class="nav-link active">MCP</a>
-    <a href="/keys" class="nav-link">API Keys</a>
   </div>
   <div class="nav-right">
-    <a href="/keys" class="nav-btn">Get started</a>
+    <a href="https://github.com/AxionLabsAI/axion" class="nav-btn-ghost">GitHub</a>
+    <a href="/keys" class="nav-btn">API Keys</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>

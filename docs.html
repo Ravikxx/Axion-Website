@@ -31,9 +31,11 @@
     .nav-link { padding: 5px 10px; border-radius: 5px; font-size: 13px; color: var(--muted2); transition: color .12s, background .12s; }
     .nav-link:hover { color: var(--text); background: var(--surface2); }
     .nav-link.active { color: var(--text); }
-    .nav-right { margin-left: auto; }
+    .nav-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
     .nav-btn { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; background: var(--accent); color: var(--accent-ink); transition: background .15s; display: inline-block; }
     .nav-btn:hover { background: var(--accent-d); }
+    .nav-btn-ghost { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--muted2); border: 1px solid var(--border2); transition: color .12s, border-color .12s; }
+    .nav-btn-ghost:hover { color: var(--text); border-color: var(--muted); }
 
     /* ── Page header ── */
     .page-header {
@@ -171,13 +173,15 @@
 <nav>
   <a href="/" class="nav-logo"><img src="/assets/logo.png" alt="Axion" style="height:22px;width:auto;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:0"> <span>Axion</span></a>
   <div class="nav-links">
-    <a href="/" class="nav-link">Home</a>
+    <a href="/models" class="nav-link">Models</a>
+    <a href="/chat" class="nav-link">Chat</a>
+    <a href="/playground" class="nav-link">Playground</a>
     <a href="/docs" class="nav-link active">Docs</a>
     <a href="/mcp" class="nav-link">MCP</a>
-    <a href="/playground" class="nav-link">Playground</a>
   </div>
   <div class="nav-right">
-    <a href="/keys" class="nav-btn">Get started</a>
+    <a href="https://github.com/AxionLabsAI/axion" class="nav-btn-ghost">GitHub</a>
+    <a href="/keys" class="nav-btn">API Keys</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>

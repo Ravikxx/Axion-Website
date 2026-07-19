@@ -1,6 +1,17 @@
 ﻿/* Signed-in profile menu — self-contained dark styling so it looks consistent
    on every page regardless of that page's theme. */
 
+nav .nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+nav .nav-btn,
+nav .nav-btn-ghost {
+  display: inline-block; padding: 6px 14px; border-radius: 6px;
+  font-size: 13px; text-decoration: none; transition: background .12s, color .12s, border-color .12s;
+}
+nav .nav-btn { background: var(--accent, #b8a27d); color: var(--accent-ink, #1a1408); font-weight: 600; border: 1px solid transparent; }
+nav .nav-btn:hover { background: var(--accent-d, #d9ca9c); }
+nav .nav-btn-ghost { background: transparent; color: var(--muted2, #9899a8); font-weight: 500; border: 1px solid var(--border2, #2e2f3e); }
+nav .nav-btn-ghost:hover { color: var(--text, #e8e9f0); border-color: var(--muted, #6b6d80); }
+
 .ax-hidden { display: none; }
 .ax-profile { position: relative; display: inline-flex; }
 .ax-avatar {

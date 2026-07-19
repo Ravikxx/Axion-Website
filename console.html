@@ -54,21 +54,22 @@
       main{padding:12px}
     }
   </style>
+  <link rel="stylesheet" href="/assets/profile.css">
   <link rel="stylesheet" href="/assets/mobile.css">
 </head>
 <body>
 <nav>
   <a href="/" class="nav-logo"><img src="/assets/logo.png" alt="Axion" style="height:22px;width:auto;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:0"> <span>Axion</span></a>
   <div class="nav-links">
-    <a href="/docs" class="nav-link">Docs</a>
-    <a href="/lumen" class="nav-link">Lumen</a>
-    <a href="/mcp" class="nav-link">MCP</a>
+    <a href="/models" class="nav-link">Models</a>
     <a href="/chat" class="nav-link">Chat</a>
     <a href="/playground" class="nav-link">Playground</a>
+    <a href="/docs" class="nav-link">Docs</a>
+    <a href="/mcp" class="nav-link">MCP</a>
   </div>
   <div class="nav-right">
     <a href="https://github.com/AxionLabsAI/axion" class="nav-btn-ghost">GitHub</a>
-    <a href="/keys" class="nav-btn">Get started</a>
+    <a href="/keys" class="nav-btn">API Keys</a>
   </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>
@@ -172,5 +173,6 @@ function initTerm(){
   // no auto-connect; user initiates via the form
 })()
 </script>
+<script src="/assets/profile.js"></script>
 </body>
 </html>

@@ -469,6 +469,7 @@
   <div class="sidebar-bottom">
     <div class="sidebar-account"><span class="acct-dot"></span><span id="acct-email">Free tier</span></div>
     <a href="/keys" class="sidebar-link"><span>⬡</span> API Keys</a>
+    <a href="/usage" class="sidebar-link"><span>▤</span> Usage</a>
     <a href="/docs" class="sidebar-link"><span>◻</span> Docs</a>
     <button class="sidebar-link" onclick="logout()"><span>⏻</span> <span id="signout-label">Sign out</span></button>
   </div>
@@ -483,7 +484,7 @@
     <span class="topbar-title" id="topbar-title">New chat</span>
     <div class="topbar-spacer"></div>
     <div class="model-badge"><span class="dot"></span> Chat</div>
-    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme">🌙</button>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme">&#9680;</button>
     <button class="theme-btn" onclick="exportChat()" title="Export chat" aria-label="Export chat">↓</button>
   </div>
 
@@ -922,11 +923,9 @@
     const html = document.documentElement
     const isLight = html.classList.toggle('light')
     localStorage.setItem(themeKey, isLight ? 'light' : 'dark')
-    document.getElementById('theme-btn').textContent = isLight ? '☀️' : '🌙'
   }
   if (localStorage.getItem(themeKey) === 'light') {
     document.documentElement.classList.add('light')
-    document.getElementById('theme-btn').textContent = '☀️'
   }
 
   // Register service worker for offline/PWA
