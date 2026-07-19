@@ -247,6 +247,32 @@
     .invite-msg.success { background: rgba(52,211,153,.1); color: var(--green); }
     .invite-msg.error { background: rgba(248,113,113,.1); color: var(--red); }
 
+    .credit-create-grid {
+      display: grid; grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 10px; margin-bottom: 12px;
+    }
+    .credit-field label {
+      display: block; color: var(--muted); font-size: 11px; text-transform: uppercase;
+      letter-spacing: .04em; margin-bottom: 5px;
+    }
+    .credit-field input {
+      width: 100%; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 9px 11px; color: var(--text); font: inherit; outline: none;
+    }
+    .credit-field input:focus { border-color: var(--accent); }
+    .credit-reveal {
+      display: none; align-items: center; gap: 10px; margin: 12px 0 16px;
+      padding: 12px 14px; border: 1px solid rgba(52,211,153,.25);
+      background: rgba(52,211,153,.08); border-radius: 8px;
+    }
+    .credit-reveal code { color: var(--green); font-size: 13px; word-break: break-all; flex: 1; }
+    .credit-variable {
+      display: flex; align-items: center; gap: 8px; margin: 0 0 12px;
+      color: var(--muted); font-size: 13px;
+    }
+    .credit-variable input { accent-color: var(--accent); }
+    @media (max-width: 760px) { .credit-create-grid { grid-template-columns: 1fr 1fr; } }
+
     /* ── Loading ── */
     .loading { color: var(--muted); padding: 24px; text-align: center; }
   </style>
@@ -420,6 +446,34 @@
       </div>
     </section>
 
+    <!-- API credit codes -->
+    <section>
+      <h2>API Credit Codes</h2>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:14px">Create one-time or limited-use codes that add dollar-denominated API usage to an account.</p>
+      <div id="credit-code-msg" class="invite-msg" style="display:none"></div>
+      <div class="credit-create-grid">
+        <div class="credit-field"><label for="credit-dollars">Credit amount (USD)</label><input id="credit-dollars" type="number" min="0.01" max="10000" step="0.01" value="5.00"></div>
+        <div class="credit-field"><label for="credit-max-uses">Maximum uses</label><input id="credit-max-uses" type="number" min="1" max="10000" step="1" value="1"></div>
+        <div class="credit-field"><label for="credit-expires">Expires (optional)</label><input id="credit-expires" type="datetime-local"></div>
+        <div class="credit-field"><label for="credit-note">Internal note</label><input id="credit-note" type="text" maxlength="200" placeholder="Launch credit"></div>
+      </div>
+      <label class="credit-variable">
+        <input id="credit-variable" type="checkbox" onchange="syncCreditCodeMode()">
+        Variable amount, reusable, and unlimited redemptions (secure 16-character code)
+      </label>
+      <button class="btn btn-sm" id="create-credit-code-btn" onclick="createCreditCode()">Create code</button>
+      <div class="credit-reveal" id="credit-reveal">
+        <code id="credit-plaintext"></code>
+        <button class="btn-outline" onclick="copyCreditCode()">Copy</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Code</th><th>Value</th><th>Uses</th><th>Expires</th><th>Status</th><th>Created</th><th></th></tr></thead>
+          <tbody id="credit-codes-body"><tr class="empty-row"><td colspan="7">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- Appeals -->
     <section>
       <h2>Appeals <span id="appeals-count" style="font-size:13px;color:var(--muted);font-weight:400"></span></h2>
@@ -566,16 +620,20 @@
   }
 
   async function apiFetch(path, opts = {}) {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 10000)
     return fetch(`${API}${path}`, {
       ...opts,
+      signal: controller.signal,
       headers: { Authorization: `Bearer ${_token}`, 'Content-Type': 'application/json', ...(opts.headers || {}) },
-    })
+    }).finally(() => clearTimeout(timeout))
   }
 
   async function loadAll() {
     loadStats()
     loadUsers()
     loadAllowlist()
+    loadCreditCodes()
     loadAppeals()
     loadChart()
   }
@@ -750,6 +808,105 @@
       const d = await res.json()
       alert(d.error || 'Failed to remove admin')
     }
+  }
+
+  // ── API credit codes ─────────────────────────────────────────────────────
+
+  function showCreditCodeMsg(text, type) {
+    const el = document.getElementById('credit-code-msg')
+    el.textContent = text
+    el.className = `invite-msg ${type}`
+    el.style.display = 'block'
+    setTimeout(() => { el.style.display = 'none' }, 5000)
+  }
+
+  async function loadCreditCodes() {
+    const res = await apiFetch('/admin/credit-codes')
+    if (!res.ok) return
+    const { codes } = await res.json()
+    const tbody = document.getElementById('credit-codes-body')
+    if (!codes || !codes.length) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No credit codes yet</td></tr>'
+      return
+    }
+    const now = Math.floor(Date.now() / 1000)
+    tbody.innerHTML = codes.map(code => {
+      const expired = code.expires_at && code.expires_at <= now
+      const exhausted = code.max_redemptions !== 0 && code.redemption_count >= code.max_redemptions
+      const active = code.active && !expired && !exhausted
+      const status = active ? 'Active' : !code.active ? 'Disabled' : expired ? 'Expired' : 'Used'
+      return `<tr>
+        <td><code>${esc(code.code_hint)}</code>${code.note ? `<div style="font-size:11px;color:var(--muted);margin-top:3px">${esc(code.note)}</div>` : ''}</td>
+        <td>${code.variable_amount ? 'Chosen at redemption' : `$${Number(code.credit_usd || 0).toFixed(2)}`}</td>
+        <td>${fmt(code.redemption_count)} / ${code.max_redemptions === 0 ? '&infin;' : fmt(code.max_redemptions)}</td>
+        <td style="color:var(--muted)">${code.expires_at ? fmtDate(code.expires_at) : 'Never'}</td>
+        <td><span class="badge ${active ? 'badge-green' : 'badge-red'}">${status}</span></td>
+        <td style="color:var(--muted)">${fmtDate(code.created_at)}</td>
+        <td>${active ? `<button class="btn btn-danger" onclick="deactivateCreditCode('${esc(code.id)}')">Disable</button>` : ''}</td>
+      </tr>`
+    }).join('')
+  }
+
+  async function createCreditCode() {
+    const variableAmount = document.getElementById('credit-variable').checked
+    const dollars = Number(document.getElementById('credit-dollars').value)
+    const maxRedemptions = Number(document.getElementById('credit-max-uses').value)
+    const expiresValue = document.getElementById('credit-expires').value
+    const note = document.getElementById('credit-note').value.trim()
+    const creditCents = Math.round(dollars * 100)
+    if (!variableAmount && (!Number.isFinite(dollars) || dollars <= 0 || Math.abs(dollars * 100 - creditCents) > .0001)) {
+      showCreditCodeMsg('Enter a positive dollar amount with at most two decimal places.', 'error')
+      return
+    }
+    if (!variableAmount && (!Number.isInteger(maxRedemptions) || maxRedemptions < 1)) {
+      showCreditCodeMsg('Maximum uses must be a positive whole number.', 'error')
+      return
+    }
+    const expiresAt = expiresValue ? Math.floor(new Date(expiresValue).getTime() / 1000) : null
+    const btn = document.getElementById('create-credit-code-btn')
+    btn.disabled = true; btn.textContent = 'Creating…'
+    try {
+      const res = await apiFetch('/admin/credit-codes', {
+        method: 'POST',
+        body: JSON.stringify(variableAmount
+          ? { variable_amount: true, allow_repeat: true, unlimited_redemptions: true, expires_at: expiresAt, note }
+          : { credit_cents: creditCents, max_redemptions: maxRedemptions, expires_at: expiresAt, note }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || 'Could not create code')
+      document.getElementById('credit-plaintext').textContent = data.code
+      document.getElementById('credit-reveal').style.display = 'flex'
+      showCreditCodeMsg('Code created. Copy it now; the plaintext will not be shown again.', 'success')
+      loadCreditCodes()
+    } catch (error) {
+      showCreditCodeMsg(error.message || 'Could not create code', 'error')
+    } finally {
+      btn.disabled = false; btn.textContent = 'Create code'
+    }
+  }
+
+  function syncCreditCodeMode() {
+    const variable = document.getElementById('credit-variable').checked
+    document.getElementById('credit-dollars').disabled = variable
+    document.getElementById('credit-max-uses').disabled = variable
+  }
+
+  async function copyCreditCode() {
+    const code = document.getElementById('credit-plaintext').textContent
+    if (!code) return
+    try {
+      await navigator.clipboard.writeText(code)
+      showCreditCodeMsg('Code copied.', 'success')
+    } catch {
+      showCreditCodeMsg('Copy failed. Select the code and copy it manually.', 'error')
+    }
+  }
+
+  async function deactivateCreditCode(id) {
+    if (!confirm('Disable this credit code? Existing redeemed balances are not affected.')) return
+    const res = await apiFetch(`/admin/credit-codes/${encodeURIComponent(id)}`, { method: 'DELETE' })
+    if (res.ok) loadCreditCodes()
+    else { const data = await res.json().catch(() => ({})); showCreditCodeMsg(data.error || 'Could not disable code', 'error') }
   }
 
   // ── Appeals ────────────────────────────────────────────────────────────────

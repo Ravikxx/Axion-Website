@@ -115,6 +115,15 @@
     .status-msg.ok { color: var(--green); }
     .status-msg.err { color: var(--red); }
 
+    .credit-redeem { display: grid; grid-template-columns: minmax(180px, 1fr) 130px auto; gap: 8px; align-items: center; width: min(100%, 560px); }
+    .credit-redeem input {
+      flex: 1; min-width: 0; padding: 8px 10px; border-radius: 6px;
+      background: var(--bg); border: 1px solid var(--border2); color: var(--text);
+      font: inherit; font-size: 12.5px; text-transform: uppercase; outline: none;
+    }
+    .credit-redeem input:focus { border-color: var(--accent); }
+    @media (max-width: 620px) { .credit-redeem { grid-template-columns: 1fr; } }
+
     /* Toggle */
     .settings-toggle {
       width: 38px; height: 22px; flex-shrink: 0; appearance: none; -webkit-appearance: none;
@@ -261,7 +270,20 @@
         </div>
         <button class="btn-sm" id="btn-upgrade" onclick="upgradeToPro()">Upgrade to Pro — $7/mo</button>
       </div>
+      <p class="section-sub" id="coupon-note" style="display:none;margin:0 0 12px">Have a subscription discount code? Enter it on the secure Square checkout page.</p>
       <div class="status-msg" id="plan-msg"></div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">API credits</div>
+          <div class="settings-row-desc">Extra usage after your plan's included allowance. Balance: <strong id="credit-balance">—</strong></div>
+        </div>
+      </div>
+      <div class="credit-redeem">
+        <input id="credit-code" type="text" autocomplete="off" spellcheck="false" placeholder="AXION code or 16-character code" aria-label="API credit code" onkeydown="if(event.key==='Enter')redeemCredit()">
+        <input id="credit-amount" type="number" min="0.01" max="10000" step="0.01" placeholder="Amount (USD)" aria-label="Credit amount for variable codes" onkeydown="if(event.key==='Enter')redeemCredit()">
+        <button class="btn-sm" id="btn-redeem" onclick="redeemCredit()">Redeem</button>
+      </div>
+      <div class="status-msg" id="credit-msg"></div>
       <div class="stat-cards" id="stat-cards">
         <div class="stat-card"><div class="n">—</div><div class="l">Requests this month</div></div>
         <div class="stat-card"><div class="n">—</div><div class="l">Requests all-time</div></div>
@@ -278,7 +300,7 @@
       <div class="settings-row">
         <div>
           <div class="settings-row-label">Usage alerts</div>
-          <div class="settings-row-desc">Email me when a key hits 80% of its monthly limit.</div>
+          <div class="settings-row-desc">Email me when my account hits 80% of its monthly included usage.</div>
         </div>
         <input type="checkbox" class="settings-toggle" id="pref-limit">
       </div>
@@ -379,24 +401,66 @@
     const label = document.getElementById('plan-label');
     const desc = document.getElementById('plan-desc');
     const btn = document.getElementById('btn-upgrade');
+    const couponNote = document.getElementById('coupon-note');
+    const creditBalance = document.getElementById('credit-balance');
     try {
       const res = await fetchT(API + '/dashboard/account', { headers: authHeaders });
       if (!res.ok) throw new Error();
       const data = await res.json();
+      creditBalance.textContent = `$${Number(data.credits?.balance_usd || 0).toFixed(2)}`;
       row.style.display = 'flex';
       if (data.plan === 'pro') {
-        sub.textContent = "You're on Axion Pro — 10,000 requests/month per key, unlimited API keys, and early access to new models.";
+        sub.textContent = `You're on Axion Pro — $${Number(data.usage?.monthly_included_limit_usd || 5).toFixed(2)} included monthly usage, $${Number(data.usage?.window_included_limit_usd || .5).toFixed(2)} every 2 hours, unlimited API keys, and early model access.`;
         label.textContent = 'Axion Pro';
         desc.textContent = 'Billed monthly via Square.';
         btn.style.display = 'none';
+        couponNote.style.display = 'none';
       } else {
-        sub.textContent = 'Free plan — 1,000 requests/month per key, up to 3 keys. This is what\'s actually going through your account.';
+        sub.textContent = `Free plan — $${Number(data.usage?.monthly_included_limit_usd || .5).toFixed(2)} included monthly usage, $${Number(data.usage?.window_included_limit_usd || .05).toFixed(2)} every 2 hours, and up to 3 API keys.`;
         label.textContent = 'Free plan';
         desc.textContent = 'Upgrade for 10x the limits, unlimited keys, and early model access.';
         btn.style.display = '';
+        couponNote.style.display = '';
       }
     } catch {
-      sub.textContent = "Axion is free — every key gets 1,000 requests/month, no payment on file.";
+      sub.textContent = "Couldn't load your plan or credit balance right now.";
+      creditBalance.textContent = 'Unavailable';
+    }
+  }
+
+  async function redeemCredit() {
+    const input = document.getElementById('credit-code');
+    const btn = document.getElementById('btn-redeem');
+    const msg = document.getElementById('credit-msg');
+    const code = input.value.trim();
+    if (!code) { input.focus(); return; }
+    const amountInput = document.getElementById('credit-amount');
+    const amount = amountInput.value === '' ? null : Number(amountInput.value);
+    const creditCents = amount === null ? null : Math.round(amount * 100);
+    if (amount !== null && (!Number.isFinite(amount) || amount <= 0 || Math.abs(amount * 100 - creditCents) > .0001)) {
+      msg.textContent = 'Enter a positive amount with at most two decimal places.';
+      msg.className = 'status-msg err';
+      return;
+    }
+    btn.disabled = true; btn.textContent = 'Redeeming…';
+    try {
+      const res = await fetchT(API + '/billing/credits/redeem', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
+        body: JSON.stringify({ code, credit_cents: creditCents }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Could not redeem this code.');
+      input.value = '';
+      amountInput.value = '';
+      document.getElementById('credit-balance').textContent = `$${Number(data.balance_usd || 0).toFixed(2)}`;
+      msg.textContent = `$${Number(data.granted_usd || 0).toFixed(2)} in API credits added.`;
+      msg.className = 'status-msg ok';
+    } catch (error) {
+      msg.textContent = error.message || 'Could not redeem this code.';
+      msg.className = 'status-msg err';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Redeem';
     }
   }
 
