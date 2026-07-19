@@ -249,7 +249,7 @@
           </div>
           <div class="meter-meta">
             <span id="monthly-remaining">Loading remaining allowance</span>
-            <span id="monthly-reset">Resets monthly</span>
+            <span id="monthly-reset">Loading reset time</span>
           </div>
         </div>
 
@@ -263,7 +263,7 @@
           </div>
           <div class="meter-meta">
             <span id="window-remaining">Loading remaining allowance</span>
-            <span id="window-reset">Resets every two hours</span>
+            <span id="window-reset">Loading reset time</span>
           </div>
         </div>
       </section>
@@ -323,14 +323,57 @@
     });
   }
 
-  function resetLabel(value, fallback) {
-    if (!value) return fallback;
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return fallback;
-    return `Resets ${date.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}`;
+  const resetTargets = { monthly: null, window: null };
+  let resetCountdownTimer = null;
+
+  function nextMonthlyReset() {
+    const now = new Date();
+    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
   }
 
-  function renderMeter(prefix, used, limit, resetAt, resetFallback) {
+  function nextWindowReset() {
+    const windowMs = 2 * 60 * 60 * 1000;
+    return new Date((Math.floor(Date.now() / windowMs) + 1) * windowMs);
+  }
+
+  function parseResetTarget(value, fallbackFactory) {
+    const parsed = value ? new Date(value) : null;
+    return parsed && !Number.isNaN(parsed.getTime()) && parsed.getTime() > Date.now()
+      ? parsed
+      : fallbackFactory();
+  }
+
+  function resetLabel(target) {
+    if (!target) return 'Reset time unavailable';
+    const totalMinutes = Math.ceil((target.getTime() - Date.now()) / 60000);
+    if (totalMinutes <= 0) return 'Resetting now';
+
+    const days = Math.floor(totalMinutes / 1440);
+    const hours = Math.floor((totalMinutes % 1440) / 60);
+    const minutes = totalMinutes % 60;
+    const unit = (value, name) => `${value} ${name}${value === 1 ? '' : 's'}`;
+
+    if (days > 0) {
+      return `Resets in ${unit(days, 'day')}${hours ? ` ${unit(hours, 'hour')}` : ''}`;
+    }
+    if (hours > 0) {
+      return `Resets in ${unit(hours, 'hour')}${minutes ? ` ${unit(minutes, 'minute')}` : ''}`;
+    }
+    return `Resets in ${unit(minutes, 'minute')}`;
+  }
+
+  function refreshResetLabels() {
+    for (const prefix of Object.keys(resetTargets)) {
+      document.getElementById(`${prefix}-reset`).textContent = resetLabel(resetTargets[prefix]);
+    }
+  }
+
+  function startResetCountdowns() {
+    refreshResetLabels();
+    if (!resetCountdownTimer) resetCountdownTimer = setInterval(refreshResetLabels, 30000);
+  }
+
+  function renderMeter(prefix, used, limit, resetAt, resetFallbackFactory) {
     const safeUsed = Math.max(0, Number(used) || 0);
     const safeLimit = Math.max(0, Number(limit) || 0);
     const percent = safeLimit > 0 ? Math.min(100, (safeUsed / safeLimit) * 100) : 0;
@@ -345,19 +388,20 @@
     fill.className = `meter-fill${percent >= 90 ? ' critical' : percent >= 70 ? ' warning' : ''}`;
     track.setAttribute('aria-valuenow', String(Math.round(percent)));
     document.getElementById(`${prefix}-remaining`).textContent = `${usd(remaining)} remaining`;
-    document.getElementById(`${prefix}-reset`).textContent = resetLabel(resetAt, resetFallback);
+    resetTargets[prefix] = parseResetTarget(resetAt, resetFallbackFactory);
     return { percent, remaining };
   }
 
   function renderUsage(data) {
     const monthly = renderMeter(
       'monthly', data.usage?.monthly_included_used_usd, data.usage?.monthly_included_limit_usd,
-      data.usage?.monthly_reset_at, 'Resets on the first of next month',
+      data.usage?.monthly_reset_at, nextMonthlyReset,
     );
     const windowUsage = renderMeter(
       'window', data.usage?.window_included_used_usd, data.usage?.window_included_limit_usd,
-      data.usage?.window_reset_at, 'Resets every two hours',
+      data.usage?.window_reset_at, nextWindowReset,
     );
+    startResetCountdowns();
     const balance = Math.max(0, Number(data.credits?.balance_usd) || 0);
     const hasCredits = balance > 0;
 
