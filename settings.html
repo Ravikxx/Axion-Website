@@ -253,7 +253,15 @@
 
     <div class="settings-section">
       <h2>Usage &amp; billing</h2>
-      <p class="section-sub">Axion is free — every key gets 1,000 requests/month, no payment on file. This is what's actually going through your account.</p>
+      <p class="section-sub" id="plan-sub">Loading…</p>
+      <div class="settings-row" id="plan-row" style="display:none">
+        <div>
+          <div class="settings-row-label" id="plan-label">Free plan</div>
+          <div class="settings-row-desc" id="plan-desc"></div>
+        </div>
+        <button class="btn-sm" id="btn-upgrade" onclick="upgradeToPro()">Upgrade to Pro — $7/mo</button>
+      </div>
+      <div class="status-msg" id="plan-msg"></div>
       <div class="stat-cards" id="stat-cards">
         <div class="stat-card"><div class="n">—</div><div class="l">Requests this month</div></div>
         <div class="stat-card"><div class="n">—</div><div class="l">Requests all-time</div></div>
@@ -363,6 +371,49 @@
   function loadUsage() {
     loadKeyStats();
     loadDailyUsage();
+  }
+
+  async function loadPlan() {
+    const sub = document.getElementById('plan-sub');
+    const row = document.getElementById('plan-row');
+    const label = document.getElementById('plan-label');
+    const desc = document.getElementById('plan-desc');
+    const btn = document.getElementById('btn-upgrade');
+    try {
+      const res = await fetchT(API + '/dashboard/account', { headers: authHeaders });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      row.style.display = 'flex';
+      if (data.plan === 'pro') {
+        sub.textContent = "You're on Axion Pro — 10,000 requests/month per key, unlimited API keys, and early access to new models.";
+        label.textContent = 'Axion Pro';
+        desc.textContent = 'Billed monthly via Square.';
+        btn.style.display = 'none';
+      } else {
+        sub.textContent = 'Free plan — 1,000 requests/month per key, up to 3 keys. This is what\'s actually going through your account.';
+        label.textContent = 'Free plan';
+        desc.textContent = 'Upgrade for 10x the limits, unlimited keys, and early model access.';
+        btn.style.display = '';
+      }
+    } catch {
+      sub.textContent = "Axion is free — every key gets 1,000 requests/month, no payment on file.";
+    }
+  }
+
+  async function upgradeToPro() {
+    const btn = document.getElementById('btn-upgrade');
+    const msg = document.getElementById('plan-msg');
+    btn.disabled = true; btn.textContent = 'Redirecting…';
+    try {
+      const res = await fetchT(API + '/billing/checkout', { method: 'POST', headers: authHeaders });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.url) throw new Error();
+      location.href = data.url;
+    } catch {
+      msg.textContent = "Couldn't start checkout right now — try again shortly."; msg.className = 'status-msg err';
+      btn.disabled = false; btn.textContent = 'Upgrade to Pro — $7/mo';
+      setTimeout(() => { msg.textContent = ''; }, 4000);
+    }
   }
 
   async function loadKeyStats() {
@@ -539,6 +590,7 @@
     loadPrefs();
     loadUsage();
     loadProviders();
+    loadPlan();
   })();
 </script>
 <script src="/assets/profile.js"></script>
