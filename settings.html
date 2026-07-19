@@ -280,7 +280,7 @@
       </div>
       <div class="credit-redeem">
         <input id="credit-code" type="text" autocomplete="off" spellcheck="false" placeholder="AXION code or 16-character code" aria-label="API credit code" onkeydown="if(event.key==='Enter')redeemCredit()">
-        <input id="credit-amount" type="number" min="0.01" max="10000" step="0.01" placeholder="Amount (USD)" aria-label="Credit amount for variable codes" onkeydown="if(event.key==='Enter')redeemCredit()">
+        <input id="credit-amount" type="number" min="0.001" max="10000" step="0.001" placeholder="Amount (USD, min $0.001)" aria-label="Credit amount for variable codes" onkeydown="if(event.key==='Enter')redeemCredit()">
         <button class="btn-sm" id="btn-redeem" onclick="redeemCredit()">Redeem</button>
       </div>
       <div class="status-msg" id="credit-msg"></div>
@@ -407,7 +407,7 @@
       const res = await fetchT(API + '/dashboard/account', { headers: authHeaders });
       if (!res.ok) throw new Error();
       const data = await res.json();
-      creditBalance.textContent = `$${Number(data.credits?.balance_usd || 0).toFixed(2)}`;
+      creditBalance.textContent = formatCreditUsd(data.credits?.balance_usd);
       row.style.display = 'flex';
       if (data.plan === 'pro') {
         sub.textContent = `You're on Axion Pro — $${Number(data.usage?.monthly_included_limit_usd || 5).toFixed(2)} included monthly usage, $${Number(data.usage?.window_included_limit_usd || .5).toFixed(2)} every 2 hours, unlimited API keys, and early model access.`;
@@ -428,6 +428,15 @@
     }
   }
 
+  function formatCreditUsd(value) {
+    return Number(value || 0).toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 3,
+    });
+  }
+
   async function redeemCredit() {
     const input = document.getElementById('credit-code');
     const btn = document.getElementById('btn-redeem');
@@ -436,9 +445,11 @@
     if (!code) { input.focus(); return; }
     const amountInput = document.getElementById('credit-amount');
     const amount = amountInput.value === '' ? null : Number(amountInput.value);
-    const creditCents = amount === null ? null : Math.round(amount * 100);
-    if (amount !== null && (!Number.isFinite(amount) || amount <= 0 || Math.abs(amount * 100 - creditCents) > .0001)) {
-      msg.textContent = 'Enter a positive amount with at most two decimal places.';
+    const creditMicrodollars = amount === null ? null : Math.round(amount * 1000000);
+    const amountMills = amount === null ? null : Math.round(amount * 1000);
+    if (amount !== null && (!Number.isFinite(amount) || amount < .001 || amount > 10000
+        || Math.abs(amount * 1000 - amountMills) > .000001)) {
+      msg.textContent = 'Enter an amount from $0.001 to $10,000, with at most three decimal places.';
       msg.className = 'status-msg err';
       return;
     }
@@ -447,14 +458,14 @@
       const res = await fetchT(API + '/billing/credits/redeem', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders },
-        body: JSON.stringify({ code, credit_cents: creditCents }),
+        body: JSON.stringify({ code, credit_microdollars: creditMicrodollars }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Could not redeem this code.');
       input.value = '';
       amountInput.value = '';
-      document.getElementById('credit-balance').textContent = `$${Number(data.balance_usd || 0).toFixed(2)}`;
-      msg.textContent = `$${Number(data.granted_usd || 0).toFixed(2)} in API credits added.`;
+      document.getElementById('credit-balance').textContent = formatCreditUsd(data.balance_usd);
+      msg.textContent = `${formatCreditUsd(data.granted_usd)} in API credits added.`;
       msg.className = 'status-msg ok';
     } catch (error) {
       msg.textContent = error.message || 'Could not redeem this code.';
