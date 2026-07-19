@@ -509,7 +509,6 @@
 
   let sessionToken = localStorage.getItem('axion_token') || null
   let userEmail = localStorage.getItem('axion_email') || null
-  let apiKey = null       // user's axion-sk- key, used for completions (account quota)
   let streaming = false
   let abortCtrl = null    // AbortController for the in-flight completion (stop button)
 
@@ -551,23 +550,6 @@
   async function deleteChatServer(id) {
     try { await fetch(`${API}/chats/${id}`, { method: 'DELETE', headers: authHeaders() }) } catch {}
   }
-  // Use the account's API key for completions so chat counts against the
-  // signed-in user's account-wide allowance (not the keyless per-IP tier). Auto-create one.
-  async function ensureApiKey() {
-    try {
-      const res = await fetch(`${API}/dashboard/keys`, { headers: authHeaders() })
-      if (res.ok) {
-        const data = await res.json()
-        if (data.keys && data.keys.length) { apiKey = data.keys[0].key_value; return }
-      }
-      const cr = await fetch(`${API}/dashboard/keys`, {
-        method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }),
-        body: JSON.stringify({ label: 'Web Chat' }),
-      })
-      if (cr.ok) { const d = await cr.json(); apiKey = d.key_value }
-    } catch {}
-  }
-
   // ── Chat management ───────────────────────────────────────────────────────
   function newChat() {
     currentId = null
@@ -1019,8 +1001,7 @@
     const chartHint = { role: 'system', content: 'You can render charts. Output chart data in a ```chart code block with JSON like {"type":"bar","title":"...","data":{"labels":["A","B"],"datasets":[{"data":[1,2]}]}}. Types: bar, pie, doughnut, line.' }
     const body = { model: 'lumen', messages: [chartHint, ...c.messages.map(m => ({ role: m.role, content: m.content }))], stream: true }
     const headers = { 'Content-Type': 'application/json' }
-    const authVal = apiKey || sessionToken
-    if (authVal) headers['Authorization'] = `Bearer ${authVal}`
+    if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`
 
     let full = '', failed = false
     try {
@@ -1124,7 +1105,7 @@
   }
 
   function logout() {
-    sessionToken = null; userEmail = null; apiKey = null
+    sessionToken = null; userEmail = null
     chats = []; currentId = null
     localStorage.removeItem('axion_token'); localStorage.removeItem('axion_email')
     document.getElementById('auth-overlay').style.display = 'flex'
@@ -1135,7 +1116,6 @@
     document.getElementById('acct-email').textContent = userEmail || 'Signed in'
     document.getElementById('signout-label').textContent = 'Sign out'
     renderMessages()
-    ensureApiKey()
     await fetchChatList()
     renderChatList()
     document.getElementById('user-input').focus()
