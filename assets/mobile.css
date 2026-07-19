@@ -2,6 +2,8 @@
 /* Injected via build script into every HTML page */
 
 /* ── Hamburger nav (applied to all navs) ─────────────────────────────────────── */
+.hamburger-nav { display: none; }
+
 @media (max-width: 720px) {
   /* Show hamburger button (injected by build script) */
   .hamburger-nav {
