@@ -466,7 +466,7 @@
             <tr>
               <th>Account</th>
               <th>Plan</th>
-              <th>Monthly left</th>
+              <th>Weekly left</th>
               <th>2-hour left</th>
               <th>Credits</th>
               <th>Total requests</th>
@@ -576,10 +576,10 @@
         <input id="account-plan" type="hidden" value="free">
         <div class="plan-options" role="group" aria-label="Account plan">
           <button class="plan-option" id="account-plan-free" type="button" onclick="setAccountPlan('free')">
-            <strong>Free</strong><span>$0.50 monthly · $0.05 per two hours</span>
+            <strong>Free</strong><span>$0.125 weekly · $0.05 per two hours</span>
           </button>
           <button class="plan-option" id="account-plan-pro" type="button" onclick="setAccountPlan('pro')">
-            <strong>Pro</strong><span>$7/month · $5.00 monthly included usage · $0.50 per two hours</span>
+            <strong>Pro</strong><span>$7/month · $1.25 weekly included usage · $0.50 per two hours</span>
           </button>
         </div>
       </div>
@@ -589,9 +589,9 @@
         <div class="field-hint">Keep this at $0.01 to leave exactly one cent of extra usage.</div>
       </div>
       <div class="account-field">
-        <label for="account-month-remaining">Monthly allowance remaining (USD)</label>
-        <input id="account-month-remaining" type="number" min="0" step="0.000001">
-        <div class="field-hint" id="account-month-hint"></div>
+        <label for="account-week-remaining">Weekly allowance remaining (USD)</label>
+        <input id="account-week-remaining" type="number" min="0" step="0.000001">
+        <div class="field-hint" id="account-week-hint"></div>
       </div>
       <div class="account-field">
         <label for="account-window-remaining">Current 2-hour allowance remaining (USD)</label>
@@ -620,8 +620,8 @@
   let _editingUserId = null
   let _currentAdminUserId = null
   const ACCOUNT_LIMITS = {
-    free: { monthly: 500000, window: 50000 },
-    pro: { monthly: 5000000, window: 500000 },
+    free: { weekly: 125000, window: 50000 },
+    pro: { weekly: 1250000, window: 500000 },
   }
 
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -802,7 +802,7 @@
           <div class="account-meta">${u.verified ? 'Verified' : 'Unverified'} · ${fmt(u.key_count)} key${Number(u.key_count) === 1 ? '' : 's'}</div>
         </td>
         <td><span class="badge ${u.plan === 'pro' ? 'badge-green' : 'badge-owner'}">${u.plan === 'pro' ? 'Pro' : 'Free'}</span></td>
-        <td class="usage-value">${formatUsdMicro(allowanceRemaining(u.monthly_limit, u.included_month_cost))} <small>/ ${formatUsdMicro(u.monthly_limit)}</small></td>
+        <td class="usage-value">${formatUsdMicro(allowanceRemaining(u.weekly_limit, u.included_week_cost))} <small>/ ${formatUsdMicro(u.weekly_limit)}</small></td>
         <td class="usage-value">${formatUsdMicro(allowanceRemaining(u.window_limit, u.included_window_cost))} <small>/ ${formatUsdMicro(u.window_limit)}</small></td>
         <td class="usage-value">${formatUsdMicro(u.credit_balance)}</td>
         <td>${fmt(u.total_requests)}</td>
@@ -847,7 +847,7 @@
     document.getElementById('account-editor-email').textContent = user.email
     document.getElementById('account-plan').value = selectedPlan
     document.getElementById('account-credits').value = microToInput(user.credit_balance)
-    document.getElementById('account-month-remaining').value = microToInput(allowanceRemaining(selectedLimits.monthly, user.included_month_cost))
+    document.getElementById('account-week-remaining').value = microToInput(allowanceRemaining(selectedLimits.weekly, user.included_week_cost))
     document.getElementById('account-window-remaining').value = microToInput(allowanceRemaining(selectedLimits.window, user.included_window_cost))
     document.getElementById('account-editor-msg').style.display = 'none'
     syncAccountLimits()
@@ -864,14 +864,14 @@
     const planInput = document.getElementById('account-plan')
     const previousPlan = ACCOUNT_LIMITS[planInput.value] ? planInput.value : plan
     const previousLimits = ACCOUNT_LIMITS[previousPlan]
-    const currentMonthRemaining = inputToMicro('account-month-remaining')
+    const currentWeekRemaining = inputToMicro('account-week-remaining')
     const currentWindowRemaining = inputToMicro('account-window-remaining')
-    const monthUsed = usageFromRemaining(previousLimits.monthly, currentMonthRemaining)
+    const weekUsed = usageFromRemaining(previousLimits.weekly, currentWeekRemaining)
     const windowUsed = usageFromRemaining(previousLimits.window, currentWindowRemaining)
     const nextLimits = ACCOUNT_LIMITS[plan]
 
     planInput.value = plan
-    document.getElementById('account-month-remaining').value = microToInput(allowanceRemaining(nextLimits.monthly, monthUsed))
+    document.getElementById('account-week-remaining').value = microToInput(allowanceRemaining(nextLimits.weekly, weekUsed))
     document.getElementById('account-window-remaining').value = microToInput(allowanceRemaining(nextLimits.window, windowUsed))
     syncAccountLimits()
   }
@@ -885,20 +885,20 @@
       button.classList.toggle('is-selected', selected)
       button.setAttribute('aria-pressed', String(selected))
     }
-    document.getElementById('account-month-remaining').max = microToInput(limits.monthly)
+    document.getElementById('account-week-remaining').max = microToInput(limits.weekly)
     document.getElementById('account-window-remaining').max = microToInput(limits.window)
-    document.getElementById('account-month-hint').textContent = `Enter how much of the ${formatUsdMicro(limits.monthly)} monthly allowance should still be available.`
+    document.getElementById('account-week-hint').textContent = `Enter how much of the ${formatUsdMicro(limits.weekly)} weekly allowance should still be available. Setting this to the full amount marks the period as not started (no reset countdown) until the next real charge.`
     document.getElementById('account-window-hint').textContent = `Enter how much of the ${formatUsdMicro(limits.window)} two-hour allowance should still be available.`
   }
 
   function setNoAllowanceLeft() {
-    document.getElementById('account-month-remaining').value = '0'
+    document.getElementById('account-week-remaining').value = '0'
     document.getElementById('account-window-remaining').value = '0'
   }
 
   function restoreFullAllowance() {
     const limits = ACCOUNT_LIMITS[document.getElementById('account-plan').value]
-    document.getElementById('account-month-remaining').value = microToInput(limits.monthly)
+    document.getElementById('account-week-remaining').value = microToInput(limits.weekly)
     document.getElementById('account-window-remaining').value = microToInput(limits.window)
   }
 
@@ -914,21 +914,21 @@
     if (!user) return
     const plan = document.getElementById('account-plan').value
     const limits = ACCOUNT_LIMITS[plan]
-    const monthly_remaining = inputToMicro('account-month-remaining')
+    const weekly_remaining = inputToMicro('account-week-remaining')
     const window_remaining = inputToMicro('account-window-remaining')
     const credit_balance = inputToMicro('account-credits')
-    if ([monthly_remaining, window_remaining, credit_balance].includes(null)) {
+    if ([weekly_remaining, window_remaining, credit_balance].includes(null)) {
       showAccountMsg('Enter dollar values from $0 to $10,000.', 'error')
       return
     }
-    if (monthly_remaining > limits.monthly || window_remaining > limits.window) {
+    if (weekly_remaining > limits.weekly || window_remaining > limits.window) {
       showAccountMsg(`Remaining allowance cannot exceed the ${plan === 'pro' ? 'Pro' : 'Free'} plan limits.`, 'error')
       return
     }
-    const included_month_cost = usageFromRemaining(limits.monthly, monthly_remaining)
+    const included_week_cost = usageFromRemaining(limits.weekly, weekly_remaining)
     const included_window_cost = usageFromRemaining(limits.window, window_remaining)
 
-    const summary = `${user.email}\nPlan: ${plan === 'pro' ? 'Pro' : 'Free'}\nMonthly allowance left: ${formatUsdMicro(monthly_remaining)}\n2-hour allowance left: ${formatUsdMicro(window_remaining)}\nExtra usage credits: ${formatUsdMicro(credit_balance)}`
+    const summary = `${user.email}\nPlan: ${plan === 'pro' ? 'Pro' : 'Free'}\nWeekly allowance left: ${formatUsdMicro(weekly_remaining)}\n2-hour allowance left: ${formatUsdMicro(window_remaining)}\nExtra usage credits: ${formatUsdMicro(credit_balance)}`
     if (!confirm(`Apply this live testing override?\n\n${summary}\n\nThis does not change Square billing or request history.`)) return
 
     const btn = document.getElementById('account-save')
@@ -937,12 +937,12 @@
     try {
       const res = await apiFetch(`/admin/users/${encodeURIComponent(user.id)}/account-testing`, {
         method: 'PUT',
-        body: JSON.stringify({ plan, included_month_cost, included_window_cost, credit_balance }),
+        body: JSON.stringify({ plan, included_week_cost, included_window_cost, credit_balance }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Unable to update account')
       await loadUsers()
-      const allowanceExhausted = monthly_remaining === 0 || window_remaining === 0
+      const allowanceExhausted = weekly_remaining === 0 || window_remaining === 0
       const state = data.user.blocked_without_credits
         ? ' Requests are now blocked.'
         : allowanceExhausted && credit_balance > 0

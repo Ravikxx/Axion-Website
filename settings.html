@@ -321,7 +321,7 @@
       <div class="settings-row">
         <div>
           <div class="settings-row-label">Usage alerts</div>
-          <div class="settings-row-desc">Email me when my account hits 80% of its monthly included usage.</div>
+          <div class="settings-row-desc">Email me when my account hits 80% of its weekly included usage.</div>
         </div>
         <input type="checkbox" class="settings-toggle" id="pref-limit">
       </div>
@@ -431,13 +431,13 @@
       creditBalance.textContent = formatCreditUsd(data.credits?.balance_usd);
       row.style.display = 'flex';
       if (data.plan === 'pro') {
-        sub.textContent = `You're on Axion Pro — $${Number(data.usage?.monthly_included_limit_usd || 5).toFixed(2)} included monthly usage, $${Number(data.usage?.window_included_limit_usd || .5).toFixed(2)} every 2 hours, unlimited API keys, and early model access.`;
+        sub.textContent = `You're on Axion Pro — $${Number(data.usage?.weekly_included_limit_usd || 1.25).toFixed(2)} included weekly usage, $${Number(data.usage?.window_included_limit_usd || .5).toFixed(2)} every 2 hours, unlimited API keys, and early model access.`;
         label.textContent = 'Axion Pro';
         desc.textContent = 'Billed monthly via Square.';
         btn.style.display = 'none';
         couponNote.style.display = 'none';
       } else {
-        sub.textContent = `Free plan — $${Number(data.usage?.monthly_included_limit_usd || .5).toFixed(2)} included monthly usage, $${Number(data.usage?.window_included_limit_usd || .05).toFixed(2)} every 2 hours, and up to 3 API keys.`;
+        sub.textContent = `Free plan — $${Number(data.usage?.weekly_included_limit_usd || .125).toFixed(2)} included weekly usage, $${Number(data.usage?.window_included_limit_usd || .05).toFixed(2)} every 2 hours, and up to 3 API keys.`;
         label.textContent = 'Free plan';
         desc.textContent = 'Upgrade for 10x the limits, unlimited keys, and early model access.';
         btn.style.display = '';
