@@ -270,15 +270,15 @@
 
         <div class="meter">
           <div class="meter-labels">
-            <span class="meter-name">Monthly allowance</span>
-            <span class="meter-value skeleton" id="monthly-value">$0.00 of $0.00</span>
+            <span class="meter-name">Weekly allowance</span>
+            <span class="meter-value skeleton" id="weekly-value">$0.00 of $0.00</span>
           </div>
-          <div class="meter-track" role="progressbar" id="monthly-track" aria-label="Monthly usage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-            <div class="meter-fill" id="monthly-fill"></div>
+          <div class="meter-track" role="progressbar" id="weekly-track" aria-label="Weekly usage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="meter-fill" id="weekly-fill"></div>
           </div>
           <div class="meter-meta">
-            <span id="monthly-remaining">Loading remaining allowance</span>
-            <span id="monthly-reset">Loading reset time</span>
+            <span id="weekly-remaining">Loading remaining allowance</span>
+            <span id="weekly-reset">Loading reset time</span>
           </div>
         </div>
 
@@ -304,9 +304,9 @@
         </div>
         <div class="exact-grid">
           <div class="exact-stat">
-            <div class="exact-stat-label">Monthly allowance used</div>
-            <div class="exact-stat-value" id="exact-monthly">$0.000000</div>
-            <div class="exact-stat-meta" id="exact-monthly-meta">0 microdollars</div>
+            <div class="exact-stat-label">Weekly allowance used</div>
+            <div class="exact-stat-value" id="exact-weekly">$0.000000</div>
+            <div class="exact-stat-meta" id="exact-weekly-meta">0 microdollars</div>
           </div>
           <div class="exact-stat">
             <div class="exact-stat-label">Two-hour allowance used</div>
@@ -388,12 +388,12 @@
   }
 
   function renderExactUsage(data) {
-    const monthlyUsed = exactMicrodollars(data.usage?.monthly_included_used_microdollars);
-    const monthlyLimit = exactMicrodollars(data.usage?.monthly_included_limit_microdollars);
+    const weeklyUsed = exactMicrodollars(data.usage?.weekly_included_used_microdollars);
+    const weeklyLimit = exactMicrodollars(data.usage?.weekly_included_limit_microdollars);
     const windowUsed = exactMicrodollars(data.usage?.window_included_used_microdollars);
     const windowLimit = exactMicrodollars(data.usage?.window_included_limit_microdollars);
     const credits = exactMicrodollars(data.credits?.balance_microdollars);
-    const exactValues = [monthlyUsed, monthlyLimit, windowUsed, windowLimit, credits];
+    const exactValues = [weeklyUsed, weeklyLimit, windowUsed, windowLimit, credits];
     const button = document.getElementById('exact-toggle');
 
     if (exactValues.some(value => value === null)) {
@@ -402,14 +402,16 @@
       return;
     }
 
-    const setValue = (prefix, used, limit = null) => {
+    const setValue = (prefix, used, limit = null, started = null) => {
       document.getElementById(prefix).textContent = exactUsd(used);
       document.getElementById(`${prefix}-meta`).textContent = limit === null
         ? `${used.toLocaleString()} microdollars`
-        : `${used.toLocaleString()} of ${limit.toLocaleString()} microdollars · ${exactUsd(Math.max(0, limit - used))} remaining`;
+        : started === false
+          ? 'Not started · begins on your next message'
+          : `${used.toLocaleString()} of ${limit.toLocaleString()} microdollars · ${exactUsd(Math.max(0, limit - used))} remaining`;
     };
-    setValue('exact-monthly', monthlyUsed, monthlyLimit);
-    setValue('exact-window', windowUsed, windowLimit);
+    setValue('exact-weekly', weeklyUsed, weeklyLimit, data.usage?.weekly_started);
+    setValue('exact-window', windowUsed, windowLimit, data.usage?.window_started);
     setValue('exact-credits', credits);
 
     const inputRate = Number(data.metering?.input_per_million_tokens_usd);
@@ -444,25 +446,11 @@
     button.textContent = 'Hide exact usage';
   }
 
-  const resetTargets = { monthly: null, window: null };
+  // Both periods are lazy-start server-side — they don't exist (and show no
+  // countdown) until the account's own first chargeable request creates one,
+  // rather than ticking on a fixed calendar/clock-grid reset nobody caused.
+  const resetTargets = { weekly: null, window: null };
   let resetCountdownTimer = null;
-
-  function nextMonthlyReset() {
-    const now = new Date();
-    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
-  }
-
-  function nextWindowReset() {
-    const windowMs = 2 * 60 * 60 * 1000;
-    return new Date((Math.floor(Date.now() / windowMs) + 1) * windowMs);
-  }
-
-  function parseResetTarget(value, fallbackFactory) {
-    const parsed = value ? new Date(value) : null;
-    return parsed && !Number.isNaN(parsed.getTime()) && parsed.getTime() > Date.now()
-      ? parsed
-      : fallbackFactory();
-  }
 
   function resetLabel(target) {
     if (!target) return 'Reset time unavailable';
@@ -485,7 +473,8 @@
 
   function refreshResetLabels() {
     for (const prefix of Object.keys(resetTargets)) {
-      document.getElementById(`${prefix}-reset`).textContent = resetLabel(resetTargets[prefix]);
+      const target = resetTargets[prefix];
+      document.getElementById(`${prefix}-reset`).textContent = target ? resetLabel(target) : 'Starts on your next message';
     }
   }
 
@@ -494,7 +483,7 @@
     if (!resetCountdownTimer) resetCountdownTimer = setInterval(refreshResetLabels, 30000);
   }
 
-  function renderMeter(prefix, used, limit, resetAt, resetFallbackFactory) {
+  function renderMeter(prefix, used, limit, started, resetAt) {
     const safeUsed = Math.max(0, Number(used) || 0);
     const safeLimit = Math.max(0, Number(limit) || 0);
     const percent = safeLimit > 0 ? Math.min(100, (safeUsed / safeLimit) * 100) : 0;
@@ -508,27 +497,30 @@
     fill.style.width = `${percent}%`;
     fill.className = `meter-fill${percent >= 90 ? ' critical' : percent >= 70 ? ' warning' : ''}`;
     track.setAttribute('aria-valuenow', String(Math.round(percent)));
-    document.getElementById(`${prefix}-remaining`).textContent = `${usd(remaining)} remaining`;
-    resetTargets[prefix] = parseResetTarget(resetAt, resetFallbackFactory);
-    return { percent, remaining };
+    document.getElementById(`${prefix}-remaining`).textContent = started
+      ? `${usd(remaining)} remaining`
+      : `${usd(safeLimit)} available`;
+    const parsedResetAt = started && resetAt ? new Date(resetAt) : null;
+    resetTargets[prefix] = parsedResetAt && !Number.isNaN(parsedResetAt.getTime()) ? parsedResetAt : null;
+    return { percent, remaining, started };
   }
 
   function renderUsage(data) {
     renderExactUsage(data);
-    const monthly = renderMeter(
-      'monthly', data.usage?.monthly_included_used_usd, data.usage?.monthly_included_limit_usd,
-      data.usage?.monthly_reset_at, nextMonthlyReset,
+    const weekly = renderMeter(
+      'weekly', data.usage?.weekly_included_used_usd, data.usage?.weekly_included_limit_usd,
+      data.usage?.weekly_started, data.usage?.weekly_reset_at,
     );
     const windowUsage = renderMeter(
       'window', data.usage?.window_included_used_usd, data.usage?.window_included_limit_usd,
-      data.usage?.window_reset_at, nextWindowReset,
+      data.usage?.window_started, data.usage?.window_reset_at,
     );
     startResetCountdowns();
     const balance = Math.max(0, Number(data.credits?.balance_usd) || 0);
     const hasCredits = balance > 0;
 
     document.getElementById('plan-pill').textContent = `${data.plan === 'pro' ? 'Pro' : 'Free'} plan`;
-    document.getElementById('allowance-state').textContent = monthly.remaining > 0 && windowUsage.remaining > 0
+    document.getElementById('allowance-state').textContent = weekly.remaining > 0 && windowUsage.remaining > 0
       ? 'Included usage available'
       : hasCredits ? 'Using extra usage when needed' : 'A limit has been reached';
 
