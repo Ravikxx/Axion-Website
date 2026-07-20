@@ -273,9 +273,9 @@
        subscribers, then stored server-side and rendered dynamically above by
        loadAnnouncements() — hidden here so it doesn't duplicate that render. -->
   <div class="announcement" style="display:none">
-    <h2>Lumen Is Now Running on Our Own Servers — Up to 3x Faster</h2>
-    <p>Lumen has moved off shared Hugging Face Spaces and onto dedicated servers we fully control. Same model (Lumen 1.2.5), same API endpoint, no changes needed on your end — just faster responses with no shared-tenant slowdowns.</p>
-    <p>Shared hosting meant contending with other models for GPU time, cold starts, and rate limits we couldn't adjust. Dedicated infrastructure gives Lumen its own GPU, always-warm serving, and full uptime ownership. If you've been hitting slowdowns during peak hours, that's gone now.</p>
+    <h2>Lumen Is Now Running on Our Own Servers — Roughly 80x Faster</h2>
+    <p>Lumen has moved off shared Hugging Face Spaces and onto dedicated servers we fully control. Same model (Lumen 1.2.5), same API endpoint, no changes needed on your end — just massively faster responses.</p>
+    <p>Response times dropped from around 220 seconds per prompt on shared hosting to 2–3 seconds on our own infrastructure. Shared hosting meant contending with other models for GPU time, cold starts, and rate limits we couldn't adjust. Dedicated infrastructure gives Lumen its own GPU, always-warm serving, and full uptime ownership.</p>
     <p>This is also the foundation for Lumen 1.3 — with our own servers we can run more experiments, serve more users, and iterate faster without external constraints. We'll share the full details on what's next soon.</p>
   </div>
   <!-- end pending announcement -->
@@ -292,20 +292,21 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="true">
       <span class="ann-when">July 20, 2026</span>
       <span class="ann-cat update">Update</span>
-      <span class="ann-title">Lumen Is Now Running on Our Own Servers — Up to 3x Faster</span>
+      <span class="ann-title">Lumen Is Now Running on Our Own Servers — Roughly 80x Faster</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
       Lumen has moved off shared Hugging Face Spaces and onto <strong>dedicated servers we fully control</strong>.
       Same model (Lumen 1.2.5), same API endpoint, no changes needed on your end — just
-      <strong>faster responses with no shared-tenant slowdowns</strong>.
+      <strong>massively faster responses</strong>.
     </p>
     <p style="margin-top:12px">
-      Shared hosting meant contending with other models for GPU time, cold starts, and rate limits we couldn't
-      adjust. Dedicated infrastructure gives Lumen its own GPU, always-warm serving, and full uptime ownership.
-      This is also the foundation for Lumen 1.3 — with our own servers we can run more experiments, serve more
-      users, and iterate faster.
+      Response times dropped from <strong>~220 seconds per prompt</strong> on shared hosting to
+      <strong>2–3 seconds</strong> on our own infrastructure. Shared hosting meant contending with other
+      models for GPU time, cold starts, and rate limits we couldn't adjust. Dedicated infrastructure gives
+      Lumen its own GPU, always-warm serving, and full uptime ownership. This is also the foundation for
+      Lumen 1.3 — with our own servers we can run more experiments, serve more users, and iterate faster.
     </p>
     <div class="ann-footer">
       <a class="ann-link" href="/lumen-dedicated-server">Read more →</a>

@@ -156,13 +156,13 @@
 <div class="hero">
   <div class="hero-badge">Infrastructure Update</div>
   <h1>Lumen Is Now on <span>Our Own Servers</span></h1>
-  <p>We moved off shared Hugging Face Spaces onto dedicated hardware we fully control. The result: faster responses, no rate-limit contention, and infrastructure that scales with demand.</p>
+  <p>We moved off shared Hugging Face Spaces onto dedicated hardware we fully control. The result: responses in seconds instead of minutes, no rate-limit contention, and infrastructure that scales with demand.</p>
   <div class="hero-date">Axion Labs &middot; July 20, 2026</div>
   <div class="stat-row">
     <div class="stat">
-      <div class="stat-num good">3&times;</div>
+      <div class="stat-num good">~80&times;</div>
       <div class="stat-label">Faster responses</div>
-      <div class="stat-sub">dedicated GPU, no queue</div>
+      <div class="stat-sub">220s &rarr; 2–3s</div>
     </div>
     <div class="stat">
       <div class="stat-num neutral">0</div>
@@ -209,7 +209,7 @@
 
   <div class="card">
     <div class="card-title">What this means for you</div>
-    <p><strong>Faster responses.</strong> Lumen now runs on dedicated hardware with no contention from other workloads. Prompts that queued for seconds on the shared Space now get dedicated GPU time immediately.</p>
+    <p><strong>Faster responses.</strong> Lumen now runs on dedicated hardware with no contention from other workloads. Prompts that took around 220 seconds on the shared Space now complete in 2–3 seconds.</p>
     <p><strong>More reliable.</strong> No more intermittent slowdowns when HF infrastructure is under load. We own the uptime.</p>
     <p><strong>Same endpoint.</strong> The API hasn't changed. <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;">api.amplifiedsmp.org</code> still serves the same OpenAI-compatible <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;">/v1/chat/completions</code> endpoint. No SDK changes, no config changes.</p>
   </div>
