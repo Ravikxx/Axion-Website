@@ -1306,7 +1306,7 @@
       return
     }
     el.innerHTML = incidents.map(inc => `
-      <div style="border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:12px">
+      <div id="incident-${esc(inc.id)}" style="border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:12px;transition:background-color .3s">
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
           <div>
             <div style="font-weight:600">${esc(inc.title)}</div>
@@ -1336,6 +1336,21 @@
           <button class="btn btn-sm" onclick="addIncidentUpdate('${esc(inc.id)}')">Post update</button>
         </div>` : ''}
       </div>`).join('')
+
+    jumpToIncidentFromHash()
+  }
+
+  // Email alerts link to /admin#incident-<id> so clicking straight from the
+  // notification lands right on the incident instead of a bare admin login.
+  function jumpToIncidentFromHash() {
+    const hash = location.hash.slice(1)
+    if (!hash.startsWith('incident-')) return
+    const el = document.getElementById(hash)
+    if (!el) return
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    const original = el.style.backgroundColor
+    el.style.backgroundColor = 'rgba(184,162,125,.18)'
+    setTimeout(() => { el.style.backgroundColor = original }, 2500)
   }
 
   async function createIncident() {
