@@ -569,9 +569,47 @@
         </table>
       </div>
     </section>
+
+    <!-- Status page incidents -->
+    <section>
+      <h2>Status Page Incidents</h2>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:14px">
+        Automated monitoring checks Lumen and the website every 5 minutes and auto-opens an
+        "investigating" incident (with a generic description) after two consecutive failures — you'll
+        get an email when that happens. Use this to write what's actually wrong, or to post a new
+        incident manually. Everything here is public on <a href="/status" target="_blank" style="color:var(--accent)">/status</a>.
+      </p>
+      <div id="incident-msg" class="invite-msg" style="display:none"></div>
+
+      <div class="credit-create-grid">
+        <div class="credit-field"><label for="incident-service">Service</label>
+          <select id="incident-service">
+            <option value="lumen">Lumen API</option>
+            <option value="website">Axion website</option>
+          </select>
+        </div>
+        <div class="credit-field"><label for="incident-status">Status</label>
+          <select id="incident-status">
+            <option value="investigating">Investigating</option>
+            <option value="identified">Identified</option>
+            <option value="monitoring">Monitoring</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </div>
+        <div class="credit-field" style="grid-column:1/-1"><label for="incident-title">Title</label>
+          <input id="incident-title" type="text" maxlength="140" placeholder="Elevated errors on Lumen API">
+        </div>
+        <div class="credit-field" style="grid-column:1/-1"><label for="incident-body">What's wrong</label>
+          <textarea id="incident-body" rows="3" maxlength="2000" placeholder="Describe exactly what's happening, in plain language, for the public status page." style="width:100%;resize:vertical;font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)"></textarea>
+        </div>
+      </div>
+      <button class="btn btn-sm" onclick="createIncident()">Post incident</button>
+
+      <div id="incidents-list" style="margin-top:24px">Loading…</div>
+    </section>
   </main>
   <footer>
-    <p>© 2026 Axion Labs · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="https://github.com/AxionLabsAI/axion">GitHub</a></p>
+    <p>© 2026 Axion Labs · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/AxionLabsAI/axion">GitHub</a></p>
   </footer>
 </div>
 
@@ -774,6 +812,7 @@
     loadCreditCodes()
     loadAppeals()
     loadChart()
+    loadStatusIncidents()
   }
 
   async function loadStats() {
@@ -1251,6 +1290,99 @@
     if (!confirm('Reject this appeal?')) return
     const res = await apiFetch(`/admin/appeals/${encodeURIComponent(token)}/reject`, { method: 'POST' })
     if (res.ok) { loadAppeals() } else { const d = await res.json(); alert(d.error || 'Failed') }
+  }
+
+  // ── Status page incidents ────────────────────────────────────────────────
+
+  const SERVICE_LABELS = { lumen: 'Lumen API', website: 'Axion website' }
+
+  async function loadStatusIncidents() {
+    const res = await apiFetch('/admin/status/incidents')
+    if (!res.ok) return
+    const { incidents } = await res.json()
+    const el = document.getElementById('incidents-list')
+    if (!incidents || !incidents.length) {
+      el.innerHTML = '<p style="color:var(--muted);font-size:13px">No incidents yet.</p>'
+      return
+    }
+    el.innerHTML = incidents.map(inc => `
+      <div style="border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+          <div>
+            <div style="font-weight:600">${esc(inc.title)}</div>
+            <div style="font-size:12px;color:var(--muted)">${esc(SERVICE_LABELS[inc.service] || inc.service)} ·
+              <span class="badge ${inc.status === 'resolved' ? 'badge-green' : ''}" style="${inc.status !== 'resolved' ? 'background:rgba(184,162,125,.12);color:#b8a27d' : ''}">${esc(inc.status)}</span>
+              ${inc.auto_created ? ' · auto-detected' : ''} · ${fmtIso(inc.created_at)}
+            </div>
+          </div>
+        </div>
+        <ul style="list-style:none;margin:12px 0 0;padding:0">
+          ${(inc.updates || []).map(u => `
+            <li style="padding:6px 0;border-top:1px solid var(--border);font-size:13px">
+              <strong style="text-transform:capitalize">${esc(u.status)}</strong>
+              <span style="color:var(--muted)"> · ${fmtIso(u.created_at)}</span><br>
+              <span style="color:var(--muted)">${esc(u.body)}</span>
+            </li>`).join('')}
+        </ul>
+        ${inc.status !== 'resolved' ? `
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <select id="update-status-${esc(inc.id)}" style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)">
+            <option value="investigating">Investigating</option>
+            <option value="identified">Identified</option>
+            <option value="monitoring">Monitoring</option>
+            <option value="resolved">Resolved</option>
+          </select>
+          <input id="update-body-${esc(inc.id)}" type="text" maxlength="2000" placeholder="What's actually wrong / latest update" style="flex:1;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)">
+          <button class="btn btn-sm" onclick="addIncidentUpdate('${esc(inc.id)}')">Post update</button>
+        </div>` : ''}
+      </div>`).join('')
+  }
+
+  async function createIncident() {
+    const service = document.getElementById('incident-service').value
+    const status = document.getElementById('incident-status').value
+    const title = document.getElementById('incident-title').value.trim()
+    const body = document.getElementById('incident-body').value.trim()
+    const msg = document.getElementById('incident-msg')
+    if (!title || !body) { showMsg(msg, 'Title and description are required.', true); return }
+
+    const res = await apiFetch('/admin/status/incidents', {
+      method: 'POST',
+      body: JSON.stringify({ service, status, title, body }),
+    })
+    if (res.ok) {
+      document.getElementById('incident-title').value = ''
+      document.getElementById('incident-body').value = ''
+      showMsg(msg, 'Incident posted.', false)
+      loadStatusIncidents()
+    } else {
+      const d = await res.json().catch(() => ({}))
+      showMsg(msg, d.error || 'Failed to post incident.', true)
+    }
+  }
+
+  async function addIncidentUpdate(id) {
+    const status = document.getElementById(`update-status-${id}`).value
+    const body = document.getElementById(`update-body-${id}`).value.trim()
+    if (!body) return
+    const res = await apiFetch(`/admin/status/incidents/${encodeURIComponent(id)}/updates`, {
+      method: 'POST',
+      body: JSON.stringify({ status, body }),
+    })
+    if (res.ok) loadStatusIncidents()
+    else { const d = await res.json().catch(() => ({})); alert(d.error || 'Failed to post update.') }
+  }
+
+  function showMsg(el, text, isError) {
+    el.textContent = text
+    el.style.display = 'block'
+    el.style.color = isError ? '#e0392f' : '#2fae5c'
+    setTimeout(() => { el.style.display = 'none' }, 4000)
+  }
+
+  function fmtIso(iso) {
+    if (!iso) return '—'
+    return new Date(iso).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
   }
 
   // ── Utils ─────────────────────────────────────────────────────────────────
