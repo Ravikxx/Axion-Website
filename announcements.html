@@ -265,6 +265,17 @@
 <main>
   <div id="dynamicAnns"></div>
 
+  <!-- Parsed by .github/scripts/send-announcement.cjs on push and emailed to
+       subscribers, then stored server-side and rendered dynamically above by
+       loadAnnouncements() — hidden here so it doesn't duplicate that render. -->
+  <div class="announcement" style="display:none">
+    <h2>Veil 1.1 Is Being Deprecated on July 25</h2>
+    <p>After moving off shared hosting onto our own servers, we've decided not to keep maintaining Veil going forward. Lumen has grown into a faster, more capable model that covers everything Veil did and more, so running both isn't worth the added complexity.</p>
+    <p>Veil 1.1 will be marked deprecated starting July 25, 2026 — it'll keep responding to requests as usual, just no longer actively developed. On July 30, it'll be fully retired. Its model card stays up after that as a memory of where Axion started — Veil was our first model, and Lumen wouldn't exist without it.</p>
+    <p>If you're calling Veil directly, switch to Lumen (model: "lumen") before July 30 — same OpenAI-compatible endpoint, same free tier.</p>
+  </div>
+  <!-- end pending announcement -->
+
   <article class="ann notice lead open" data-cat="notice">
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="true">
       <span class="ann-when">July 12, 2026</span>

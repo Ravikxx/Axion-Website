@@ -429,9 +429,9 @@
       </div>
 
       <div class="model-card">
-        <span class="model-status down"><span class="led down"></span> migrating · back soon</span>
+        <span class="model-status down" id="veil-status"><span class="led down"></span> migrating · back soon</span>
         <p class="model-name">Veil 1.1</p>
-        <p class="model-desc">Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat.</p>
+        <p class="model-desc" id="veil-desc">Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat.</p>
         <div class="model-facts">
           <div class="fact"><div class="n">3B</div><div class="l">parameters</div></div>
           <div class="fact"><div class="n">Free</div><div class="l">no key required</div></div>
@@ -551,6 +551,24 @@
       lumenStatus.className = 'model-status down'
       lumenStatus.innerHTML = '<span class="led down"></span> migrating · back soon'
     })
+
+  // ── Veil deprecation card — client-side date check, no server round trip ──
+  ;(function () {
+    const veilStatus = document.getElementById('veil-status')
+    const veilDesc = document.getElementById('veil-desc')
+    if (!veilStatus || !veilDesc) return
+    const deprecatedAt = new Date('2026-07-25T00:00:00Z')
+    const retiredAt = new Date('2026-07-30T00:00:00Z')
+    const now = new Date()
+    if (now >= retiredAt) {
+      veilStatus.innerHTML = '<span class="led down"></span> retired'
+      veilDesc.textContent = 'Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat. Retired July 30, 2026 — kept here as a memory: Axion’s first model, and the reason Lumen exists.'
+    } else if (now >= deprecatedAt) {
+      veilStatus.innerHTML = '<span class="led down"></span> deprecated'
+      veilDesc.textContent = 'Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat. Deprecated as of July 25, 2026 and retiring July 30 — still usable until then, but no longer actively developed.'
+    }
+    // Before July 25: leave the existing "migrating · back soon" markup as-is.
+  })()
 
   // ── Animated chat demo ──────────────────────────────────────────────────
   const chatBody = document.getElementById('chat-body')
