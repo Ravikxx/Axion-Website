@@ -91,16 +91,6 @@
     }
     .param-label span { color: var(--text); font-weight: 700; font-size: 12px; text-transform: none; letter-spacing: 0; }
 
-    .system-prompt {
-      width: 100%; min-height: 120px; max-height: 240px;
-      padding: 10px 12px; border-radius: 7px;
-      border: 1px solid var(--border2); background: var(--bg);
-      color: var(--text); font-size: 13px; line-height: 1.6;
-      outline: none; transition: border-color .12s;
-    }
-    .system-prompt:focus { border-color: var(--accent); }
-    .system-prompt::placeholder { color: var(--muted); }
-
     .slider-wrap { display: flex; flex-direction: column; gap: 8px; }
     input[type=range] {
       -webkit-appearance: none; width: 100%; height: 4px;
@@ -123,13 +113,15 @@
     }
     .param-input:focus { border-color: var(--accent); }
 
-    .model-chip {
-      display: inline-flex; align-items: center; gap: 6px;
+    .model-select {
+      appearance: none; -webkit-appearance: none; width: 100%;
       background: rgba(184, 162, 125,.12); color: var(--accent);
       border: 1px solid rgba(184, 162, 125,.25);
-      border-radius: 6px; padding: 5px 10px; font-size: 12px; font-weight: 600;
+      border-radius: 6px; padding: 6px 24px 6px 10px; font-size: 12px; font-weight: 600;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%23b8a27d' d='M3 4.5l3 3 3-3'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 8px center; background-size: 10px;
     }
-    .model-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
 
     .free-banner {
       margin: 14px 16px 0; padding: 10px 12px; border-radius: 7px;
@@ -441,12 +433,7 @@
 
     <div class="param-group">
       <div class="param-label">Model</div>
-      <div class="model-chip"><div class="model-dot"></div> lumen</div>
-    </div>
-
-    <div class="param-group">
-      <div class="param-label">System prompt</div>
-      <textarea class="system-prompt" id="system-prompt" placeholder="You are a helpful assistant…"></textarea>
+      <select class="model-select" id="model-select" aria-label="Model" onchange="setModel(this.value)"></select>
     </div>
 
     <div class="param-group">
@@ -484,7 +471,7 @@
     <div class="messages" id="messages">
       <div class="empty-state" id="empty-state">
         <div class="empty-title">Start a conversation</div>
-        <div class="empty-sub">Type a message below to chat with our models. Adjust the system prompt and parameters on the left.</div>
+        <div class="empty-sub">Type a message below to chat with our models. Adjust the model and parameters on the left.</div>
       </div>
     </div>
 
@@ -512,6 +499,25 @@
   let isAnon = false
   let messages = [] // { role, content }
   let streaming = false
+
+  // ── Model selector ───────────────────────────────────────────────────────
+  const MODELS = [
+    { id: 'lumen', label: 'Lumen' },
+  ]
+  let selectedModel = localStorage.getItem('axion_chat_model') || MODELS[0].id
+  if (!MODELS.some(m => m.id === selectedModel)) selectedModel = MODELS[0].id
+
+  function setModel(id) {
+    selectedModel = id
+    localStorage.setItem('axion_chat_model', id)
+  }
+
+  function initModelSelect() {
+    const select = document.getElementById('model-select')
+    select.innerHTML = MODELS.map(m =>
+      `<option value="${m.id}"${m.id === selectedModel ? ' selected' : ''}>${m.label}</option>`
+    ).join('')
+  }
 
   // ── Auth ──────────────────────────────────────────────────────────────────
   let authMode = 'signin'
@@ -594,6 +600,7 @@
     // Let the responsive stylesheet decide whether the desktop sidebar is visible.
     document.getElementById('sidebar').style.removeProperty('display')
     document.getElementById('app').style.display = 'flex'
+    initModelSelect()
     document.getElementById('sidebar-email').textContent = isAnon ? 'Free tier' : (userEmail || '')
     if (isAnon) {
       document.getElementById('free-notice').style.display = ''
@@ -629,7 +636,7 @@
   function clearChat() {
     messages = []
     const container = document.getElementById('messages')
-    container.innerHTML = '<div class="empty-state" id="empty-state"><div class="empty-title">Start a conversation</div><div class="empty-sub">Type a message below to chat with our models. Adjust the system prompt and parameters on the left.</div></div>'
+    container.innerHTML = '<div class="empty-state" id="empty-state"><div class="empty-title">Start a conversation</div><div class="empty-sub">Type a message below to chat with our models. Adjust the model and parameters on the left.</div></div>'
     document.getElementById('copy-btn').style.display = 'none'
   }
 
@@ -724,15 +731,12 @@
     appendMessage('user', content)
 
     // Build request body
-    const system = document.getElementById('system-prompt').value.trim()
     const temperature = parseFloat(document.getElementById('temp-slider').value)
     const max_tokens = parseInt(document.getElementById('max-tokens').value) || 1024
 
     const body = {
-      model: 'lumen',
-      messages: system
-        ? [{ role: 'system', content: system }, ...messages]
-        : [...messages],
+      model: selectedModel,
+      messages: [...messages],
       temperature,
       max_tokens,
       stream: true,
