@@ -323,7 +323,7 @@ document.addEventListener("click",function(e){if(!e.target.closest("nav"))docume
     }).join('')
   }
 
-  fetch(API + '/status/api')
+  fetch(API + '/status/api', { cache: 'no-store' })
     .then(function (r) { return r.json() })
     .then(function (data) {
       allIncidents = data.recent_incidents || []
