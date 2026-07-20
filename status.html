@@ -19,10 +19,12 @@
       display: flex; align-items: center; height: 56px; gap: 24px;
       position: sticky; top: 0; z-index: 100;
     }
-    nav a { color: var(--text-muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
-    nav a:hover { color: var(--text); }
-    nav a.brand { color: var(--text); font-weight: 700; font-size: 16px; margin-right: 16px; }
-    .nav-right { margin-left: auto; }
+    .nav-logo { color: var(--text); font-weight: 700; font-size: 16px; display: flex; align-items: center; }
+    .nav-links { display: flex; gap: 4px; margin-left: 8px; }
+    .nav-link { padding: 5px 10px; border-radius: 5px; font-size: 14px; color: var(--text-muted); transition: color .12s; }
+    .nav-link:hover { color: var(--text); }
+    .nav-link.active { color: var(--text); }
+    .nav-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
 
     /* ── Page header ── */
     .page-header { background: var(--dark); color: var(--text); padding: 52px 32px 44px; }
@@ -58,13 +60,43 @@
     .state.degraded { color: #c98a1a; }
     .state.unknown { color: var(--text-muted); }
 
-    .uptime-bars { display: flex; gap: 3px; }
-    .uptime-bars .bar { flex: 1; height: 32px; border-radius: 2px; background: var(--border); }
+    .uptime-bars { display: flex; gap: 3px; position: relative; }
+    .uptime-bars .bar { flex: 1; height: 32px; border-radius: 2px; background: var(--border); cursor: pointer; transition: opacity .1s; }
+    .uptime-bars .bar:hover { opacity: 0.8; }
     .uptime-bars .bar.operational { background: #2fae5c; }
     .uptime-bars .bar.degraded { background: #c98a1a; }
     .uptime-bars .bar.down { background: #e0392f; }
-    .uptime-bars .bar.no_data { background: var(--border); }
+    .uptime-bars .bar.no_data { background: var(--border); cursor: default; }
     .uptime-foot { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+
+    /* ── Day popover ── */
+    .day-popover {
+      position: absolute; z-index: 200; width: 260px;
+      background: var(--surface, var(--bg)); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 18px; box-shadow: 0 12px 32px rgba(0,0,0,.25);
+      display: none;
+    }
+    .day-popover.open { display: block; }
+    .day-popover::before {
+      content: ''; position: absolute; top: -7px; left: var(--arrow-left, 50%); transform: translateX(-50%) rotate(45deg);
+      width: 12px; height: 12px; background: var(--surface, var(--bg)); border-left: 1px solid var(--border); border-top: 1px solid var(--border);
+    }
+    .day-popover-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .day-popover-date { font-size: 14px; font-weight: 700; }
+    .day-popover-close { cursor: pointer; color: var(--text-muted); background: none; border: none; font-size: 16px; line-height: 1; padding: 2px; }
+    .day-popover-status {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      background: var(--bg2, rgba(127,127,127,.08)); border-radius: 8px; padding: 10px 12px; font-size: 13px; font-weight: 600;
+    }
+    .day-popover-status .label { display: flex; align-items: center; gap: 8px; }
+    .day-popover-status .label .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .day-popover-status.operational .dot { background: #2fae5c; }
+    .day-popover-status.degraded .dot { background: #c98a1a; }
+    .day-popover-status.down .dot { background: #e0392f; }
+    .day-popover-status.no_data .dot { background: var(--border); }
+    .day-popover-related { margin-top: 12px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-muted); }
+    .day-popover-related-list { margin-top: 6px; font-size: 13px; color: var(--text); }
+    .day-popover-related-list div { padding: 4px 0; }
 
     /* ── Incidents ── */
     h2 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 16px; }
@@ -103,11 +135,14 @@
 <body>
 
 <nav>
-  <a href="/" class="brand"><img src="/assets/logo.png" alt="Axion" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Axion</a>
-  <a href="/models">Models</a>
-  <a href="/chat">Chat</a>
-  <a href="/playground">Playground</a>
-  <a href="/docs">Docs</a>
+  <a href="/" class="nav-logo"><img src="/assets/logo.png" alt="Axion" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Axion</a>
+  <div class="nav-links">
+    <a href="/models" class="nav-link">Models</a>
+    <a href="/chat" class="nav-link">Chat</a>
+    <a href="/playground" class="nav-link">Playground</a>
+    <a href="/docs" class="nav-link">Docs</a>
+    <a href="/status" class="nav-link active">Status</a>
+  </div>
   <div class="nav-right">
     <a href="https://github.com/AxionLabsAI/axion" class="nav-btn-ghost">GitHub</a>
     <a href="/keys" class="nav-btn">API Keys</a>
@@ -126,6 +161,20 @@
 
   <div class="services" id="services">
     <p class="loading">Loading services…</p>
+  </div>
+  <div class="day-popover" id="day-popover">
+    <div class="day-popover-head">
+      <span class="day-popover-date" id="day-popover-date"></span>
+      <button class="day-popover-close" onclick="closeDayPopover()" aria-label="Close">×</button>
+    </div>
+    <div class="day-popover-status" id="day-popover-status">
+      <span class="label"><span class="dot"></span><span id="day-popover-label"></span></span>
+      <span id="day-popover-duration"></span>
+    </div>
+    <div id="day-popover-related-wrap">
+      <div class="day-popover-related">Related</div>
+      <div class="day-popover-related-list" id="day-popover-related-list"></div>
+    </div>
   </div>
 
   <section>
@@ -146,9 +195,25 @@ document.addEventListener("click",function(e){if(!e.target.closest("nav"))docume
 
 ;(function () {
   const API = 'https://api.amplifiedsmp.org'
+  let allIncidents = []
 
   function fmtDate(iso) {
     return new Date(iso).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+  }
+
+  function fmtDayHeading(dateStr) {
+    // dateStr is 'YYYY-MM-DD'; parse as UTC to avoid off-by-one from local tz
+    const d = new Date(dateStr + 'T00:00:00Z')
+    return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
+  }
+
+  function fmtDuration(minutes) {
+    if (!minutes) return ''
+    const h = Math.floor(minutes / 60)
+    const m = minutes % 60
+    if (h && m) return h + ' hr' + (h > 1 ? 's' : '') + ' ' + m + ' min' + (m > 1 ? 's' : '')
+    if (h) return h + ' hr' + (h > 1 ? 's' : '')
+    return m + ' min' + (m > 1 ? 's' : '')
   }
 
   function renderBanner(overall) {
@@ -162,9 +227,9 @@ document.addEventListener("click",function(e){if(!e.target.closest("nav"))docume
 
   function renderServices(services) {
     const el = document.getElementById('services')
-    el.innerHTML = services.map(function (s) {
-      var bars = s.days.map(function (d) {
-        return '<div class="bar ' + d.status + '" title="' + d.date + ': ' + d.status.replace('_', ' ') + '"></div>'
+    el.innerHTML = services.map(function (s, si) {
+      var bars = s.days.map(function (d, di) {
+        return '<div class="bar ' + d.status + '" data-service="' + si + '" data-day="' + di + '" onclick="openDayPopover(this)"></div>'
       }).join('')
       var uptime = s.uptime_pct == null ? 'no data' : s.uptime_pct.toFixed(2) + '% uptime'
       var stateLabel = s.status === 'operational' ? 'Operational' : s.status === 'down' ? 'Down' : s.status === 'degraded' ? 'Degraded' : 'Unknown'
@@ -176,7 +241,63 @@ document.addEventListener("click",function(e){if(!e.target.closest("nav"))docume
         '</div>'
       )
     }).join('')
+    window._statusServices = services
   }
+
+  window.openDayPopover = function (barEl) {
+    const si = Number(barEl.getAttribute('data-service'))
+    const di = Number(barEl.getAttribute('data-day'))
+    const service = window._statusServices[si]
+    const day = service.days[di]
+
+    const popover = document.getElementById('day-popover')
+    document.getElementById('day-popover-date').textContent = fmtDayHeading(day.date)
+
+    const statusBox = document.getElementById('day-popover-status')
+    statusBox.className = 'day-popover-status ' + day.status
+    const labels = { operational: 'Operational', degraded: 'Partial outage', down: 'Down', no_data: 'No data' }
+    document.getElementById('day-popover-label').textContent = labels[day.status] || day.status
+    document.getElementById('day-popover-duration').textContent = fmtDuration(day.down_minutes)
+
+    const related = allIncidents.filter(function (inc) {
+      const start = (inc.created_at || '').slice(0, 10)
+      const updates = inc.updates || []
+      const end = updates.length ? updates[0].created_at.slice(0, 10) : start // updates[0] is most recent (DESC)
+      return day.date >= start && day.date <= end
+    })
+    const relatedWrap = document.getElementById('day-popover-related-wrap')
+    if (related.length) {
+      relatedWrap.style.display = 'block'
+      document.getElementById('day-popover-related-list').innerHTML = related.map(function (inc) {
+        return '<div>' + inc.title + '</div>'
+      }).join('')
+    } else {
+      relatedWrap.style.display = 'none'
+    }
+
+    // Position the popover above the bar row it belongs to, clamped so it
+    // doesn't run off either edge of the service card.
+    const barsRow = barEl.parentElement
+    const rowRect = barsRow.getBoundingClientRect()
+    const barRect = barEl.getBoundingClientRect()
+    popover.classList.add('open')
+    const popoverWidth = popover.offsetWidth
+    let left = barRect.left - rowRect.left + barRect.width / 2 - popoverWidth / 2
+    left = Math.max(0, Math.min(left, rowRect.width - popoverWidth))
+    popover.style.setProperty('--arrow-left', (barRect.left - rowRect.left + barRect.width / 2 - left) + 'px')
+    popover.style.left = left + 'px'
+    popover.style.top = (barRect.bottom - rowRect.top + 12) + 'px'
+    barsRow.style.position = 'relative'
+    barsRow.appendChild(popover)
+  }
+
+  window.closeDayPopover = function () {
+    document.getElementById('day-popover').classList.remove('open')
+  }
+
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.day-popover') && !e.target.closest('.bar')) closeDayPopover()
+  })
 
   function renderIncidents(incidents) {
     const el = document.getElementById('incidents')
@@ -205,9 +326,10 @@ document.addEventListener("click",function(e){if(!e.target.closest("nav"))docume
   fetch(API + '/status/api')
     .then(function (r) { return r.json() })
     .then(function (data) {
+      allIncidents = data.recent_incidents || []
       renderBanner(data.overall)
       renderServices(data.services)
-      renderIncidents(data.recent_incidents || [])
+      renderIncidents(allIncidents)
     })
     .catch(function () {
       document.getElementById('banner-text').textContent = 'Unable to load status right now.'
