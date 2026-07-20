@@ -222,7 +222,7 @@ document.addEventListener("click",function(e){if(!e.target.closest("nav"))docume
     banner.className = 'banner ' + overall
     if (overall === 'operational') text.textContent = 'All systems operational'
     else if (overall === 'outage') text.textContent = 'Some systems are experiencing issues'
-    else text.textContent = 'Status unavailable'
+    else text.textContent = 'Status data is still loading — check back in a few minutes'
   }
 
   function renderServices(services) {
