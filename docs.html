@@ -177,7 +177,6 @@
     <a href="/chat" class="nav-link">Chat</a>
     <a href="/playground" class="nav-link">Playground</a>
     <a href="/docs" class="nav-link active">Docs</a>
-    <a href="/mcp" class="nav-link">MCP</a>
   </div>
   <div class="nav-right">
     <a href="https://github.com/AxionLabsAI/axion" class="nav-btn-ghost">GitHub</a>
@@ -222,7 +221,6 @@
     </div>
     <div class="sidebar-section">
       <div class="sidebar-heading">Extensions</div>
-      <a href="#mcp">MCP Marketplace</a>
       <a href="#discord">Discord Bot</a>
       <a href="#chrome">Chrome Extension</a>
     </div>
@@ -569,45 +567,6 @@
       </ul>
     </div>
 
-    <div class="doc-section" id="mcp">
-      <h2>MCP Marketplace</h2>
-      <p class="lead">Install MCP servers with one command to add new tools — databases, browsers, APIs, and more.</p>
-
-      <div class="code-block">
-        <span class="comment"># Browse the marketplace</span><br>
-        <span class="prompt">› </span>/mcp browse<br><br>
-        <span class="comment"># Install a server</span><br>
-        <span class="prompt">› </span>/mcp install github<br>
-        <span class="prompt">› </span>/mcp install postgres<br>
-        <span class="prompt">› </span>/mcp install playwright<br><br>
-        <span class="comment"># Reload the remote catalog</span><br>
-        <span class="prompt">› </span>/mcp reload
-      </div>
-
-      <p>The full catalog is also browsable at <a href="/mcp" style="color:var(--accent)">axion.amplifiedsmp.org/mcp</a>. Some servers require environment variables (API keys, connection strings) — the marketplace shows what each one needs.</p>
-
-      <h3>Available servers (highlights)</h3>
-      <table class="cmd-table">
-        <thead><tr><th>ID</th><th>What it adds</th></tr></thead>
-        <tbody>
-          <tr><td><code>github</code></td><td class="desc">Read/write repos, issues, and PRs</td></tr>
-          <tr><td><code>postgres</code></td><td class="desc">Query a PostgreSQL database</td></tr>
-          <tr><td><code>sqlite</code></td><td class="desc">Query a local SQLite file</td></tr>
-          <tr><td><code>playwright</code></td><td class="desc">Full browser automation (Chrome, Firefox, WebKit)</td></tr>
-          <tr><td><code>filesystem</code></td><td class="desc">Read/write local files via MCP</td></tr>
-          <tr><td><code>memory</code></td><td class="desc">Persistent knowledge graph across sessions</td></tr>
-          <tr><td><code>brave-search</code></td><td class="desc">Web search via the Brave Search API</td></tr>
-          <tr><td><code>notion</code></td><td class="desc">Read and write Notion pages and databases</td></tr>
-          <tr><td><code>slack</code></td><td class="desc">Read and send Slack messages</td></tr>
-        </tbody>
-      </table>
-
-      <h3>Custom MCP servers</h3>
-      <div class="code-block">
-        <span class="prompt">› </span>/mcp add &lt;name&gt; &lt;command&gt;
-      </div>
-      <p>Any MCP-compatible server works. See the <a href="https://modelcontextprotocol.io" style="color:var(--accent)">MCP spec</a> for building your own.</p>
-    </div>
 
     <div class="doc-section" id="discord">
       <h2>Discord Bot</h2>
@@ -649,7 +608,7 @@
 </div>
 
 <footer>
-  <p>© 2026 Axion Labs · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/AxionLabsAI/axion">GitHub</a></p>
+  <p>© 2026 Axion Labs · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="https://github.com/AxionLabsAI/axion">GitHub</a></p>
 </footer>
 
 <script>

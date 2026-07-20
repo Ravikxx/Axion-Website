@@ -48,13 +48,10 @@
       -webkit-backdrop-filter: blur(12px);
       pointer-events: none;
     }
-    .nav-logo { position: relative; z-index: 1; font-weight: 700; font-size: 15.5px; display: flex; align-items: center; gap: 9px; letter-spacing: -.01em; }
-    .nav-links { display: flex; gap: 2px; margin-left: 12px; }
-    .nav-link {
-      padding: 6px 11px; border-radius: 6px; font-size: 13.5px;
-      color: var(--muted2); transition: color .12s, background .12s;
-    }
-    .nav-link:hover { color: var(--text); background: var(--surface2); }
+    nav a { color: var(--muted2); text-decoration: none; font-size: 13.5px; transition: color .12s; position: relative; z-index: 1; }
+    nav a:hover { color: var(--text); }
+    nav a.brand { color: var(--text); font-weight: 700; font-size: 15.5px; margin-right: 4px; }
+    nav a.active { color: var(--text); }
     .nav-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
     .nav-btn {
       padding: 7px 15px; border-radius: 7px; font-size: 13px; font-weight: 600;
@@ -344,14 +341,11 @@
 <body>
 
 <nav>
-  <a href="/" class="nav-logo"><img src="/assets/logo.png" alt="Axion" style="height:22px;width:auto;object-fit:contain;display:inline-block;vertical-align:middle"> Axion</a>
-  <div class="nav-links">
-    <a href="/models" class="nav-link">Models</a>
-    <a href="/chat" class="nav-link">Chat</a>
-    <a href="/playground" class="nav-link">Playground</a>
-    <a href="/docs" class="nav-link">Docs</a>
-    <a href="/mcp" class="nav-link">MCP</a>
-  </div>
+  <a href="/" class="brand"><img src="/assets/logo.png" alt="Axion" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Axion</a>
+  <a href="/models">Models</a>
+  <a href="/chat">Chat</a>
+  <a href="/playground">Playground</a>
+  <a href="/docs">Docs</a>
   <div class="nav-right">
     <a href="https://github.com/AxionLabsAI/axion" class="nav-btn-ghost">GitHub</a>
     <a href="/keys" class="nav-btn">API Keys</a>
@@ -520,10 +514,7 @@
 </main>
 
 <footer>
-  <div class="footer-inner">
-    <p>© 2026 Axion Labs · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="https://github.com/AxionLabsAI/axion">GitHub</a> · <a href="/announcements">Announcements</a></p>
-    <p class="footer-note"><span class="sym">⚛</span> the axion is a hypothetical particle — so light it's nearly impossible to detect. we build models the same way: small, fast, everywhere.</p>
-  </div>
+  <p>© 2026 Axion Labs · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="https://github.com/AxionLabsAI/axion">GitHub</a></p>
 </footer>
 
 <script>
