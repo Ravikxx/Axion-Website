@@ -273,6 +273,14 @@
        subscribers, then stored server-side and rendered dynamically above by
        loadAnnouncements() — hidden here so it doesn't duplicate that render. -->
   <div class="announcement" style="display:none">
+    <h2>Lumen Is Now Running on Our Own Servers — Up to 3x Faster</h2>
+    <p>Lumen has moved off shared Hugging Face Spaces and onto dedicated servers we fully control. Same model (Lumen 1.2.5), same API endpoint, no changes needed on your end — just faster responses with no shared-tenant slowdowns.</p>
+    <p>Shared hosting meant contending with other models for GPU time, cold starts, and rate limits we couldn't adjust. Dedicated infrastructure gives Lumen its own GPU, always-warm serving, and full uptime ownership. If you've been hitting slowdowns during peak hours, that's gone now.</p>
+    <p>This is also the foundation for Lumen 1.3 — with our own servers we can run more experiments, serve more users, and iterate faster without external constraints. We'll share the full details on what's next soon.</p>
+  </div>
+  <!-- end pending announcement -->
+
+  <div class="announcement" style="display:none">
     <h2>Veil 1.1 Is Being Deprecated on July 25</h2>
     <p>After moving off shared hosting onto our own servers, we've decided not to keep maintaining Veil going forward. Lumen has grown into a faster, more capable model that covers everything Veil did and more, so running both isn't worth the added complexity.</p>
     <p>Veil 1.1 will be marked deprecated starting July 25, 2026 — it'll keep responding to requests as usual, just no longer actively developed. On July 30, it'll be fully retired. Its model card stays up after that as a memory of where Axion started — Veil was our first model, and Lumen wouldn't exist without it.</p>
@@ -280,8 +288,34 @@
   </div>
   <!-- end pending announcement -->
 
-  <article class="ann notice lead open" data-cat="notice">
+  <article class="ann update lead open" data-cat="update">
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="true">
+      <span class="ann-when">July 20, 2026</span>
+      <span class="ann-cat update">Update</span>
+      <span class="ann-title">Lumen Is Now Running on Our Own Servers — Up to 3x Faster</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
+      Lumen has moved off shared Hugging Face Spaces and onto <strong>dedicated servers we fully control</strong>.
+      Same model (Lumen 1.2.5), same API endpoint, no changes needed on your end — just
+      <strong>faster responses with no shared-tenant slowdowns</strong>.
+    </p>
+    <p style="margin-top:12px">
+      Shared hosting meant contending with other models for GPU time, cold starts, and rate limits we couldn't
+      adjust. Dedicated infrastructure gives Lumen its own GPU, always-warm serving, and full uptime ownership.
+      This is also the foundation for Lumen 1.3 — with our own servers we can run more experiments, serve more
+      users, and iterate faster.
+    </p>
+    <div class="ann-footer">
+      <a class="ann-link" href="/lumen-dedicated-server">Read more →</a>
+      <a class="ann-link" href="https://github.com/AxionLabsAI/axion">GitHub →</a>
+    </div>
+    </div></div>
+  </article>
+
+  <article class="ann notice" data-cat="notice">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">July 12, 2026</span>
       <span class="ann-cat notice">Notice</span>
       <span class="ann-title">Migrating to Our Own Server — Lumen and Veil Temporarily Down</span>
