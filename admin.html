@@ -124,9 +124,16 @@
     .admin-badge { background: var(--accent); color: var(--accent-ink); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; text-transform: uppercase; letter-spacing: .05em; }
 
     .header-right { display: flex; align-items: center; gap: 12px; }
+    .header-links { display: flex; align-items: center; gap: 4px; margin-left: 4px; }
+    .header-links a { color: var(--muted); text-decoration: none; font-size: 13px; padding: 6px 10px; border-radius: 6px; transition: color .12s, background .12s; }
+    .header-links a:hover { color: var(--text); background: var(--surface2); }
     #admin-email { color: var(--muted); font-size: 13px; }
     .sign-out { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; }
     .sign-out:hover { border-color: var(--text); color: var(--text); }
+    footer { text-align: center; padding: 24px; color: var(--muted); font-size: 13px; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+    @media (max-width: 720px) { .header-links { display: none; } }
 
     main { padding: 32px; max-width: 1100px; margin: 0 auto; width: 100%; }
 
@@ -398,6 +405,12 @@
 <div id="app">
   <header>
     <div class="logo"><img src="/assets/logo.png" alt="Axion" style="height:22px;width:auto;object-fit:contain;display:inline-block;vertical-align:-5px;margin-right:7px">Axion <span>Admin</span> <span class="admin-badge">admin</span></div>
+    <div class="header-links">
+      <a href="/models">Models</a>
+      <a href="/chat">Chat</a>
+      <a href="/playground">Playground</a>
+      <a href="/docs">Docs</a>
+    </div>
     <div class="header-right">
       <span id="admin-email"></span>
       <button class="sign-out" onclick="signOut()">Sign out</button>
@@ -557,6 +570,9 @@
       </div>
     </section>
   </main>
+  <footer>
+    <p>© 2026 Axion Labs · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="https://github.com/AxionLabsAI/axion">GitHub</a></p>
+  </footer>
 </div>
 
 <dialog class="account-dialog" id="account-editor" aria-labelledby="account-editor-title">

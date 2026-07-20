@@ -124,13 +124,15 @@
       color: var(--text); cursor: pointer; font-size: 17px;
     }
     .topbar-title { font-size: 14px; font-weight: 600; }
-    .model-badge {
-      display: inline-flex; align-items: center; gap: 6px;
+    .model-select {
+      appearance: none; -webkit-appearance: none;
       background: rgba(184, 162, 125,.12); color: var(--accent);
       border: 1px solid rgba(184, 162, 125,.25);
-      border-radius: 20px; padding: 4px 11px; font-size: 12px; font-weight: 600;
+      border-radius: 20px; padding: 4px 24px 4px 11px; font-size: 12px; font-weight: 600;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%23b8a27d' d='M3 4.5l3 3 3-3'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 8px center; background-size: 10px;
     }
-    .model-badge .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
     .theme-btn {
       width: 32px; height: 32px; border-radius: 7px; flex-shrink: 0;
       border: 1px solid var(--border2); background: var(--surface2);
@@ -470,6 +472,8 @@
     <div class="sidebar-account"><span class="acct-dot"></span><span id="acct-email">Free tier</span></div>
     <a href="/keys" class="sidebar-link"><span>⬡</span> API Keys</a>
     <a href="/usage" class="sidebar-link"><span>▤</span> Usage</a>
+    <a href="/playground" class="sidebar-link"><span>▶</span> Playground</a>
+    <a href="/settings" class="sidebar-link"><span>⚙</span> Settings</a>
     <a href="/docs" class="sidebar-link"><span>◻</span> Docs</a>
     <button class="sidebar-link" onclick="logout()"><span>⏻</span> <span id="signout-label">Sign out</span></button>
   </div>
@@ -483,8 +487,7 @@
     <button class="hamburger" onclick="toggleDrawer()" aria-label="Menu">☰</button>
     <span class="topbar-title" id="topbar-title">New chat</span>
     <div class="topbar-spacer"></div>
-    <div class="model-badge"><span class="dot"></span> Chat</div>
-    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme">&#9680;</button>
+    <select class="model-select" id="model-select" aria-label="Model" onchange="setModel(this.value)"></select>
     <button class="theme-btn" onclick="exportChat()" title="Export chat" aria-label="Export chat">↓</button>
   </div>
 
@@ -518,6 +521,41 @@
   function authHeaders(extra) { return Object.assign({ Authorization: `Bearer ${sessionToken}` }, extra || {}) }
   function currentChat() { return chats.find(c => c.id === currentId) || null }
   function uid() { return 'c-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7) }
+
+  // ── Model selector ───────────────────────────────────────────────────────
+  const MODELS = [
+    { id: 'lumen', label: 'Lumen' },
+  ]
+  let selectedModel = localStorage.getItem('axion_chat_model') || MODELS[0].id
+  if (!MODELS.some(m => m.id === selectedModel)) selectedModel = MODELS[0].id
+
+  function setModel(id) {
+    selectedModel = id
+    localStorage.setItem('axion_chat_model', id)
+  }
+
+  function initModelSelect() {
+    const select = document.getElementById('model-select')
+    select.innerHTML = MODELS.map(m =>
+      `<option value="${m.id}"${m.id === selectedModel ? ' selected' : ''}>${m.label}</option>`
+    ).join('')
+  }
+
+  // ── Time-based greeting ──────────────────────────────────────────────────
+  function timeGreeting() {
+    const hour = new Date().getHours()
+    const buckets = [
+      { max: 5, options: ['Moonlit chat', 'Up late?', 'Burning the midnight oil'] },
+      { max: 8, options: ['Early start', 'Before sunrise'] },
+      { max: 12, options: ['Good morning', 'Morning session'] },
+      { max: 14, options: ['Midday chat', 'Lunch break?'] },
+      { max: 18, options: ['Afternoon session', 'Good afternoon'] },
+      { max: 22, options: ['Evening session', 'Good evening'] },
+      { max: 24, options: ['Night owl', 'Winding down'] },
+    ]
+    const bucket = buckets.find(b => hour < b.max) || buckets[buckets.length - 1]
+    return bucket.options[Math.floor(Math.random() * bucket.options.length)]
+  }
 
   // ── Server sync ────────────────────────────────────────────────────────────
   async function fetchChatList() {
@@ -841,13 +879,12 @@
       container.innerHTML = `
         <div class="greeting">
           <img src="/assets/logo.png" class="greeting-logo" alt="Axion">
-          <div class="greeting-title">How can I help?</div>
-          <div class="greeting-sub">Chat with our models — free. Your conversations are saved on this device.</div>
+          <div class="greeting-title">${timeGreeting()}</div>
           <div class="suggestions">
             <button class="suggestion" onclick="useSuggestion(this)"><b>Explain a concept</b>How does async/await work in JavaScript?</button>
             <button class="suggestion" onclick="useSuggestion(this)"><b>Write code</b>Write a Python function to debounce calls.</button>
             <button class="suggestion" onclick="useSuggestion(this)"><b>Debug</b>Why might my React useEffect run twice?</button>
-            <button class="suggestion" onclick="useSuggestion(this)"><b>Brainstorm</b>Give me 5 name ideas for a CLI tool.</button>
+            <button class="suggestion" onclick="useSuggestion(this)"><b>Brainstorm</b>Give me 5 name ideas for a research project.</button>
           </div>
         </div>`
       return
@@ -897,17 +934,6 @@
     const open = force !== undefined ? force : !sb.classList.contains('open')
     sb.classList.toggle('open', open)
     ov.classList.toggle('show', open)
-  }
-
-  // ── Theme toggle ────────────────────────────────────────────────────────
-  const themeKey = 'axion_chat_theme'
-  function toggleTheme() {
-    const html = document.documentElement
-    const isLight = html.classList.toggle('light')
-    localStorage.setItem(themeKey, isLight ? 'light' : 'dark')
-  }
-  if (localStorage.getItem(themeKey) === 'light') {
-    document.documentElement.classList.add('light')
   }
 
   // Register service worker for offline/PWA
@@ -999,7 +1025,7 @@
     messagesEl.scrollTop = messagesEl.scrollHeight
 
     const chartHint = { role: 'system', content: 'You can render charts. Output chart data in a ```chart code block with JSON like {"type":"bar","title":"...","data":{"labels":["A","B"],"datasets":[{"data":[1,2]}]}}. Types: bar, pie, doughnut, line.' }
-    const body = { model: 'lumen', messages: [chartHint, ...c.messages.map(m => ({ role: m.role, content: m.content }))], stream: true }
+    const body = { model: selectedModel, messages: [chartHint, ...c.messages.map(m => ({ role: m.role, content: m.content }))], stream: true }
     const headers = { 'Content-Type': 'application/json' }
     if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`
 
@@ -1115,6 +1141,7 @@
     document.getElementById('auth-overlay').style.display = 'none'
     document.getElementById('acct-email').textContent = userEmail || 'Signed in'
     document.getElementById('signout-label').textContent = 'Sign out'
+    initModelSelect()
     renderMessages()
     await fetchChatList()
     renderChatList()

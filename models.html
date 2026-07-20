@@ -162,7 +162,7 @@
 <div class="page-header">
   <div class="tag">Axion Labs</div>
   <h1>Models</h1>
-  <p>The models we build and host, plus every third-party model the CLI supports. Switch anytime with <code style="font-family:monospace;font-size:14px;background:rgba(255,255,255,0.08);padding:2px 7px;border-radius:4px">/model</code>.</p>
+  <p>We research AI safety and build small, fast models shaped by that work — trained, evaluated, and hosted end to end by us.</p>
 </div>
 
 <main>
@@ -170,8 +170,8 @@
   <!-- Axion Labs models -->
   <section>
     <p class="section-tag">Axion Labs</p>
-    <h2>Built and hosted by us</h2>
-    <p class="section-lead">Free to use — no API key, no account. Hosted on Hugging Face.</p>
+    <h2>Built, trained, and hosted by us</h2>
+    <p class="section-lead">Free to chat with — no API key, no account required.</p>
 
     <div class="model-grid">
       <div class="model-card featured">
@@ -184,203 +184,53 @@
         </div>
         <p class="card-desc">Fine-tuned Llama 3.1 8B with DPO safety training. Best for general chat, questions, writing, and code explanations. 73% safety pass rate under adversarial testing.</p>
         <div class="card-footer">
-          <div class="card-cmd"><span>/model</span> lumen</div>
           <a class="card-link" href="/lumen">Chat in browser →</a>
           <a class="card-link" href="/lumen-model">Model details →</a>
         </div>
       </div>
 
-      <div class="model-card">
+      <div class="model-card" id="veil-card">
         <div class="card-top">
           <div>
-            <div class="card-name">Axion Vision</div>
+            <div class="card-name">Veil 1.1</div>
             <div class="card-provider">Axion Labs</div>
           </div>
-          <span class="badge badge-free">Free</span>
+          <span class="badge badge-free" id="veil-badge">Free</span>
         </div>
-        <p class="card-desc">Vision model for image understanding and OCR. Used automatically for computer use and screenshot analysis. Powered by GLM-OCR (Qwen2.5-VL-3B). OpenAI-compatible API.</p>
+        <p class="card-desc" id="veil-desc">Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat.</p>
         <div class="card-footer">
-          <div class="card-cmd"><span>/vision</span> axion-vision</div>
-          <a class="card-link" href="https://huggingface.co/spaces/AxionLabsAI/LumenVision">View on HuggingFace →</a>
+          <a class="card-link" href="/veil">Why we're moving on →</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Third-party providers -->
+  <!-- Safety research -->
   <section>
-    <p class="section-tag">Third-party providers</p>
-    <h2>Bring your own key</h2>
-    <p class="section-lead">Set a key once with <code>/api &lt;provider&gt; &lt;key&gt;</code> and it's saved for all future sessions.</p>
+    <p class="section-tag">Research</p>
+    <h2>Safety is the point, not a checkbox</h2>
+    <p class="section-lead">Every model we ship goes through adversarial safety testing before release, and we publish the results.</p>
 
-    <div class="model-grid">
+    <div class="model-grid" style="grid-template-columns: repeat(2, 1fr);">
       <div class="model-card">
         <div class="card-top">
-          <div>
-            <div class="card-name">Claude</div>
-            <div class="card-provider">Anthropic</div>
-          </div>
-          <span class="badge badge-paid">API key</span>
+          <div class="card-name">Lumen 1.2.5 Safety Report</div>
         </div>
-        <p class="card-desc">The default Axion model. Best overall coding performance, long context, and instruction following. Defaults to Claude Sonnet.</p>
+        <p class="card-desc">DPO safety alignment results and adversarial test pass rates for our flagship model.</p>
         <div class="card-footer">
-          <div class="card-cmd"><span>/model</span> claude</div>
-          <a class="card-link" href="https://console.anthropic.com">Get key →</a>
+          <a class="card-link" href="/lumen-125-safety">Read the report →</a>
         </div>
       </div>
-
       <div class="model-card">
         <div class="card-top">
-          <div>
-            <div class="card-name">GPT-4o</div>
-            <div class="card-provider">OpenAI</div>
-          </div>
-          <span class="badge badge-paid">API key</span>
+          <div class="card-name">All announcements</div>
         </div>
-        <p class="card-desc">Strong all-rounder. Good for coding, reasoning, and multimodal tasks. Also supports <code>gpt-4o-mini</code> for faster, cheaper responses.</p>
+        <p class="card-desc">Release notes, safety reports, and infrastructure updates as we ship them.</p>
         <div class="card-footer">
-          <div class="card-cmd"><span>/model</span> gpt</div>
-          <a class="card-link" href="https://platform.openai.com">Get key →</a>
-        </div>
-      </div>
-
-      <div class="model-card">
-        <div class="card-top">
-          <div>
-            <div class="card-name">Gemini</div>
-            <div class="card-provider">Google</div>
-          </div>
-          <span class="badge badge-freetier">Free tier</span>
-        </div>
-        <p class="card-desc">Gemini 2.0 Flash is fast, cheap, and has a very generous free tier. Good for quick tasks and high-volume use.</p>
-        <div class="card-footer">
-          <div class="card-cmd"><span>/model</span> gemini</div>
-          <a class="card-link" href="https://aistudio.google.com">Get key →</a>
-        </div>
-      </div>
-
-      <div class="model-card">
-        <div class="card-top">
-          <div>
-            <div class="card-name">Groq</div>
-            <div class="card-provider">Groq</div>
-          </div>
-          <span class="badge badge-freetier">Free tier</span>
-        </div>
-        <p class="card-desc">Extremely fast inference on Llama 3.3 70B. Generous free tier with high rate limits. Great if you want a capable open model without paying per token.</p>
-        <div class="card-footer">
-          <div class="card-cmd"><span>/model</span> groq</div>
-          <a class="card-link" href="https://console.groq.com">Get key →</a>
-        </div>
-      </div>
-
-      <div class="model-card">
-        <div class="card-top">
-          <div>
-            <div class="card-name">Ollama</div>
-            <div class="card-provider">Local</div>
-          </div>
-          <span class="badge badge-local">Local</span>
-        </div>
-        <p class="card-desc">Run any model locally. No key, no data leaving your machine. Axion connects to Ollama at <code>localhost:11434</code> automatically.</p>
-        <div class="card-footer">
-          <div class="card-cmd"><span>/model</span> ollama</div>
-          <a class="card-link" href="https://ollama.com">Install Ollama →</a>
-        </div>
-      </div>
-
-      <div class="model-card">
-        <div class="card-top">
-          <div>
-            <div class="card-name">OpenRouter</div>
-            <div class="card-provider">OpenRouter</div>
-          </div>
-          <span class="badge badge-paid">API key</span>
-        </div>
-        <p class="card-desc">One key, 100+ models. Access Claude, Gemini, Llama, Mistral, and more through a single API. Good for comparing models or accessing ones not directly supported.</p>
-        <div class="card-footer">
-          <div class="card-cmd"><span>/model</span> or</div>
-          <a class="card-link" href="https://openrouter.ai">Get key →</a>
+          <a class="card-link" href="/announcements">View announcements →</a>
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- Compare table -->
-  <section>
-    <p class="section-tag">Comparison</p>
-    <h2>At a glance</h2>
-    <p class="section-lead">How the options stack up for common needs.</p>
-
-    <table class="compare-table">
-      <thead>
-        <tr>
-          <th>Model</th>
-          <th>Cost</th>
-          <th>No key needed</th>
-          <th>Best for</th>
-          <th>Switch to</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Lumen 1.2.5</strong></td>
-          <td class="dim">Free</td>
-          <td><span class="check">✓</span></td>
-          <td class="dim">Chat, questions, writing</td>
-          <td><code>/model lumen</code></td>
-        </tr>
-        <tr>
-          <td><strong>Axion Vision</strong></td>
-          <td class="dim">Free</td>
-          <td><span class="check">✓</span></td>
-          <td class="dim">Images, OCR, screenshots</td>
-          <td><code>/vision axion-vision</code></td>
-        </tr>
-        <tr>
-          <td><strong>Groq</strong></td>
-          <td class="dim">Free tier</td>
-          <td><span class="cross">✗</span></td>
-          <td class="dim">Fast responses, high volume</td>
-          <td><code>/model groq</code></td>
-        </tr>
-        <tr>
-          <td><strong>Gemini Flash</strong></td>
-          <td class="dim">Free tier</td>
-          <td><span class="cross">✗</span></td>
-          <td class="dim">Quick tasks, long context</td>
-          <td><code>/model gemini</code></td>
-        </tr>
-        <tr>
-          <td><strong>Ollama</strong></td>
-          <td class="dim">Free (local)</td>
-          <td><span class="check">✓</span></td>
-          <td class="dim">Privacy, offline use</td>
-          <td><code>/model ollama</code></td>
-        </tr>
-        <tr>
-          <td><strong>Claude</strong></td>
-          <td class="dim">Paid</td>
-          <td><span class="cross">✗</span></td>
-          <td class="dim">Coding, complex tasks</td>
-          <td><code>/model claude</code></td>
-        </tr>
-        <tr>
-          <td><strong>GPT-4o</strong></td>
-          <td class="dim">Paid</td>
-          <td><span class="cross">✗</span></td>
-          <td class="dim">Coding, multimodal</td>
-          <td><code>/model gpt</code></td>
-        </tr>
-        <tr>
-          <td><strong>OpenRouter</strong></td>
-          <td class="dim">Paid</td>
-          <td><span class="cross">✗</span></td>
-          <td class="dim">Accessing 100+ models</td>
-          <td><code>/model or</code></td>
-        </tr>
-      </tbody>
-    </table>
   </section>
 
 </main>
@@ -394,6 +244,25 @@
 <script>
 function toggleNav(){document.querySelector("nav")?.classList.toggle("nav-links-visible")}
 document.addEventListener("click",function(e){if(!e.target.closest("nav"))document.querySelector("nav")?.classList.remove("nav-links-visible")})
+
+// ── Veil deprecation lifecycle — same client-side date check as index.html ──
+;(function () {
+  const badge = document.getElementById('veil-badge')
+  const desc = document.getElementById('veil-desc')
+  if (!badge || !desc) return
+  const deprecatedAt = new Date('2026-07-25T00:00:00Z')
+  const retiredAt = new Date('2026-07-30T00:00:00Z')
+  const now = new Date()
+  if (now >= retiredAt) {
+    badge.textContent = 'Retired'
+    badge.className = 'badge badge-paid'
+    desc.textContent = 'Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat. Retired July 30, 2026 — kept here as a memory: Axion’s first model, and the reason Lumen exists.'
+  } else if (now >= deprecatedAt) {
+    badge.textContent = 'Deprecated'
+    badge.className = 'badge badge-paid'
+    desc.textContent = 'Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat. Deprecated as of July 25, 2026 and retiring July 30 — still usable until then, but no longer actively developed.'
+  }
+})()
 </script>
 </body>
 </html>
