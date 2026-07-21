@@ -1010,6 +1010,13 @@
     }
   }
 
+  // Tracks the immediately-preceding (language, code) signature per chat —
+  // not a lifetime set, just "the last thing attempted" — so a model that
+  // resends identical code back-to-back (observed live: it kept retrying
+  // the same denied call rather than adapting) gets blocked automatically
+  // instead of putting a fresh Run/Deny card in front of the user each time.
+  window.__lastToolCallSignature = window.__lastToolCallSignature || {}
+
   // Appends a tool card to the live message stream and returns a promise
   // that resolves with the tool-result string once the call is settled.
   function renderToolCall(toolCall, wrap, chatId) {
@@ -1019,6 +1026,17 @@
       code = args.code || ''
       if (args.language) language = args.language
     } catch {}
+
+    const trimmed = code.trim()
+    if (!trimmed) {
+      return Promise.resolve('Error: no code was provided in this call — the code argument was empty. Call run_code again with actual, non-empty code.')
+    }
+    const signature = language + '::' + trimmed
+    if (window.__lastToolCallSignature[chatId] === signature) {
+      return Promise.resolve('Error: this exact code was just attempted immediately before this call — do not call run_code again with identical code back-to-back. If it was denied, do not retry it; respond to the user instead. If you need to keep going, try something meaningfully different or ask the user what they want.')
+    }
+    window.__lastToolCallSignature[chatId] = signature
+
     const cardId = 'tool-' + (toolCall.id || Math.random().toString(36).slice(2))
 
     return new Promise(resolve => {
