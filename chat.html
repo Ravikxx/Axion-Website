@@ -1017,6 +1017,17 @@
   // instead of putting a fresh Run/Deny card in front of the user each time.
   window.__lastToolCallSignature = window.__lastToolCallSignature || {}
 
+  // Counts consecutive blocked attempts (empty code, or a repeat of the
+  // immediately preceding call) per chat. Wording alone doesn't reliably
+  // stop a weak model from just retrying anyway — observed live it burned
+  // through all 5 rounds re-requesting the same blocked call. At
+  // TOOL_ISSUE_STREAK_LIMIT, generateReply strips `tools` from the next
+  // request entirely, making it structurally impossible to call the tool
+  // again this turn rather than hoping the model listens. Reset to 0 by any
+  // real execution or a denial of genuinely new code.
+  window.__toolIssueStreak = window.__toolIssueStreak || {}
+  const TOOL_ISSUE_STREAK_LIMIT = 2
+
   // Appends a tool card to the live message stream and returns a promise
   // that resolves with the tool-result string once the call is settled.
   function renderToolCall(toolCall, wrap, chatId) {
@@ -1029,16 +1040,19 @@
 
     const trimmed = code.trim()
     if (!trimmed) {
+      window.__toolIssueStreak[chatId] = (window.__toolIssueStreak[chatId] || 0) + 1
       return Promise.resolve('Error: no code was provided in this call — the code argument was empty. Call run_code again with actual, non-empty code.')
     }
     const signature = language + '::' + trimmed
     const last = window.__lastToolCallSignature[chatId]
     if (last && last.signature === signature) {
+      window.__toolIssueStreak[chatId] = (window.__toolIssueStreak[chatId] || 0) + 1
       return Promise.resolve(last.denied
         ? 'The user explicitly declined to run this exact code. Do not call run_code with this code again — it will not be run. Respond to the user instead of retrying.'
         : 'This exact code already ran in the immediately preceding call. Do not call run_code with this code again — use the result you already have instead of repeating it.')
     }
     window.__lastToolCallSignature[chatId] = { signature, denied: null }
+    window.__toolIssueStreak[chatId] = 0
 
     const cardId = 'tool-' + (toolCall.id || Math.random().toString(36).slice(2))
 
@@ -1267,7 +1281,7 @@
   // hard cap (TOOL_STEP_LIMIT) stops a runaway "call tool, get result, call
   // tool again..." loop instead of looping forever.
   async function generateReply(c, depth = 0) {
-    if (depth === 0) stopRequested = false
+    if (depth === 0) { stopRequested = false; window.__toolIssueStreak[c.id] = 0 }
     await ensureSandboxMode()
     setSendingState(true)
     abortCtrl = new AbortController()
@@ -1301,7 +1315,12 @@
     // axion-sk-/CLI caller hitting /v1/chat/completions directly has no
     // client-side loop to fulfill a tool_calls turn, so injecting it for
     // everyone would silently hand back an unfulfillable response.
-    const tools = sessionToken ? [{
+    // Also withheld once this chat's blocked-attempt streak hits the limit
+    // (see TOOL_ISSUE_STREAK_LIMIT) — omitting the tool entirely makes
+    // another attempt structurally impossible for this turn, rather than
+    // relying on the model to actually listen to the tool-result wording.
+    const toolAccessRevoked = (window.__toolIssueStreak[c.id] || 0) >= TOOL_ISSUE_STREAK_LIMIT
+    const tools = (sessionToken && !toolAccessRevoked) ? [{
       type: 'function',
       function: {
         name: 'run_code',
@@ -1316,7 +1335,11 @@
         },
       },
     }] : undefined
-    const body = { model: selectedModel, messages: [chartHint, ...apiMessages], stream: true, ...(tools ? { tools } : {}) }
+    const systemHints = [chartHint]
+    if (toolAccessRevoked) {
+      systemHints.push({ role: 'system', content: 'Tool access has been temporarily disabled for this reply because you called run_code with the same blocked request too many times in a row. You cannot call any tool right now — answer the user directly in plain text using the information already in this conversation.' })
+    }
+    const body = { model: selectedModel, messages: [...systemHints, ...apiMessages], stream: true, ...(tools ? { tools } : {}) }
     const headers = { 'Content-Type': 'application/json' }
     if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`
 
