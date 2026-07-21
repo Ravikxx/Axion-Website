@@ -544,13 +544,13 @@
   function timeGreeting() {
     const hour = new Date().getHours()
     const buckets = [
-      { max: 5, options: ['Moonlit chat?', 'Up late?', 'Burning the midnight oil?', "Can't sleep?", 'Working through the night?', 'Still awake?', 'Chasing an idea at this hour?', '3am thoughts?', 'Night shift?', 'Wide awake?'] },
-      { max: 8, options: ['Early start?', 'Before sunrise?', 'Up with the sun?', 'Early bird today?', 'Getting a head start?', 'Coffee first?', 'First thing on your mind?'] },
-      { max: 12, options: ['Good morning?', 'Morning session?', 'Ready to start the day?', 'Fresh start?', 'Morning coffee chat?', "What's on the agenda today?", 'Off to a good start?'] },
+      { max: 5, options: ['Up late?', 'Burning the midnight oil?', "Can't sleep?", 'Working through the night?', 'Still awake?', 'Chasing an idea at this hour?', 'Lost track of time?', 'Night shift?', 'Wide awake?'] },
+      { max: 8, options: ['Early start?', 'Beat the sunrise?', 'Up with the sun?', 'Early bird today?', 'Getting a head start?', 'Coffee first?', 'First thing on your mind?'] },
+      { max: 12, options: ['Morning session?', 'Ready to start the day?', 'Fresh start?', 'Morning coffee chat?', "What's on the agenda today?", 'Off to a good start?', 'Bright and early?'] },
       { max: 14, options: ['Midday chat?', 'Lunch break?', 'Halfway through the day?', 'Quick midday check-in?', 'Taking a break?', 'Recharging?'] },
-      { max: 18, options: ['Afternoon session?', 'Good afternoon?', 'Push through the afternoon?', 'Afternoon slump?', 'Back at it?', 'Still going strong?', 'Afternoon pick-me-up?'] },
-      { max: 22, options: ['Evening session?', 'Good evening?', 'Winding down for the day?', 'Evening thoughts?', 'How was your day?', 'Wrapping up?', 'One more thing before dinner?'] },
-      { max: 24, options: ['Night owl?', 'Winding down?', 'Late one tonight?', 'One more thing before bed?', 'Still going?', 'Up past your bedtime?', 'Late-night curiosity?'] },
+      { max: 18, options: ['Afternoon session?', 'Keeping the momentum going?', 'Push through the afternoon?', 'Afternoon slump?', 'Back at it?', 'Still going strong?', 'Afternoon pick-me-up?'] },
+      { max: 22, options: ['Evening session?', 'Settling in for the evening?', 'Winding down for the day?', 'How was your day?', 'Wrapping up?', 'One more thing before dinner?'] },
+      { max: 24, options: ['Night owl?', 'Winding down?', 'Late one tonight?', 'One more thing before bed?', 'Still going?', 'Up past your bedtime?'] },
     ]
     const bucket = buckets.find(b => hour < b.max) || buckets[buckets.length - 1]
     return bucket.options[Math.floor(Math.random() * bucket.options.length)]
