@@ -336,6 +336,21 @@
       </div>
     </div>
 
+    <div class="settings-section">
+      <h2>Code execution</h2>
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Auto-run Python</div>
+          <div class="settings-row-desc">When Lumen wants to run Python code, run it immediately instead of asking you to approve each execution first.</div>
+        </div>
+        <input type="checkbox" class="settings-toggle" id="pref-sandbox-auto">
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
+        <button class="btn-sm" onclick="saveSandboxMode()">Save</button>
+        <span class="status-msg" id="sandbox-mode-msg"></span>
+      </div>
+    </div>
+
     <div class="danger-zone">
       <h2>Delete account</h2>
       <p>Permanently deletes your account, API keys, and usage history. This can't be undone.</p>
@@ -384,6 +399,7 @@
       const p = await res.json();
       document.getElementById('pref-limit').checked = p.notify_limit !== 0;
       document.getElementById('pref-announcements').checked = p.notify_announcements !== 0;
+      document.getElementById('pref-sandbox-auto').checked = p.sandbox_mode === 'auto';
     } catch {}
   }
   async function savePrefs() {
@@ -392,6 +408,22 @@
       notify_limit: document.getElementById('pref-limit').checked,
       notify_announcements: document.getElementById('pref-announcements').checked,
     };
+    try {
+      const res = await fetchT(API + '/dashboard/prefs', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
+        body: JSON.stringify(body),
+      });
+      msg.textContent = res.ok ? 'Saved' : 'Failed to save';
+      msg.className = 'status-msg ' + (res.ok ? 'ok' : 'err');
+    } catch {
+      msg.textContent = 'Failed to save'; msg.className = 'status-msg err';
+    }
+    setTimeout(() => { msg.textContent = ''; }, 2500);
+  }
+  async function saveSandboxMode() {
+    const msg = document.getElementById('sandbox-mode-msg');
+    const body = { sandbox_mode: document.getElementById('pref-sandbox-auto').checked ? 'auto' : 'ask' };
     try {
       const res = await fetchT(API + '/dashboard/prefs', {
         method: 'PUT',

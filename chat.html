@@ -229,6 +229,34 @@
     }
     .msg-action:hover { color: var(--text); background: var(--surface2); }
 
+    /* ── Tool call cards (run_python) ── */
+    .tool-card {
+      border: 1px solid var(--border2); border-radius: 11px; overflow: hidden;
+      background: var(--surface); margin-top: 4px;
+    }
+    .tool-code, .tool-output {
+      margin: 0; padding: 11px 14px; font-family: 'SF Mono', Menlo, Consolas, monospace;
+      font-size: 12.5px; line-height: 1.55; white-space: pre-wrap; word-break: break-word;
+      color: var(--text);
+    }
+    .tool-code { border-bottom: 1px solid var(--border2); background: var(--surface2); }
+    .tool-output { color: var(--muted2); }
+    .tool-card-actions {
+      display: flex; align-items: center; gap: 8px; padding: 8px 14px;
+      border-top: 1px solid var(--border2);
+    }
+    .tool-status { font-size: 12px; color: var(--muted); }
+    .tool-run, .tool-deny {
+      font-size: 12.5px; padding: 5px 12px; border-radius: 8px; cursor: pointer;
+      border: 1px solid transparent; transition: color .12s, border-color .12s, background .12s, opacity .12s;
+    }
+    .tool-run { background: var(--accent); color: #fff; }
+    .tool-run:hover { opacity: .88; }
+    .tool-deny {
+      border-color: var(--border2); background: none; color: var(--muted);
+    }
+    .tool-deny:hover { color: var(--text); border-color: var(--accent); }
+
     /* ── Empty / greeting ── */
     .greeting {
       flex: 1; display: flex; flex-direction: column;
@@ -513,6 +541,20 @@
   let userEmail = localStorage.getItem('axion_email') || null
   let streaming = false
   let abortCtrl = null    // AbortController for the in-flight completion (stop button)
+
+  // Sandbox tool-call mode: 'ask' requires a click before running model-requested
+  // code, 'auto' runs immediately. Fetched once per session load and cached.
+  let sandboxMode = 'ask'
+  let sandboxModeLoaded = false
+  async function ensureSandboxMode() {
+    if (sandboxModeLoaded || !sessionToken) return
+    sandboxModeLoaded = true
+    try {
+      const res = await fetch(`${API}/dashboard/prefs`, { headers: authHeaders() })
+      if (res.ok) { const data = await res.json(); sandboxMode = data.sandbox_mode === 'auto' ? 'auto' : 'ask' }
+    } catch {}
+  }
+  const TOOL_STEP_LIMIT = 5
 
   let chats = []          // [{ id, title, messages, updated, loaded }]
   let currentId = null
@@ -871,6 +913,89 @@
 
   const AVATAR = '<img src="/assets/logo.png" alt="">'
 
+  // ── Sandbox tool calls ──────────────────────────────────────────────────
+  // Renders one card per pending tool call, waits for it to resolve (either
+  // immediately in auto-run mode, or after the user clicks Run/Deny in ask
+  // mode), and returns the string to send back to the model as the
+  // {role:'tool'} message content. No syntax highlighter exists in this
+  // codebase — plain escaped <pre>, matching the existing code-block style.
+  window.__toolResolvers = window.__toolResolvers || {}
+
+  function toolCardHtml(cardId, code, mode) {
+    const actions = mode === 'ask'
+      ? `<button class="btn btn-sm tool-run" onclick="resolveToolCard('${cardId}', true)">Run</button>
+         <button class="btn-outline tool-deny" onclick="resolveToolCard('${cardId}', false)">Deny</button>`
+      : `<span class="tool-status">Executing…</span>`
+    return `
+      <div class="msg-avatar assistant">${AVATAR}</div>
+      <div class="msg-body">
+        <div class="msg-role">Tool call — run_python</div>
+        <div class="tool-card" id="${cardId}">
+          <pre class="tool-code">${escHtml(code)}</pre>
+          <div class="tool-card-actions">${actions}</div>
+          <pre class="tool-output" style="display:none"></pre>
+        </div>
+      </div>`
+  }
+
+  async function executeSandboxCode(code) {
+    try {
+      const res = await fetch(`${API}/v1/sandbox/execute`, {
+        method: 'POST',
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ code }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (data.cap_exceeded) return data.message || 'Weekly sandbox execution limit reached.'
+      if (data.error) return `Error: ${data.error}`
+      let out = data.stdout || ''
+      if (data.timed_out) out += (out ? '\n' : '') + '[execution timed out]'
+      return out || '(no output)'
+    } catch (e) {
+      return `Error: ${e.message}`
+    }
+  }
+
+  // Appends a tool card to the live message stream and returns a promise
+  // that resolves with the tool-result string once the call is settled.
+  function renderToolCall(toolCall, wrap) {
+    let code = ''
+    try { code = JSON.parse(toolCall.function.arguments || '{}').code || '' } catch {}
+    const cardId = 'tool-' + (toolCall.id || Math.random().toString(36).slice(2))
+
+    return new Promise(resolve => {
+      const div = document.createElement('div')
+      div.className = 'msg'
+      div.innerHTML = toolCardHtml(cardId, code, sandboxMode)
+      wrap.appendChild(div)
+      document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight
+
+      window.__toolResolvers[cardId] = async (approved) => {
+        const cardEl = document.getElementById(cardId)
+        const actionsEl = cardEl.querySelector('.tool-card-actions')
+        const outputEl = cardEl.querySelector('.tool-output')
+        if (!approved) {
+          actionsEl.innerHTML = '<span class="tool-status">Denied</span>'
+          resolve('User declined to run this code.')
+          return
+        }
+        actionsEl.innerHTML = '<span class="tool-status">Executing…</span>'
+        const result = await executeSandboxCode(code)
+        outputEl.style.display = 'block'
+        outputEl.textContent = result
+        actionsEl.innerHTML = '<span class="tool-status">Done</span>'
+        resolve(result)
+      }
+
+      if (sandboxMode === 'auto') window.__toolResolvers[cardId](true)
+    })
+  }
+
+  function resolveToolCard(cardId, approved) {
+    const resolver = window.__toolResolvers[cardId]
+    if (resolver) resolver(approved)
+  }
+
   function renderMessages() {
     const container = document.getElementById('messages')
     const c = currentChat()
@@ -893,6 +1018,35 @@
     c.messages.forEach((m, idx) => {
       const div = document.createElement('div')
       div.className = 'msg'
+      const tsHtml = m.ts ? `<span class="msg-time">${fmtTime(m.ts)}</span>` : ''
+
+      // A completed tool call from history: the assistant's request (code)
+      // plus its result, collapsed into one static card — no Run/Deny
+      // buttons here, those only exist for the live, unresolved card.
+      if (m.role === 'assistant' && m.tool_calls?.length) {
+        const cardsHtml = m.tool_calls.map(tc => {
+          let code = ''
+          try { code = JSON.parse(tc.function.arguments || '{}').code || '' } catch {}
+          const resultMsg = c.messages.find(mm => mm.role === 'tool' && mm.tool_call_id === tc.id)
+          return `
+            <div class="tool-card">
+              <pre class="tool-code">${escHtml(code)}</pre>
+              <pre class="tool-output">${escHtml(resultMsg ? resultMsg.content : '')}</pre>
+            </div>`
+        }).join('')
+        div.innerHTML = `
+          <div class="msg-avatar assistant">${AVATAR}</div>
+          <div class="msg-body">
+            <div class="msg-role">Tool call — run_python${tsHtml}</div>
+            ${cardsHtml}
+          </div>`
+        wrap.appendChild(div)
+        return
+      }
+      // The {role:'tool'} result itself is rendered as part of its matching
+      // tool_calls card above — skip rendering it again as its own bubble.
+      if (m.role === 'tool') return
+
       const avatar = m.role === 'user'
         ? '<div class="msg-avatar user">You</div>'
         : `<div class="msg-avatar assistant">${AVATAR}</div>`
@@ -900,7 +1054,6 @@
       const extraAction = m.role === 'user'
         ? `<button class="msg-action" onclick="editMessage(${idx})">Edit</button>`
         : `<button class="msg-action" onclick="regenerate(${idx})">Retry</button>`
-      const tsHtml = m.ts ? `<span class="msg-time">${fmtTime(m.ts)}</span>` : ''
       div.innerHTML = `
         ${avatar}
         <div class="msg-body">
@@ -1005,7 +1158,11 @@
   }
 
   // Generates an assistant reply for a chat whose messages end with a user turn.
-  async function generateReply(c) {
+  // depth counts automatic tool-call round-trips within one user turn — a
+  // hard cap (TOOL_STEP_LIMIT) stops a runaway "call tool, get result, call
+  // tool again..." loop instead of looping forever.
+  async function generateReply(c, depth = 0) {
+    await ensureSandboxMode()
     setSendingState(true)
     abortCtrl = new AbortController()
 
@@ -1024,11 +1181,30 @@
     messagesEl.scrollTop = messagesEl.scrollHeight
 
     const chartHint = { role: 'system', content: 'You can render charts. Output chart data in a ```chart code block with JSON like {"type":"bar","title":"...","data":{"labels":["A","B"],"datasets":[{"data":[1,2]}]}}. Types: bar, pie, doughnut, line.' }
-    const body = { model: selectedModel, messages: [chartHint, ...c.messages.map(m => ({ role: m.role, content: m.content }))], stream: true }
+    const apiMessages = c.messages.map(m => {
+      const out = { role: m.role, content: m.content ?? '' }
+      if (m.tool_calls) out.tool_calls = m.tool_calls
+      if (m.tool_call_id) out.tool_call_id = m.tool_call_id
+      return out
+    })
+    // The run_python tool is only ever offered to signed-in sessions — an
+    // axion-sk-/CLI caller hitting /v1/chat/completions directly has no
+    // client-side loop to fulfill a tool_calls turn, so injecting it for
+    // everyone would silently hand back an unfulfillable response.
+    const tools = sessionToken ? [{
+      type: 'function',
+      function: {
+        name: 'run_python',
+        description: 'Execute Python code in an isolated sandbox and return stdout/stderr. No internet access on the free plan.',
+        parameters: { type: 'object', properties: { code: { type: 'string', description: 'Python code to execute.' } }, required: ['code'] },
+      },
+    }] : undefined
+    const body = { model: selectedModel, messages: [chartHint, ...apiMessages], stream: true, ...(tools ? { tools } : {}) }
     const headers = { 'Content-Type': 'application/json' }
     if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`
 
     let full = '', failed = false
+    let toolCallsAcc = []
     try {
       const res = await fetch(`${API}/v1/chat/completions`, { method: 'POST', headers, body: JSON.stringify(body), signal: abortCtrl.signal })
       if (!res.ok) {
@@ -1049,8 +1225,17 @@
             const data = line.slice(6).trim()
             if (data === '[DONE]') continue
             try {
-              const delta = JSON.parse(data).choices?.[0]?.delta?.content
-              if (delta) { full += delta; live.textContent = full; if (!_userScrolledAway) messagesEl.scrollTop = messagesEl.scrollHeight }
+              const delta = JSON.parse(data).choices?.[0]?.delta
+              if (delta?.content) { full += delta.content; live.textContent = full; if (!_userScrolledAway) messagesEl.scrollTop = messagesEl.scrollHeight }
+              if (delta?.tool_calls) {
+                for (const tc of delta.tool_calls) {
+                  const i = tc.index ?? 0
+                  toolCallsAcc[i] = toolCallsAcc[i] || { id: '', type: 'function', function: { name: '', arguments: '' } }
+                  if (tc.id) toolCallsAcc[i].id = tc.id
+                  if (tc.function?.name) toolCallsAcc[i].function.name += tc.function.name
+                  if (tc.function?.arguments) toolCallsAcc[i].function.arguments += tc.function.arguments
+                }
+              }
             } catch {}
           }
         }
@@ -1059,8 +1244,39 @@
       if (e.name === 'AbortError') { /* keep whatever streamed so far */ }
       else { live.textContent = '⚠ Network error: ' + e.message; failed = true }
     }
+    toolCallsAcc = toolCallsAcc.filter(Boolean)
 
     live.classList.remove('streaming')
+
+    if (!failed && toolCallsAcc.length) {
+      // Pending tool call(s): show what streamed (if any), then a card per
+      // call. Nothing is pushed to persisted history until every card in
+      // this turn has resolved, so a page refresh mid-approval can't leave
+      // a half-written turn behind.
+      live.innerHTML = full ? renderMarkdown(full) : ''
+      const results = []
+      for (const tc of toolCallsAcc) results.push(await renderToolCall(tc, wrap))
+
+      c.messages.push({ role: 'assistant', content: full, tool_calls: toolCallsAcc, ts: Date.now() })
+      toolCallsAcc.forEach((tc, i) => c.messages.push({ role: 'tool', tool_call_id: tc.id, content: results[i], ts: Date.now() }))
+      c.updated = Date.now(); persistChat(c)
+      renderChatList(); renderMessages()
+
+      setSendingState(false)
+      abortCtrl = null
+
+      if (depth + 1 >= TOOL_STEP_LIMIT) {
+        const stepDiv = document.createElement('div')
+        stepDiv.className = 'msg'
+        stepDiv.innerHTML = `<div class="msg-avatar assistant">${AVATAR}</div><div class="msg-body"><div class="msg-text" style="color:var(--muted)">Step limit reached (${TOOL_STEP_LIMIT} tool calls in a row) — stopping here.</div></div>`
+        document.getElementById('msg-wrap')?.appendChild(stepDiv)
+        document.getElementById('user-input').focus()
+        return
+      }
+      await generateReply(c, depth + 1)
+      return
+    }
+
     if (!failed) { live.innerHTML = full ? renderMarkdown(full) : '<p style="color:var(--muted)">(stopped)</p>'; initCharts() }
 
     if (!failed && full) {
