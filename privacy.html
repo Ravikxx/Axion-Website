@@ -189,7 +189,7 @@
 
 <main>
 
-  <p class="last-updated">Last updated: July 19, 2026</p>
+  <p class="last-updated">Last updated: July 21, 2026</p>
 
   <div class="callout">
     <strong>Short version:</strong> Most CLI work happens on your machine. Model inference, accounts, signed-in web chat, usage tracking, billing, email, vision, and connected integrations may send data to remote services. Axion's hosted backend runs on Cloudflare, and Lumen and the default vision model run on Hugging Face. We do not use your conversations for training unless you explicitly opt in with <code>/contribute</code>.
@@ -208,6 +208,7 @@
       <li>Axion-issued API keys and their status, request counts, token counts, calculated usage cost, allowance windows, and rate-limit records.</li>
       <li>Plan and subscription status, credit balances, credit-code redemptions, and Square customer or subscription identifiers.</li>
       <li>Signed-in web chat history and chat metadata used to sync conversations across sessions.</li>
+      <li>A separate, permanent log of message content and model responses across signed-in, API-key, and anonymous usage, kept independently of your visible chat history and retained even after you delete a chat or your account. An automated process periodically reviews this log — separately from and after your live conversation, not in real time — and classifies each exchange as safe or in need of human review; anything it cannot confirm is safe is escalated to a person on the Axion Labs team. This log exists for abuse detection, safety enforcement, and legal compliance.</li>
       <li>Email and announcement preferences, organization membership and invitations, and CLI device-login codes.</li>
       <li>Administrative test changes to plan, allowance usage, or credit balances, including who made the change and when.</li>
     </ul>
@@ -288,7 +289,7 @@
   <div class="policy-section">
     <h2>Your control</h2>
     <ul>
-      <li>Delete individual signed-in web chats from the chat interface, or delete your account and linked account data from Settings.</li>
+      <li>Delete individual signed-in web chats from the chat interface, or delete your account and linked account data from Settings — this removes them from your own history and dashboard, but the separate compliance log described above is retained and is not deleted by these actions.</li>
       <li>Use the unsubscribe link in an announcement email to remove a separate announcement subscription.</li>
       <li>Disconnect any OAuth service with <code>/oauth revoke &lt;service&gt;</code>, or delete <code>~/.axion/oauth.json</code></li>
       <li>Use your own provider keys — or a local model via Ollama — to keep inference off Axion Labs' backend entirely</li>

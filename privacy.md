@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated: July 19, 2026**
+**Last updated: July 21, 2026**
 
 ## Overview
 
@@ -32,6 +32,7 @@ Axion's Cloudflare-hosted backend stores and processes data needed to run accoun
 - Axion-issued API keys and their status, request counts, token counts, calculated usage cost, allowance windows, and rate-limit records;
 - plan and subscription status, credit balances, credit-code redemptions, and Square customer or subscription identifiers;
 - signed-in web chat history and chat metadata used to sync conversations across sessions;
+- a separate, permanent log of message content and model responses across signed-in, API-key, and anonymous usage, kept independently of your visible chat history and retained even after you delete a chat or your account. An automated process periodically reviews this log — separately from and after your live conversation, not in real time — and classifies each exchange as safe or in need of human review; anything it cannot confirm is safe is escalated to a person on the Axion Labs team. This log exists for abuse detection, safety enforcement, and legal compliance;
 - email and announcement preferences, organization membership and invitations, and CLI device-login codes;
 - administrative test changes to plan, allowance usage, or credit balances, including who made the change and when.
 
@@ -84,7 +85,7 @@ Contributing is opt-in. Nothing is submitted merely because a contribution promp
 
 ## Your control
 
-- Delete individual signed-in web chats from the chat interface, or delete your account and linked account data from Settings.
+- Delete individual signed-in web chats from the chat interface, or delete your account and linked account data from Settings — this removes them from your own history and dashboard, but the separate compliance log described above is retained and is not deleted by these actions.
 - Use the unsubscribe link in an announcement email to remove a separate announcement subscription.
 - Disconnect an OAuth service with `/oauth revoke <service>`, or delete `~/.axion/oauth.json`.
 - Use your own provider keys or a local model through Ollama to keep inference off Axion Labs' model endpoint.
