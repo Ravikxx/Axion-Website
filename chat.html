@@ -558,6 +558,7 @@
   let userEmail = localStorage.getItem('axion_email') || null
   let streaming = false
   let abortCtrl = null    // AbortController for the in-flight completion (stop button)
+  let stopRequested = false   // also cancels pending tool cards + the automatic tool-call loop, not just the current fetch
 
   // Sandbox tool-call mode: 'ask' requires a click before running model-requested
   // code, 'auto' runs immediately. Fetched once per session load and cached.
@@ -985,12 +986,13 @@
     }).join('')
   }
 
-  async function executeSandboxCode(code, language, chatId) {
+  async function executeSandboxCode(code, language, chatId, signal) {
     try {
       const res = await fetch(`${API}/v1/sandbox/execute`, {
         method: 'POST',
         headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ code, language, chat_id: chatId }),
+        signal,
       })
       const data = await res.json().catch(() => ({}))
       if (data.cap_exceeded) return { text: data.message || 'Weekly sandbox execution limit reached.', artifacts: [] }
@@ -1003,6 +1005,7 @@
       }
       return { text: out || '(no output)', artifacts }
     } catch (e) {
+      if (e.name === 'AbortError') return { text: 'Execution stopped by user.', artifacts: [], stopped: true }
       return { text: `Error: ${e.message}`, artifacts: [] }
     }
   }
@@ -1025,23 +1028,23 @@
       wrap.appendChild(div)
       document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight
 
-      window.__toolResolvers[cardId] = async (approved) => {
+      window.__toolResolvers[cardId] = async (approved, reason) => {
         const cardEl = document.getElementById(cardId)
         const actionsEl = cardEl.querySelector('.tool-card-actions')
         const outputEl = cardEl.querySelector('.tool-output')
         const artifactsEl = cardEl.querySelector('.tool-artifacts')
         if (!approved) {
-          actionsEl.innerHTML = '<span class="tool-status">Denied</span>'
-          resolve('User declined to run this code.')
+          actionsEl.innerHTML = `<span class="tool-status">${escHtml(reason ? 'Stopped' : 'Denied')}</span>`
+          resolve(reason || 'User declined to run this code.')
           return
         }
         actionsEl.innerHTML = '<span class="tool-status">Executing…</span>'
-        const result = await executeSandboxCode(code, language, chatId)
+        const result = await executeSandboxCode(code, language, chatId, abortCtrl?.signal)
         outputEl.style.display = 'block'
         outputEl.textContent = result.text
         if (result.artifacts?.length) window.__toolArtifactsCache[toolCall.id] = result.artifacts
         artifactsEl.innerHTML = artifactsHtml(result.artifacts)
-        actionsEl.innerHTML = '<span class="tool-status">Done</span>'
+        actionsEl.innerHTML = `<span class="tool-status">${result.stopped ? 'Stopped' : 'Done'}</span>`
         resolve(result.text)
       }
 
@@ -1181,7 +1184,21 @@
   }
 
   function onSendClick() { if (streaming) stopGenerating(); else sendMessage() }
-  function stopGenerating() { if (abortCtrl) abortCtrl.abort() }
+  // Stop needs to reach three different waiting states, not just the
+  // streaming fetch: a card still waiting on Run/Deny, an execution
+  // already in flight (aborted via the same signal passed into
+  // executeSandboxCode), and the automatic tool-call loop itself (checked
+  // via stopRequested before each recursive round).
+  function stopGenerating() {
+    stopRequested = true
+    if (abortCtrl) abortCtrl.abort()
+    document.querySelectorAll('.tool-card').forEach(cardEl => {
+      const actionsEl = cardEl.querySelector('.tool-card-actions')
+      if (actionsEl?.querySelector('.tool-run')) {
+        window.__toolResolvers[cardEl.id]?.(false, 'Stopped by user.')
+      }
+    })
+  }
 
   async function sendMessage() {
     if (streaming) return
@@ -1227,6 +1244,7 @@
   // hard cap (TOOL_STEP_LIMIT) stops a runaway "call tool, get result, call
   // tool again..." loop instead of looping forever.
   async function generateReply(c, depth = 0) {
+    if (depth === 0) stopRequested = false
     await ensureSandboxMode()
     setSendingState(true)
     abortCtrl = new AbortController()
@@ -1340,6 +1358,11 @@
 
       setSendingState(false)
       abortCtrl = null
+
+      if (stopRequested) {
+        document.getElementById('user-input').focus()
+        return
+      }
 
       if (depth + 1 >= TOOL_STEP_LIMIT) {
         const stepDiv = document.createElement('div')
