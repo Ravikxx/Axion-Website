@@ -1032,10 +1032,13 @@
       return Promise.resolve('Error: no code was provided in this call — the code argument was empty. Call run_code again with actual, non-empty code.')
     }
     const signature = language + '::' + trimmed
-    if (window.__lastToolCallSignature[chatId] === signature) {
-      return Promise.resolve('Error: this exact code was just attempted immediately before this call — do not call run_code again with identical code back-to-back. If it was denied, do not retry it; respond to the user instead. If you need to keep going, try something meaningfully different or ask the user what they want.')
+    const last = window.__lastToolCallSignature[chatId]
+    if (last && last.signature === signature) {
+      return Promise.resolve(last.denied
+        ? 'The user explicitly declined to run this exact code. Do not call run_code with this code again — it will not be run. Respond to the user instead of retrying.'
+        : 'This exact code already ran in the immediately preceding call. Do not call run_code with this code again — use the result you already have instead of repeating it.')
     }
-    window.__lastToolCallSignature[chatId] = signature
+    window.__lastToolCallSignature[chatId] = { signature, denied: null }
 
     const cardId = 'tool-' + (toolCall.id || Math.random().toString(36).slice(2))
 
@@ -1052,12 +1055,14 @@
         const outputEl = cardEl.querySelector('.tool-output')
         const artifactsEl = cardEl.querySelector('.tool-artifacts')
         if (!approved) {
+          window.__lastToolCallSignature[chatId] = { signature, denied: true }
           actionsEl.innerHTML = `<span class="tool-status">${escHtml(reason ? 'Stopped' : 'Denied')}</span>`
-          resolve(reason || 'User declined to run this code.')
+          resolve(reason || 'The user explicitly declined to run this code. Do not call run_code with this code again.')
           return
         }
         actionsEl.innerHTML = '<span class="tool-status">Executing…</span>'
         const result = await executeSandboxCode(code, language, chatId, abortCtrl?.signal)
+        window.__lastToolCallSignature[chatId] = { signature, denied: false }
         outputEl.style.display = 'block'
         outputEl.textContent = result.text
         if (result.artifacts?.length) window.__toolArtifactsCache[toolCall.id] = result.artifacts
