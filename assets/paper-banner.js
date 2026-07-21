@@ -176,7 +176,10 @@
       img.src = src;
       imgEls[i] = img;
 
+      var settled = false;
       function markReady() {
+        if (settled) return;
+        settled = true;
         loaded[i] = true;
         if (!painted) paintNext();
       }
@@ -187,13 +190,20 @@
       // first time it's actually drawn, which is exactly the flash this
       // is trying to avoid. Fall back to onload where decode() isn't
       // available.
+      //
+      // decode() can also just hang — never resolving *or* rejecting —
+      // in some browser/tab states (observed directly: a backgrounded or
+      // otherwise non-composited tab can leave its promise pending
+      // indefinitely). Without a backstop that leaves this image stuck
+      // "not ready" forever, which starves paintNext() and leaves the
+      // banner showing its flat CSS fallback color with no texture at
+      // all — exactly the "doesn't look right" case this guards against.
       if (img.decode) {
-        img.decode().then(markReady, function () {
-          img.onload = markReady;
-        });
-      } else {
-        img.onload = markReady;
+        img.decode().then(markReady, markReady);
       }
+      img.onload = markReady;
+      if (img.complete && img.naturalWidth) markReady();
+      setTimeout(markReady, 2000);
     });
 
     window.setInterval(paintNext, interval);
