@@ -1246,11 +1246,11 @@
       type: 'function',
       function: {
         name: 'run_code',
-        description: 'Execute code in an isolated sandbox tied to this conversation and return stdout/stderr. The sandbox persists across calls in this chat — variables, installed packages, and files from earlier calls in the same conversation are still there. This runs as a script, not a REPL — bare expressions produce no output; you must print() (or console.log()) any value you want to see, including the final answer to a calculation. To hand a generated file back to the user (e.g. a chart image, a CSV), save it under /home/daytona/output/ — anything written there is returned to the user as a downloadable/inline attachment.',
+        description: 'Execute code in an isolated sandbox tied to this conversation and return stdout/stderr. The sandbox persists across calls in this chat — variables, installed packages, and files from earlier calls in the same conversation are still there. This runs as a script, not a REPL — bare expressions produce no output; you must print() (or console.log()) any value you want to see, including the final answer to a calculation. IMPORTANT, read carefully: print()/console.log() ONLY shows text in this chat — it does NOT create a downloadable file, no matter what the text says. If the user asks you to "generate a file", "save a file", or "let me download" something, you MUST write actual bytes to disk under /home/daytona/output/ (e.g. open("/home/daytona/output/hello.txt", "w").write("...") in Python, or fs.writeFileSync("/home/daytona/output/hello.txt", "...") in JavaScript) — printing the content is never sufficient and will not give the user anything to download. Anything written under /home/daytona/output/ is automatically returned to the user as a downloadable/inline attachment after the call finishes.',
         parameters: {
           type: 'object',
           properties: {
-            code: { type: 'string', description: 'Code to execute. Must print()/console.log() to produce any visible output. Save files meant for the user under /home/daytona/output/.' },
+            code: { type: 'string', description: 'Code to execute. print()/console.log() only shows text in the chat and creates no downloadable file. To give the user an actual file, write it to disk under /home/daytona/output/, e.g. open("/home/daytona/output/name.ext", "w").write(...) in Python.' },
             language: { type: 'string', enum: ['python', 'javascript'], description: 'Language to run the code as. Defaults to python.' },
           },
           required: ['code'],
