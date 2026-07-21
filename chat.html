@@ -961,11 +961,20 @@
   // just an inert link) but are NOT persisted with the chat: the base64
   // payload of even one image would blow past /chats/:id's 1MB message-blob
   // cap almost immediately. The {role:'tool'} text sent to the model (and
-  // saved to history) just names what was generated, so re-opening an old
-  // chat still shows what happened even though the file itself is gone.
-  function renderArtifacts(container, artifacts) {
-    if (!artifacts || !artifacts.length) return
-    container.innerHTML = artifacts.map(a => {
+  // saved to history) just names what was generated.
+  //
+  // Cached client-side (in-memory only, per page load) keyed by tool_call_id
+  // so renderMessages()'s full DOM rebuild — which runs right after a tool
+  // round resolves, to append the assistant's next turn — can redraw them
+  // instead of losing them: without this, the live card's blob URLs would
+  // be wiped the instant renderMessages() ran. Reopening a chat from
+  // scratch (a fresh page load) won't have this cache, so old artifacts
+  // are gone then — only the filenames mentioned in the tool text remain.
+  window.__toolArtifactsCache = window.__toolArtifactsCache || {}
+
+  function artifactsHtml(artifacts) {
+    if (!artifacts || !artifacts.length) return ''
+    return artifacts.map(a => {
       const bytes = Uint8Array.from(atob(a.dataBase64), ch => ch.charCodeAt(0))
       const blob = new Blob([bytes], { type: a.mimeType })
       const url = URL.createObjectURL(blob)
@@ -989,7 +998,9 @@
       let out = data.stdout || ''
       if (data.timed_out) out += (out ? '\n' : '') + '[execution timed out]'
       const artifacts = data.artifacts || []
-      if (artifacts.length) out += (out ? '\n' : '') + `[Generated file(s): ${artifacts.map(a => a.name).join(', ')}]`
+      if (artifacts.length) {
+        out += (out ? '\n' : '') + `[Generated file(s): ${artifacts.map(a => a.name).join(', ')} — already saved and shown to the user as a download. Do not call this tool again for the same file; just tell the user it's ready.]`
+      }
       return { text: out || '(no output)', artifacts }
     } catch (e) {
       return { text: `Error: ${e.message}`, artifacts: [] }
@@ -1028,7 +1039,8 @@
         const result = await executeSandboxCode(code, language, chatId)
         outputEl.style.display = 'block'
         outputEl.textContent = result.text
-        renderArtifacts(artifactsEl, result.artifacts)
+        if (result.artifacts?.length) window.__toolArtifactsCache[toolCall.id] = result.artifacts
+        artifactsEl.innerHTML = artifactsHtml(result.artifacts)
         actionsEl.innerHTML = '<span class="tool-status">Done</span>'
         resolve(result.text)
       }
@@ -1078,10 +1090,12 @@
             if (args.language) language = args.language
           } catch {}
           const resultMsg = c.messages.find(mm => mm.role === 'tool' && mm.tool_call_id === tc.id)
+          const cachedArtifacts = window.__toolArtifactsCache[tc.id]
           return `
             <div class="tool-card">
               <pre class="tool-code">${escHtml(code)}</pre>
               <pre class="tool-output">${escHtml(resultMsg ? resultMsg.content : '')}</pre>
+              ${cachedArtifacts ? `<div class="tool-artifacts">${artifactsHtml(cachedArtifacts)}</div>` : ''}
             </div>`
         }).join('')
         const langs = [...new Set(m.tool_calls.map(tc => { try { return JSON.parse(tc.function.arguments || '{}').language || 'python' } catch { return 'python' } }))]
@@ -1233,7 +1247,11 @@
 
     const chartHint = { role: 'system', content: 'You can render charts. Output chart data in a ```chart code block with JSON like {"type":"bar","title":"...","data":{"labels":["A","B"],"datasets":[{"data":[1,2]}]}}. Types: bar, pie, doughnut, line.' }
     const apiMessages = c.messages.map(m => {
-      const out = { role: m.role, content: m.content ?? '' }
+      // A pure tool-call turn (no accompanying prose) is content: null on
+      // the real API wire shape, confirmed against a live non-streaming
+      // spike response — sending '' instead risks reading as "the
+      // assistant said something" to the model and muddying its own turn.
+      const out = { role: m.role, content: m.tool_calls?.length ? (m.content || null) : (m.content ?? '') }
       if (m.tool_calls) out.tool_calls = m.tool_calls
       if (m.tool_call_id) out.tool_call_id = m.tool_call_id
       return out
