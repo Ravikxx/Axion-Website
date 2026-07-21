@@ -274,6 +274,19 @@
     }
     .tool-artifact-file:hover { border-color: var(--accent); }
 
+    .tool-lock-banner {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      max-width: 760px; margin: 0 auto 10px; padding: 10px 14px;
+      border: 1px solid var(--border2); border-radius: 11px;
+      background: var(--surface2); font-size: 12.5px; color: var(--muted2);
+    }
+    .tool-lock-banner .btn-sm {
+      flex-shrink: 0; border: 1px solid var(--border2); background: none;
+      color: var(--text); font-size: 12px; padding: 5px 12px; border-radius: 8px;
+      cursor: pointer; transition: border-color .12s, background .12s;
+    }
+    .tool-lock-banner .btn-sm:hover { border-color: var(--accent); background: var(--surface); }
+
     /* ── Empty / greeting ── */
     .greeting {
       flex: 1; display: flex; flex-direction: column;
@@ -539,6 +552,10 @@
 
   <div class="input-area">
     <div class="input-inner">
+      <div class="tool-lock-banner" id="tool-lock-banner" style="display:none">
+        <span>Code execution was disabled for this chat after a repeated call.</span>
+        <button class="btn-sm" onclick="reenableToolAccess()">Re-enable</button>
+      </div>
       <div class="input-row">
         <textarea class="input-box" id="user-input" placeholder="Message…" rows="1"
           oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
@@ -655,6 +672,7 @@
     document.getElementById('topbar-title').textContent = 'New chat'
     toggleDrawer(false)
     document.getElementById('user-input').focus()
+    updateToolLockBanner()
   }
 
   async function switchChat(id) {
@@ -663,6 +681,7 @@
     const c = currentChat()
     document.getElementById('topbar-title').textContent = c ? c.title : 'New chat'
     toggleDrawer(false)
+    updateToolLockBanner()
     if (c && !c.loaded) {
       document.getElementById('messages').innerHTML = '<div class="greeting"><div class="greeting-sub">Loading…</div></div>'
       await fetchChatMessages(c)
@@ -1017,16 +1036,33 @@
   // instead of putting a fresh Run/Deny card in front of the user each time.
   window.__lastToolCallSignature = window.__lastToolCallSignature || {}
 
-  // Counts consecutive blocked attempts (empty code, or a repeat of the
-  // immediately preceding call) per chat. Wording alone doesn't reliably
-  // stop a weak model from just retrying anyway — observed live it burned
-  // through all 5 rounds re-requesting the same blocked call. At
-  // TOOL_ISSUE_STREAK_LIMIT, generateReply strips `tools` from the next
-  // request entirely, making it structurally impossible to call the tool
-  // again this turn rather than hoping the model listens. Reset to 0 by any
-  // real execution or a denial of genuinely new code.
-  window.__toolIssueStreak = window.__toolIssueStreak || {}
-  const TOOL_ISSUE_STREAK_LIMIT = 2
+  // A single blocked attempt (empty code, or a repeat of the immediately
+  // preceding call) sticks a per-chat lock: generateReply omits the
+  // run_code tool entirely from every future request in this chat, not
+  // just the rest of this turn, until the user explicitly clicks
+  // "Re-enable" in the banner (see reenableToolAccess). Wording alone
+  // doesn't reliably stop a weak model from just retrying anyway —
+  // observed live it burned through all 5 rounds re-requesting the same
+  // blocked call — and auto-restoring on the next message would let it
+  // immediately repeat the same mistake, so restoring access is a
+  // deliberate user action, not automatic.
+  window.__toolAccessLocked = window.__toolAccessLocked || {}
+
+  function lockToolAccess(chatId) {
+    window.__toolAccessLocked[chatId] = true
+    updateToolLockBanner()
+  }
+
+  function reenableToolAccess() {
+    window.__toolAccessLocked[currentId] = false
+    window.__lastToolCallSignature[currentId] = null
+    updateToolLockBanner()
+  }
+
+  function updateToolLockBanner() {
+    const banner = document.getElementById('tool-lock-banner')
+    if (banner) banner.style.display = window.__toolAccessLocked[currentId] ? 'flex' : 'none'
+  }
 
   // Appends a tool card to the live message stream and returns a promise
   // that resolves with the tool-result string once the call is settled.
@@ -1040,19 +1076,19 @@
 
     const trimmed = code.trim()
     if (!trimmed) {
-      window.__toolIssueStreak[chatId] = (window.__toolIssueStreak[chatId] || 0) + 1
-      return Promise.resolve('Error: no code was provided in this call — the code argument was empty. Call run_code again with actual, non-empty code.')
+      lockToolAccess(chatId)
+      return Promise.resolve('Error: no code was provided in this call — the code argument was empty. Tool access has now been disabled for this chat until the user re-enables it — do not attempt to call run_code again; tell the user what happened.')
     }
     const signature = language + '::' + trimmed
     const last = window.__lastToolCallSignature[chatId]
     if (last && last.signature === signature) {
-      window.__toolIssueStreak[chatId] = (window.__toolIssueStreak[chatId] || 0) + 1
-      return Promise.resolve(last.denied
-        ? 'The user explicitly declined to run this exact code. Do not call run_code with this code again — it will not be run. Respond to the user instead of retrying.'
-        : 'This exact code already ran in the immediately preceding call. Do not call run_code with this code again — use the result you already have instead of repeating it.')
+      lockToolAccess(chatId)
+      return Promise.resolve((last.denied
+        ? 'The user explicitly declined to run this exact code, and you called run_code again with it anyway. '
+        : 'This exact code already ran in the immediately preceding call, and you called run_code again with it anyway. ')
+        + 'Tool access has now been disabled for this chat until the user re-enables it — do not attempt to call run_code again; tell the user what happened.')
     }
     window.__lastToolCallSignature[chatId] = { signature, denied: null }
-    window.__toolIssueStreak[chatId] = 0
 
     const cardId = 'tool-' + (toolCall.id || Math.random().toString(36).slice(2))
 
@@ -1281,7 +1317,7 @@
   // hard cap (TOOL_STEP_LIMIT) stops a runaway "call tool, get result, call
   // tool again..." loop instead of looping forever.
   async function generateReply(c, depth = 0) {
-    if (depth === 0) { stopRequested = false; window.__toolIssueStreak[c.id] = 0 }
+    if (depth === 0) stopRequested = false
     await ensureSandboxMode()
     setSendingState(true)
     abortCtrl = new AbortController()
@@ -1315,11 +1351,12 @@
     // axion-sk-/CLI caller hitting /v1/chat/completions directly has no
     // client-side loop to fulfill a tool_calls turn, so injecting it for
     // everyone would silently hand back an unfulfillable response.
-    // Also withheld once this chat's blocked-attempt streak hits the limit
-    // (see TOOL_ISSUE_STREAK_LIMIT) — omitting the tool entirely makes
-    // another attempt structurally impossible for this turn, rather than
-    // relying on the model to actually listen to the tool-result wording.
-    const toolAccessRevoked = (window.__toolIssueStreak[c.id] || 0) >= TOOL_ISSUE_STREAK_LIMIT
+    // Also withheld once this chat is locked (see lockToolAccess) — omitting
+    // the tool entirely makes another attempt structurally impossible,
+    // rather than relying on the model to actually listen to wording. The
+    // lock is sticky across turns; only the user clicking "Re-enable" in
+    // the banner clears it.
+    const toolAccessRevoked = !!window.__toolAccessLocked[c.id]
     const tools = (sessionToken && !toolAccessRevoked) ? [{
       type: 'function',
       function: {
@@ -1337,7 +1374,7 @@
     }] : undefined
     const systemHints = [chartHint]
     if (toolAccessRevoked) {
-      systemHints.push({ role: 'system', content: 'Tool access has been temporarily disabled for this reply because you called run_code with the same blocked request too many times in a row. You cannot call any tool right now — answer the user directly in plain text using the information already in this conversation.' })
+      systemHints.push({ role: 'system', content: 'Tool access has been disabled for this entire chat because you repeated an already-blocked run_code call. You cannot call any tool right now, in this reply or any future one in this chat, until the user clicks "Re-enable" — answer the user directly in plain text using the information already in this conversation.' })
     }
     const body = { model: selectedModel, messages: [...systemHints, ...apiMessages], stream: true, ...(tools ? { tools } : {}) }
     const headers = { 'Content-Type': 'application/json' }
