@@ -1195,8 +1195,8 @@
       type: 'function',
       function: {
         name: 'run_python',
-        description: 'Execute Python code in an isolated sandbox and return stdout/stderr. No internet access on the free plan.',
-        parameters: { type: 'object', properties: { code: { type: 'string', description: 'Python code to execute.' } }, required: ['code'] },
+        description: 'Execute Python code in an isolated sandbox and return stdout/stderr. This runs as a script, not a REPL — bare expressions produce no output. You must print() any value you want to see, including the final answer to a calculation. No internet access on the free plan.',
+        parameters: { type: 'object', properties: { code: { type: 'string', description: 'Python code to execute. Must call print() to produce any visible output.' } }, required: ['code'] },
       },
     }] : undefined
     const body = { model: selectedModel, messages: [chartHint, ...apiMessages], stream: true, ...(tools ? { tools } : {}) }
