@@ -218,7 +218,7 @@
       <li>Axion-issued API keys and their status, request counts, token counts, calculated usage cost, allowance windows, and rate-limit records.</li>
       <li>Plan and subscription status, credit balances, credit-code redemptions, and Square customer or subscription identifiers.</li>
       <li>Signed-in web chat history and chat metadata used to sync conversations across sessions.</li>
-      <li>A separate, permanent log of message content, model responses, and model-requested tool calls across signed-in, API-key, and anonymous usage, kept independently of your visible chat history and retained even after you delete a chat or your account. An automated process periodically sends the latest user message and the corresponding assistant response to Mistral's moderation service — separately from and after your live conversation, not in real time. Exchanges matched to Axion's selected safety categories may be escalated to a person on the Axion Labs team. Moderation-service or parsing failures are recorded as operational errors rather than user-safety violations. This log exists for abuse detection, safety enforcement, and legal compliance.</li>
+      <li>A separate, permanent log of message content, model responses, and model-requested tool calls across signed-in, API-key, and anonymous usage, kept independently of your visible chat history and retained even after you delete a chat or your account. An automated process periodically sends recent user/assistant conversation context, the latest user message, and the corresponding assistant response to a general-purpose Mistral model with instructions to classify Axion's selected safety categories — separately from and after your live conversation, not in real time. Exchanges matched to those categories may be escalated to a person on the Axion Labs team. Model, API, or parsing failures are recorded as operational errors rather than user-safety violations. This log exists for abuse detection, safety enforcement, and legal compliance.</li>
       <li>Email and announcement preferences, organization membership and invitations, and CLI device-login codes.</li>
       <li>Administrative test changes to plan, allowance usage, or credit balances, including who made the change and when.</li>
     </ul>
@@ -289,7 +289,7 @@
     <ul>
       <li><strong>RunPod</strong> (Lumen inference) — <a href="https://www.runpod.io/legal/privacy-policy">runpod.io privacy policy</a></li>
       <li><strong>Hugging Face</strong> (default vision inference) — <a href="https://huggingface.co/privacy">huggingface.co/privacy</a></li>
-      <li><strong>Mistral</strong> (asynchronous safety moderation of logged chat exchanges) — <a href="https://legal.mistral.ai/terms/privacy-policy">mistral.ai privacy policy</a></li>
+      <li><strong>Mistral</strong> (asynchronous, context-aware safety classification of logged chat exchanges) — <a href="https://legal.mistral.ai/terms/privacy-policy">mistral.ai privacy policy</a></li>
       <li><strong>Cloudflare</strong> (API backend &amp; contribution endpoint) — <a href="https://www.cloudflare.com/policies/privacy/">cloudflare.com/policies/privacy</a></li>
       <li><strong>Square</strong> (payments &amp; subscriptions) — <a href="https://squareup.com/us/en/legal/general/privacy">squareup.com privacy notice</a></li>
       <li><strong>Resend</strong> (transactional &amp; announcement email) — <a href="https://resend.com/legal/privacy-policy">resend.com privacy policy</a></li>
