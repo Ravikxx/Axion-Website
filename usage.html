@@ -236,7 +236,13 @@
     </a>
   </div>
   <div class="sidebar-bottom">
-    <a class="sidebar-user" href="/settings" title="Open settings" aria-label="Open account settings"><div class="sidebar-email" id="sidebar-email"></div></a>
+    <a class="sidebar-user" href="/settings" title="Open settings" aria-label="Open account settings">
+      <div class="sidebar-avatar" id="sidebar-avatar" aria-hidden="true">A</div>
+      <div class="sidebar-account-copy">
+        <div class="sidebar-email" id="sidebar-email"></div>
+        <div class="sidebar-account-label">Account settings</div>
+      </div>
+    </a>
     <button class="sidebar-signout" type="button" onclick="logout()">Sign out</button>
   </div>
 </aside>
@@ -355,6 +361,7 @@
   </div>
 </main>
 
+<script src="/assets/account-profile.js"></script>
 <script>
   const API = 'https://api.amplifiedsmp.org';
   const sessionToken = localStorage.getItem('axion_token') || null;
@@ -363,6 +370,7 @@
   function logout() {
     localStorage.removeItem('axion_token');
     localStorage.removeItem('axion_email');
+    AxionAccountProfile.clear();
     location.href = '/';
   }
 
@@ -543,13 +551,17 @@
       });
       if (response.status === 401) {
         localStorage.removeItem('axion_token');
+        AxionAccountProfile.clear();
         document.getElementById('sidebar').style.display = 'none';
         document.getElementById('main-panel').style.display = 'none';
         document.getElementById('signin-prompt').style.display = 'flex';
         return false;
       }
       if (!response.ok) throw new Error(`Usage service returned ${response.status}`);
-      renderUsage(await response.json());
+      const account = await response.json();
+      AxionAccountProfile.cacheAvatar(account.avatar_url || '');
+      AxionAccountProfile.renderAvatar(document.getElementById('sidebar-avatar'), userEmail, account.avatar_url);
+      renderUsage(account);
       return true;
     } catch (error) {
       document.getElementById('usage-content').style.display = 'none';
@@ -567,6 +579,11 @@
     document.getElementById('sidebar').style.display = 'flex';
     document.getElementById('main-panel').style.display = 'flex';
     document.getElementById('sidebar-email').textContent = userEmail;
+    AxionAccountProfile.renderAvatar(
+      document.getElementById('sidebar-avatar'),
+      userEmail,
+      AxionAccountProfile.cachedAvatar(),
+    );
     loadUsage();
   }
 </script>

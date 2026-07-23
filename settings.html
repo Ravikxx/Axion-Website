@@ -188,6 +188,24 @@
     .provider-status { font-size: 12px; color: var(--muted); margin-right: 8px; }
     .provider-status.connected { color: var(--green); }
 
+    /* Profile picture */
+    .profile-picture-row {
+      display: flex; align-items: center; gap: 18px;
+      padding: 14px 0 4px;
+    }
+    .profile-picture-preview {
+      width: 72px; height: 72px; flex: 0 0 auto;
+      display: grid; place-items: center; overflow: hidden;
+      border: 1px solid var(--border2); border-radius: 50%;
+      background: var(--accent); color: var(--accent-ink);
+      font-size: 22px; font-weight: 700; text-transform: uppercase;
+      box-shadow: 0 8px 24px rgba(0,0,0,.18);
+    }
+    .profile-picture-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-picture-copy { min-width: 0; flex: 1; }
+    .profile-picture-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .profile-picture-status { min-height: 18px; }
+
     /* Usage stat cards */
     .stat-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
     .stat-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
@@ -232,6 +250,7 @@
       .settings-tabs-shell { padding: 0 8px; }
       body .content { padding: 16px 16px 48px !important; }
       .stat-cards { grid-template-columns: 1fr 1fr; }
+      .profile-picture-row { align-items: flex-start; }
     }
   </style>
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
@@ -279,7 +298,13 @@
   </div>
 
   <div class="sidebar-bottom">
-    <a class="sidebar-user" href="/settings" title="Open settings" aria-label="Open account settings"><div class="sidebar-email" id="sidebar-email"></div></a>
+    <a class="sidebar-user" href="/settings" title="Open settings" aria-label="Open account settings">
+      <div class="sidebar-avatar" id="sidebar-avatar" aria-hidden="true">A</div>
+      <div class="sidebar-account-copy">
+        <div class="sidebar-email" id="sidebar-email"></div>
+        <div class="sidebar-account-label">Account settings</div>
+      </div>
+    </a>
     <button class="sidebar-signout" onclick="logout()">Sign out</button>
   </div>
 </aside>
@@ -299,6 +324,19 @@
     <section class="settings-panel" id="settings-panel-account" role="tabpanel" aria-labelledby="settings-tab-account" data-settings-panel="account">
       <div class="settings-section">
         <h2>Account</h2>
+        <div class="profile-picture-row">
+          <div class="profile-picture-preview" id="profile-picture-preview" aria-hidden="true">A</div>
+          <div class="profile-picture-copy">
+            <div class="settings-row-label">Profile picture</div>
+            <div class="settings-row-desc">PNG, JPEG, or WebP. Maximum 2 MB. Square images work best.</div>
+            <div class="profile-picture-actions">
+              <input id="profile-picture-input" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+              <button class="btn-sm" id="btn-profile-picture" type="button" onclick="document.getElementById('profile-picture-input').click()">Upload picture</button>
+              <button class="btn-sm" id="btn-remove-profile-picture" type="button" onclick="removeProfilePicture()" hidden>Remove</button>
+            </div>
+            <div class="status-msg profile-picture-status" id="profile-picture-msg" role="status" aria-live="polite"></div>
+          </div>
+        </div>
         <div class="settings-row">
           <div>
             <div class="settings-row-label">Email</div>
@@ -417,6 +455,7 @@
   </div>
 </div>
 
+<script src="/assets/account-profile.js"></script>
 <script>
   const API = 'https://api.amplifiedsmp.org';
   const sessionToken = localStorage.getItem('axion_token') || null;
@@ -435,6 +474,7 @@
   function logout() {
     localStorage.removeItem('axion_token');
     localStorage.removeItem('axion_email');
+    AxionAccountProfile.clear();
     location.href = '/';
   }
 
@@ -478,6 +518,101 @@
     activateSettingsTab(location.hash.slice(1), false);
     window.addEventListener('popstate', () => activateSettingsTab(location.hash.slice(1), false));
   }
+
+  // ── Profile picture ───────────────────────────────────────────────────────
+  function renderProfilePicture(url) {
+    AxionAccountProfile.cacheAvatar(url || '');
+    AxionAccountProfile.renderAvatar(document.getElementById('profile-picture-preview'), userEmail, url);
+    AxionAccountProfile.renderAvatar(document.getElementById('sidebar-avatar'), userEmail, url);
+    document.getElementById('btn-profile-picture').textContent = url ? 'Change picture' : 'Upload picture';
+    document.getElementById('btn-remove-profile-picture').hidden = !url;
+  }
+
+  async function loadProfilePicture() {
+    try {
+      const account = await AxionAccountProfile.fetchAccount(sessionToken);
+      renderProfilePicture(account.avatar_url);
+    } catch {
+      renderProfilePicture(AxionAccountProfile.cachedAvatar());
+    }
+  }
+
+  async function uploadProfilePicture(file) {
+    if (!file) return;
+    const msg = document.getElementById('profile-picture-msg');
+    const uploadButton = document.getElementById('btn-profile-picture');
+    const removeButton = document.getElementById('btn-remove-profile-picture');
+    if (file.type && !['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+      msg.textContent = 'Choose a PNG, JPEG, or WebP image.';
+      msg.className = 'status-msg profile-picture-status err';
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      msg.textContent = 'Profile pictures must be 2 MB or smaller.';
+      msg.className = 'status-msg profile-picture-status err';
+      return;
+    }
+
+    uploadButton.disabled = true;
+    removeButton.disabled = true;
+    uploadButton.textContent = 'Uploading…';
+    msg.textContent = '';
+    try {
+      const response = await fetchT(API + '/dashboard/avatar', {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type || 'application/octet-stream', ...authHeaders },
+        body: file,
+      }, 20000);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || 'Could not upload that picture.');
+      renderProfilePicture(data.avatar_url);
+      await AxionAccountProfile.fetchAccount(sessionToken, true);
+      msg.textContent = 'Profile picture updated.';
+      msg.className = 'status-msg profile-picture-status ok';
+    } catch (error) {
+      msg.textContent = error.name === 'AbortError'
+        ? 'The upload took too long. Please try again.'
+        : (error.message || 'Could not upload that picture.');
+      msg.className = 'status-msg profile-picture-status err';
+    } finally {
+      uploadButton.disabled = false;
+      removeButton.disabled = false;
+      uploadButton.textContent = AxionAccountProfile.cachedAvatar() ? 'Change picture' : 'Upload picture';
+    }
+  }
+
+  async function removeProfilePicture() {
+    const msg = document.getElementById('profile-picture-msg');
+    const uploadButton = document.getElementById('btn-profile-picture');
+    const removeButton = document.getElementById('btn-remove-profile-picture');
+    uploadButton.disabled = true;
+    removeButton.disabled = true;
+    msg.textContent = '';
+    try {
+      const response = await fetchT(API + '/dashboard/avatar', {
+        method: 'DELETE',
+        headers: authHeaders,
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || 'Could not remove your picture.');
+      renderProfilePicture('');
+      await AxionAccountProfile.fetchAccount(sessionToken, true);
+      msg.textContent = 'Profile picture removed.';
+      msg.className = 'status-msg profile-picture-status ok';
+    } catch (error) {
+      msg.textContent = error.message || 'Could not remove your picture.';
+      msg.className = 'status-msg profile-picture-status err';
+    } finally {
+      uploadButton.disabled = false;
+      removeButton.disabled = false;
+    }
+  }
+
+  document.getElementById('profile-picture-input').addEventListener('change', event => {
+    const [file] = event.target.files;
+    event.target.value = '';
+    void uploadProfilePicture(file);
+  });
 
   // ── Notifications ─────────────────────────────────────────────────────────
   async function loadPrefs() {
@@ -542,9 +677,7 @@
     const couponNote = document.getElementById('coupon-note');
     const creditBalance = document.getElementById('credit-balance');
     try {
-      const res = await fetchT(API + '/dashboard/account', { headers: authHeaders });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
+      const data = await AxionAccountProfile.fetchAccount(sessionToken);
       creditBalance.textContent = formatCreditUsd(data.credits?.balance_usd);
       row.style.display = 'flex';
       if (data.plan === 'pro') {
@@ -729,9 +862,7 @@
     const list = document.getElementById('providers-list');
     let connected = null;
     try {
-      const res = await fetchT(API + '/dashboard/account', { headers: authHeaders });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
+      const data = await AxionAccountProfile.fetchAccount(sessionToken);
       connected = data.connected || {};
     } catch {
       connected = null; // backend route not live yet
@@ -804,10 +935,16 @@
     document.getElementById('main-panel').style.display = 'flex';
     document.getElementById('sidebar-email').textContent = userEmail;
     document.getElementById('account-email').textContent = userEmail;
+    AxionAccountProfile.renderAvatar(
+      document.getElementById('sidebar-avatar'),
+      userEmail,
+      AxionAccountProfile.cachedAvatar(),
+    );
     loadPrefs();
     loadUsage();
     loadProviders();
     loadPlan();
+    loadProfilePicture();
   })();
 </script>
 <script src="/assets/profile.js"></script>

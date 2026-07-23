@@ -23,6 +23,10 @@ nav .nav-btn-ghost:hover { color: var(--text, #e8e9f0); border-color: var(--mute
   transition: transform .12s, box-shadow .12s;
 }
 .ax-avatar:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(184,162,125,.35); }
+.ax-avatar img {
+  width: 100%; height: 100%; border-radius: inherit;
+  object-fit: cover;
+}
 
 .ax-menu {
   position: absolute; top: 42px; right: 0;
