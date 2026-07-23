@@ -4,7 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veil — Axion Labs</title>
+  <meta name="description" content="The history, deprecation schedule, and retirement plan for Veil 1.1, Axion Labs' first model.">
+  <link rel="canonical" href="https://axion.amplifiedsmp.org/veil">
+  <meta property="og:title" content="Why we're moving on from Veil — Axion Labs">
+  <meta property="og:description" content="The history, deprecation schedule, and retirement plan for Veil 1.1.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://axion.amplifiedsmp.org/veil">
+  <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
+  <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="/assets/theme-adaptive.css">
+  <link rel="stylesheet" href="/assets/site-shell.css">
+  <script src="/assets/site-nav.js" defer></script>
+  <script src="/assets/model-lifecycle.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -96,7 +107,7 @@
 <main>
   <section>
     <h2>What Veil was</h2>
-    <p>Veil 1.1 is a fine-tuned Llama 3.1 3B — small, fast, and free, with no API key or account required. It was our first model, built before Lumen existed, and it's the reason Lumen exists at all: everything we learned fine-tuning and shipping Veil shaped how we built Lumen 1.2.5.</p>
+    <p>Veil 1.1 is a fine-tuned Llama 3.1 3B — small, fast, and free with an Axion account. It was our first model, built before Lumen existed, and it's the reason Lumen exists at all: everything we learned fine-tuning and shipping Veil shaped how we built Lumen 1.2.5.</p>
   </section>
 
   <section>
@@ -116,7 +127,7 @@
 
   <section>
     <h2>What to use instead</h2>
-    <p>If you were calling Veil directly, switch to Lumen (<code style="background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;font-size:13px">model: "lumen"</code>) before July 30 — same OpenAI-compatible endpoint, same free tier, no account required.</p>
+    <p>If you were calling Veil directly, switch to Lumen (<code style="background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;font-size:13px">model: "lumen"</code>) before July 30 — same OpenAI-compatible endpoint and the same free Axion account.</p>
     <a class="cta" href="/lumen-model">See Lumen's model details →</a>
   </section>
 </main>
@@ -127,24 +138,5 @@
 
 <script src="/assets/profile.js"></script>
 
-<script>
-function toggleNav(){document.querySelector("nav")?.classList.toggle("nav-links-visible")}
-document.addEventListener("click",function(e){if(!e.target.closest("nav"))document.querySelector("nav")?.classList.remove("nav-links-visible")})
-
-;(function () {
-  const dot = document.getElementById('status-dot')
-  const text = document.getElementById('status-text')
-  const deprecatedAt = new Date('2026-07-25T00:00:00Z')
-  const retiredAt = new Date('2026-07-30T00:00:00Z')
-  const now = new Date()
-  if (now >= retiredAt) {
-    text.textContent = 'Veil is retired as of July 30, 2026.'
-  } else if (now >= deprecatedAt) {
-    text.textContent = 'Veil is deprecated — still usable until it retires July 30, 2026.'
-  } else {
-    text.textContent = 'Veil is migrating now; deprecates July 25, retires July 30, 2026.'
-  }
-})()
-</script>
 </body>
 </html>

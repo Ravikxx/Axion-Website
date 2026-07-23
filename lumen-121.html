@@ -4,8 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lumen 1.2.1 — Axion Labs</title>
+  <meta name="description" content="What changed in Lumen 1.2.1, including the mixed-dataset retrain, benchmark tradeoffs, and safety findings.">
+  <link rel="canonical" href="https://axion.amplifiedsmp.org/lumen-121">
+  <meta property="og:title" content="Lumen 1.2.1 — What Happened">
+  <meta property="og:description" content="The mixed-dataset retrain, benchmark tradeoffs, and safety findings behind Lumen 1.2.1.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://axion.amplifiedsmp.org/lumen-121">
+  <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
+  <meta name="twitter:card" content="summary">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="/assets/theme-adaptive.css">
+  <link rel="stylesheet" href="/assets/site-shell.css">
+  <script src="/assets/site-nav.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -467,7 +477,7 @@
 </main>
 
 <footer>
-  <p>© 2026 Axion Labs · <a href="/">Home</a> · <a href="/announcements">Announcements</a> · <a href="/lumen-12">Lumen 1.2</a> · <a href="/status">Status</a> · <a href="https://github.com/AxionLabsAI/axion">GitHub</a></p>
+  <p>© 2026 Axion Labs · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/AxionLabsAI/axion">GitHub</a></p>
 </footer>
 
 <script>
@@ -525,9 +535,5 @@
 </script>
 <script src="/assets/profile.js"></script>
 
-<script>
-function toggleNav(){document.querySelector("nav")?.classList.toggle("nav-links-visible")}
-document.addEventListener("click",function(e){if(!e.target.closest("nav"))document.querySelector("nav")?.classList.remove("nav-links-visible")})
-</script>
 </body>
 </html>

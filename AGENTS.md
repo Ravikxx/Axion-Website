@@ -148,7 +148,7 @@ These are lessons paid for in review cycles — keep them:
 
 ## Dashboard / API pages
 
-`keys.html`, `settings.html`, `playground.html`, `chat.html`, `admin.html`, etc.
+`keys.html`, `settings.html`, `usage.html`, `chat.html`, `admin.html`, etc.
 talk to a Cloudflare-Workers backend. When building UI against an endpoint that
 doesn't exist yet, degrade gracefully (timeouts, fallbacks) and hand off a
 precise backend spec rather than blocking.

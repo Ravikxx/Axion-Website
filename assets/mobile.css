@@ -146,10 +146,6 @@
   /* Auth/dashboard */
   .auth-card { padding: 24px 20px !important; border-radius: 12px !important; }
 
-  /* Playground */
-  .playground-layout { flex-direction: column !important; }
-  .playground-sidebar { width: 100% !important; position: static !important; height: auto !important; }
-
   /* Admin dashboard */
   .dashboard { padding: 16px !important; }
 
