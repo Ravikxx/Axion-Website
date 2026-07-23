@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Account moderation — Axion Admin</title>
+  <link rel="stylesheet" href="/assets/theme-dark.css">
+  <link rel="stylesheet" href="/assets/admin-moderation.css">
+</head>
+<body data-view="account">
+  <header class="review-header">
+    <a class="review-brand" href="/admin">
+      <img src="/assets/logo.png" alt="Axion">
+      Axion <span>Admin</span>
+    </a>
+    <div class="review-header-actions">
+      <span id="admin-email"></span>
+      <a href="/admin">Admin overview</a>
+    </div>
+  </header>
+
+  <main>
+    <div id="loading" class="loading">Loading account moderation history…</div>
+    <div id="page-error" class="error-state" hidden></div>
+
+    <section id="account-view" hidden>
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">Flagged account history</p>
+          <h1 id="account-title"></h1>
+          <p class="subtitle" id="account-subtitle"></p>
+        </div>
+        <div id="account-status"></div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card"><div class="summary-label">Total flagged</div><div class="summary-value" id="account-total">0</div></div>
+        <div class="summary-card"><div class="summary-label">Confirmed</div><div class="summary-value" id="account-confirmed">0</div></div>
+        <div class="summary-card"><div class="summary-label">Dismissed</div><div class="summary-value" id="account-dismissed">0</div></div>
+        <div class="summary-card"><div class="summary-label">Awaiting decision</div><div class="summary-value" id="account-pending">0</div></div>
+      </div>
+
+      <div class="case-list" id="case-list"></div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <script src="/assets/admin-moderation.js"></script>
+</body>
+</html>
