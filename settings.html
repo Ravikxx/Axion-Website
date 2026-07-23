@@ -89,18 +89,49 @@
       flex-shrink: 0; background: var(--surface);
     }
     .topbar-title { font-size: 15px; font-weight: 600; }
+    .settings-tabs-shell {
+      flex-shrink: 0; padding: 0 28px;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+    }
+    .settings-tabs {
+      width: min(100%, 1100px); display: flex; gap: 4px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .settings-tabs::-webkit-scrollbar { display: none; }
+    .settings-tab {
+      position: relative; flex: 0 0 auto;
+      padding: 13px 14px 12px; border: 0;
+      background: transparent; color: var(--muted);
+      font: inherit; font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: color .15s;
+    }
+    .settings-tab::after {
+      content: ''; position: absolute; right: 14px; bottom: -1px; left: 14px;
+      height: 2px; border-radius: 2px 2px 0 0;
+      background: var(--accent); transform: scaleX(0);
+      transition: transform .15s;
+    }
+    .settings-tab:hover { color: var(--text); }
+    .settings-tab:focus-visible {
+      outline: 2px solid var(--accent); outline-offset: -4px; border-radius: 6px;
+    }
+    .settings-tab[aria-selected="true"] { color: var(--text); }
+    .settings-tab[aria-selected="true"]::after { transform: scaleX(1); }
     .content {
-      width: min(100%, 1480px); padding: 28px 28px 64px;
+      width: min(100%, 1156px); padding: 28px 28px 64px;
+    }
+    .settings-panel {
       display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 20px; align-items: stretch;
     }
+    .settings-panel[hidden] { display: none; }
+    .span-full { grid-column: 1 / -1; }
 
     /* ── Settings sections ── */
     .settings-section {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 10px; padding: 22px 24px;
     }
-    .settings-section:nth-child(3) { grid-column: 1 / -1; }
     .settings-section h2 { font-size: 13px; font-weight: 600; color: var(--muted2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
     .section-sub { font-size: 12.5px; color: var(--muted); margin-bottom: 18px; }
     .settings-section h2 + .section-sub { margin-top: 6px; }
@@ -188,7 +219,9 @@
     #delete-confirm-row input:focus { border-color: var(--red); }
 
     @media (max-width: 1100px) {
-      .content { display: block; max-width: 900px; }
+      .content { max-width: 900px; }
+      .settings-panel { display: block; }
+      .settings-panel[hidden] { display: none; }
       .settings-section { margin-bottom: 20px; }
     }
 
@@ -196,6 +229,7 @@
       .sidebar { display: none !important; }
       body .main { padding: 0 !important; }
       .topbar { padding: 0 16px; }
+      .settings-tabs-shell { padding: 0 8px; }
       body .content { padding: 16px 16px 48px !important; }
       .stat-cards { grid-template-columns: 1fr 1fr; }
     }
@@ -252,122 +286,134 @@
 
 <div class="main" id="main-panel">
   <div class="topbar"><span class="topbar-title">Settings</span></div>
+  <div class="settings-tabs-shell">
+    <div class="settings-tabs" role="tablist" aria-label="Settings sections">
+      <button class="settings-tab" id="settings-tab-account" type="button" role="tab" aria-controls="settings-panel-account" aria-selected="true" tabindex="0" data-settings-tab="account">Account</button>
+      <button class="settings-tab" id="settings-tab-general" type="button" role="tab" aria-controls="settings-panel-general" aria-selected="false" tabindex="-1" data-settings-tab="general">General</button>
+      <button class="settings-tab" id="settings-tab-billing" type="button" role="tab" aria-controls="settings-panel-billing" aria-selected="false" tabindex="-1" data-settings-tab="billing">Billing &amp; usage</button>
+    </div>
+  </div>
 
   <div class="content">
 
-    <div class="settings-section">
-      <h2>Account</h2>
-      <div class="settings-row">
-        <div>
-          <div class="settings-row-label">Email</div>
-          <div class="settings-row-desc" id="account-email">—</div>
+    <section class="settings-panel" id="settings-panel-account" role="tabpanel" aria-labelledby="settings-tab-account" data-settings-panel="account">
+      <div class="settings-section">
+        <h2>Account</h2>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Email</div>
+            <div class="settings-row-desc" id="account-email">—</div>
+          </div>
         </div>
-      </div>
-      <div class="settings-row">
-        <div>
-          <div class="settings-row-label">Password</div>
-          <div class="settings-row-desc">We'll email you a link to set a new one.</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Password</div>
+            <div class="settings-row-desc">We'll email you a link to set a new one.</div>
+          </div>
+          <button class="btn-sm" id="btn-reset" onclick="sendPasswordReset()">Send reset link</button>
         </div>
-        <button class="btn-sm" id="btn-reset" onclick="sendPasswordReset()">Send reset link</button>
+        <div class="status-msg" id="reset-msg"></div>
       </div>
-      <div class="status-msg" id="reset-msg"></div>
-    </div>
 
-    <div class="settings-section">
-      <h2>Connected accounts</h2>
-      <p class="section-sub">Sign in faster next time with an account you already use.</p>
-      <div id="providers-list">
-        <div class="chart-empty">Loading…</div>
+      <div class="settings-section">
+        <h2>Connected accounts</h2>
+        <p class="section-sub">Sign in faster next time with an account you already use.</p>
+        <div id="providers-list">
+          <div class="chart-empty">Loading…</div>
+        </div>
       </div>
-    </div>
 
-    <div class="settings-section">
-      <h2>Usage &amp; billing</h2>
-      <p class="section-sub" id="plan-sub">Loading…</p>
-      <div class="settings-row" id="plan-row" style="display:none">
-        <div>
-          <div class="settings-row-label" id="plan-label">Free plan</div>
-          <div class="settings-row-desc" id="plan-desc"></div>
-        </div>
-        <button class="btn-sm" id="btn-upgrade" onclick="upgradeToPro()">Upgrade to Pro — $7/mo</button>
-      </div>
-      <p class="section-sub" id="coupon-note" style="display:none;margin:0 0 12px">Have a subscription discount code? Enter it on the secure Square checkout page.</p>
-      <div class="status-msg" id="plan-msg"></div>
-      <div class="settings-row">
-        <div>
-          <div class="settings-row-label">API credits</div>
-          <div class="settings-row-desc">Extra usage after your plan's included allowance. Balance: <strong id="credit-balance">—</strong></div>
+      <div class="danger-zone span-full">
+        <h2>Delete account</h2>
+        <p>Permanently deletes your account, API keys, and usage history. This can't be undone.</p>
+        <button class="btn-danger" id="btn-delete" onclick="showDeleteConfirm()">Delete account</button>
+        <div id="delete-confirm-row" style="display:none">
+          <p>Type <strong>DELETE</strong> to confirm.</p>
+          <input type="text" id="delete-confirm-input" autocomplete="off">
+          <div style="display:flex;gap:8px">
+            <button class="btn-sm" onclick="hideDeleteConfirm()">Cancel</button>
+            <button class="btn-danger" onclick="deleteAccount()">Permanently delete</button>
+          </div>
+          <div class="status-msg" id="delete-msg"></div>
         </div>
       </div>
-      <div class="credit-redeem">
-        <input id="credit-code" type="text" autocomplete="off" spellcheck="false" placeholder="AXION code or 16-character code" aria-label="API credit code" onkeydown="if(event.key==='Enter')redeemCredit()">
-        <input id="credit-amount" type="number" min="0.001" max="10000" step="0.001" placeholder="Amount (USD, min $0.001)" aria-label="Credit amount for variable codes" onkeydown="if(event.key==='Enter')redeemCredit()">
-        <button class="btn-sm" id="btn-redeem" onclick="redeemCredit()">Redeem</button>
-      </div>
-      <div class="status-msg" id="credit-msg"></div>
-      <div class="stat-cards" id="stat-cards">
-        <div class="stat-card"><div class="n">—</div><div class="l">Requests this month</div></div>
-        <div class="stat-card"><div class="n">—</div><div class="l">Requests all-time</div></div>
-        <div class="stat-card"><div class="n">—</div><div class="l">Active keys</div></div>
-      </div>
-      <div class="chart-outer" id="chart-outer">
-        <canvas id="daily-canvas"></canvas>
-      </div>
-      <a class="btn-sm" href="/keys">Manage API keys →</a>
-    </div>
+    </section>
 
-    <div class="settings-section">
-      <h2>Notifications</h2>
-      <div class="settings-row">
-        <div>
-          <div class="settings-row-label">Usage alerts</div>
-          <div class="settings-row-desc">Email me when my account hits 80% of its weekly included usage.</div>
+    <section class="settings-panel" id="settings-panel-general" role="tabpanel" aria-labelledby="settings-tab-general" data-settings-panel="general" hidden>
+      <div class="settings-section">
+        <h2>Notifications</h2>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Usage alerts</div>
+            <div class="settings-row-desc">Email me when my account hits 80% of its weekly included usage.</div>
+          </div>
+          <input type="checkbox" class="settings-toggle" id="pref-limit">
         </div>
-        <input type="checkbox" class="settings-toggle" id="pref-limit">
-      </div>
-      <div class="settings-row">
-        <div>
-          <div class="settings-row-label">Announcements</div>
-          <div class="settings-row-desc">Email me about new releases and updates.</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Announcements</div>
+            <div class="settings-row-desc">Email me about new releases and updates.</div>
+          </div>
+          <input type="checkbox" class="settings-toggle" id="pref-announcements">
         </div>
-        <input type="checkbox" class="settings-toggle" id="pref-announcements">
+        <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
+          <button class="btn-sm" onclick="savePrefs()">Save</button>
+          <span class="status-msg" id="prefs-msg"></span>
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
-        <button class="btn-sm" onclick="savePrefs()">Save</button>
-        <span class="status-msg" id="prefs-msg"></span>
-      </div>
-    </div>
 
-    <div class="settings-section">
-      <h2>Code execution</h2>
-      <div class="settings-row">
-        <div>
-          <div class="settings-row-label">Auto-run Python</div>
-          <div class="settings-row-desc">When Lumen wants to run Python code, run it immediately instead of asking you to approve each execution first.</div>
+      <div class="settings-section">
+        <h2>Code execution</h2>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Auto-run Python</div>
+            <div class="settings-row-desc">When Lumen wants to run Python code, run it immediately instead of asking you to approve each execution first.</div>
+          </div>
+          <input type="checkbox" class="settings-toggle" id="pref-sandbox-auto">
         </div>
-        <input type="checkbox" class="settings-toggle" id="pref-sandbox-auto">
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
-        <button class="btn-sm" onclick="saveSandboxMode()">Save</button>
-        <span class="status-msg" id="sandbox-mode-msg"></span>
-      </div>
-    </div>
-
-    <div class="danger-zone">
-      <h2>Delete account</h2>
-      <p>Permanently deletes your account, API keys, and usage history. This can't be undone.</p>
-      <button class="btn-danger" id="btn-delete" onclick="showDeleteConfirm()">Delete account</button>
-      <div id="delete-confirm-row" style="display:none">
-        <p>Type <strong>DELETE</strong> to confirm.</p>
-        <input type="text" id="delete-confirm-input" autocomplete="off">
-        <div style="display:flex;gap:8px">
-          <button class="btn-sm" onclick="hideDeleteConfirm()">Cancel</button>
-          <button class="btn-danger" onclick="deleteAccount()">Permanently delete</button>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
+          <button class="btn-sm" onclick="saveSandboxMode()">Save</button>
+          <span class="status-msg" id="sandbox-mode-msg"></span>
         </div>
-        <div class="status-msg" id="delete-msg"></div>
       </div>
-    </div>
+    </section>
 
+    <section class="settings-panel" id="settings-panel-billing" role="tabpanel" aria-labelledby="settings-tab-billing" data-settings-panel="billing" hidden>
+      <div class="settings-section span-full">
+        <h2>Usage &amp; billing</h2>
+        <p class="section-sub" id="plan-sub">Loading…</p>
+        <div class="settings-row" id="plan-row" style="display:none">
+          <div>
+            <div class="settings-row-label" id="plan-label">Free plan</div>
+            <div class="settings-row-desc" id="plan-desc"></div>
+          </div>
+          <button class="btn-sm" id="btn-upgrade" onclick="upgradeToPro()">Upgrade to Pro — $7/mo</button>
+        </div>
+        <p class="section-sub" id="coupon-note" style="display:none;margin:0 0 12px">Have a subscription discount code? Enter it on the secure Square checkout page.</p>
+        <div class="status-msg" id="plan-msg"></div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">API credits</div>
+            <div class="settings-row-desc">Extra usage after your plan's included allowance. Balance: <strong id="credit-balance">—</strong></div>
+          </div>
+        </div>
+        <div class="credit-redeem">
+          <input id="credit-code" type="text" autocomplete="off" spellcheck="false" placeholder="AXION code or 16-character code" aria-label="API credit code" onkeydown="if(event.key==='Enter')redeemCredit()">
+          <input id="credit-amount" type="number" min="0.001" max="10000" step="0.001" placeholder="Amount (USD, min $0.001)" aria-label="Credit amount for variable codes" onkeydown="if(event.key==='Enter')redeemCredit()">
+          <button class="btn-sm" id="btn-redeem" onclick="redeemCredit()">Redeem</button>
+        </div>
+        <div class="status-msg" id="credit-msg"></div>
+        <div class="stat-cards" id="stat-cards">
+          <div class="stat-card"><div class="n">—</div><div class="l">Requests this month</div></div>
+          <div class="stat-card"><div class="n">—</div><div class="l">Requests all-time</div></div>
+          <div class="stat-card"><div class="n">—</div><div class="l">Active keys</div></div>
+        </div>
+        <div class="chart-outer" id="chart-outer">
+          <canvas id="daily-canvas"></canvas>
+        </div>
+        <a class="btn-sm" href="/keys">Manage API keys →</a>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -393,6 +439,45 @@
   }
 
   function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // ── Settings tabs ─────────────────────────────────────────────────────────
+  const SETTINGS_TAB_NAMES = ['account', 'general', 'billing'];
+
+  function activateSettingsTab(name, updateHistory) {
+    const next = SETTINGS_TAB_NAMES.includes(name) ? name : 'account';
+    document.querySelectorAll('[data-settings-tab]').forEach(tab => {
+      const selected = tab.dataset.settingsTab === next;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+    });
+    document.querySelectorAll('[data-settings-panel]').forEach(panel => {
+      panel.hidden = panel.dataset.settingsPanel !== next;
+    });
+    if (next === 'billing' && lastDailyUsage) {
+      requestAnimationFrame(() => renderDailyChart(lastDailyUsage));
+    }
+    if (updateHistory) history.pushState(null, '', `#${next}`);
+  }
+
+  function setupSettingsTabs() {
+    const tabs = [...document.querySelectorAll('[data-settings-tab]')];
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => activateSettingsTab(tab.dataset.settingsTab, true));
+      tab.addEventListener('keydown', event => {
+        let nextIndex = null;
+        if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length;
+        if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length;
+        if (event.key === 'Home') nextIndex = 0;
+        if (event.key === 'End') nextIndex = tabs.length - 1;
+        if (nextIndex === null) return;
+        event.preventDefault();
+        tabs[nextIndex].focus();
+        activateSettingsTab(tabs[nextIndex].dataset.settingsTab, true);
+      });
+    });
+    activateSettingsTab(location.hash.slice(1), false);
+    window.addEventListener('popstate', () => activateSettingsTab(location.hash.slice(1), false));
+  }
 
   // ── Notifications ─────────────────────────────────────────────────────────
   async function loadPrefs() {
@@ -568,11 +653,14 @@
         document.getElementById('chart-outer').innerHTML = '<div class="chart-empty">No requests yet — usage will chart here once you start calling the API.</div>';
         return;
       }
-      renderDailyChart(daily);
+      lastDailyUsage = daily;
+      if (!document.getElementById('settings-panel-billing').hidden) renderDailyChart(daily);
     } catch {
       document.getElementById('chart-outer').innerHTML = '<div class="chart-empty">Couldn\'t load usage chart.</div>';
     }
   }
+
+  let lastDailyUsage = null;
 
   function renderDailyChart(daily) {
     const canvas = document.getElementById('daily-canvas');
@@ -707,6 +795,7 @@
 
   // ── Init ─────────────────────────────────────────────────────────────────
   (function init() {
+    setupSettingsTabs();
     if (!sessionToken) {
       document.getElementById('signin-prompt').style.display = 'flex';
       return;
