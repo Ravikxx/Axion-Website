@@ -593,9 +593,26 @@
     .sidebar-bottom {
       display: flex;
       align-items: center;
-      gap: 9px;
-      padding: 10px 12px 12px;
+      gap: 5px;
+      padding: 8px;
       border-top-color: var(--border);
+    }
+    .account-link {
+      min-width: 0;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 4px;
+      border-radius: 9px;
+      text-decoration: none;
+      transition: background .15s;
+    }
+    .account-link:hover { background: var(--surface2); }
+    .account-link:focus-visible {
+      background: var(--surface2);
+      outline: 1px solid var(--accent);
+      outline-offset: 1px;
     }
     .account-avatar {
       width: 34px;
@@ -1233,11 +1250,13 @@
     <div class="chat-list" id="chat-list"></div>
   </div>
   <div class="sidebar-bottom">
-    <div class="account-avatar" id="acct-avatar" aria-hidden="true">A</div>
-    <div class="account-copy">
-      <span class="account-email" id="acct-email">Signed in</span>
-      <span class="account-plan">Free tier</span>
-    </div>
+    <a class="account-link" href="/settings" title="Open settings" aria-label="Open account settings">
+      <div class="account-avatar" id="acct-avatar" aria-hidden="true">A</div>
+      <div class="account-copy">
+        <span class="account-email" id="acct-email">Signed in</span>
+        <span class="account-plan">Free tier</span>
+      </div>
+    </a>
     <button class="sidebar-icon-btn signout-btn" onclick="logout()" title="Sign out" aria-label="Sign out">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5H5v14h5M14 8l4 4-4 4m4-4H9"/></svg>
     </button>
