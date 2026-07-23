@@ -461,9 +461,9 @@
       <div class="review-runner">
         <div>
           <h2>Safety Review</h2>
-          <p>Pending chat exchanges are reviewed automatically each hour. Run the same Mistral moderation job now; any findings or operational errors send the usual admin digest.</p>
+          <p>Pending chat exchanges are reviewed automatically each hour. Run the same role-aware Mistral safety review now; any findings or operational errors send the usual admin digest.</p>
         </div>
-        <button class="btn btn-sm" id="run-message-review" type="button" onclick="runMessageReview()">Run review now</button>
+        <button class="btn btn-sm" id="run-message-review" type="button" onclick="runMessageReview()">Run moderation test</button>
       </div>
       <div id="message-review-msg" class="invite-msg" style="display:none" role="status" aria-live="polite"></div>
     </section>
@@ -893,7 +893,7 @@
       message.style.display = 'block'
     } finally {
       button.disabled = false
-      button.textContent = 'Run review now'
+      button.textContent = 'Run moderation test'
     }
   }
 
