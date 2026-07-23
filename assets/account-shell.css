@@ -20,3 +20,24 @@
 .nav-item.active {
   box-shadow: inset 2px 0 0 var(--accent);
 }
+
+.sidebar-user {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+
+.sidebar-user:hover {
+  background: var(--surface2);
+}
+
+.sidebar-user:hover .sidebar-email {
+  color: var(--text);
+}
+
+.sidebar-user:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

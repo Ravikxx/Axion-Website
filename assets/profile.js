@@ -30,7 +30,7 @@
 
   var menu = el('div', 'ax-menu')
   menu.innerHTML =
-    '<div class="ax-menu-head"><div class="ax-hi">Signed in as</div><div class="ax-email"></div></div>' +
+    '<a class="ax-menu-head" href="/settings" title="Open settings" aria-label="Open account settings"><div class="ax-hi">Signed in as</div><div class="ax-email"></div></a>' +
     '<div class="ax-menu-group-label">Navigate</div>' +
     '<a class="ax-menu-item" href="/chat">Chat</a>' +
     '<a class="ax-menu-item" href="/keys">API Keys</a>' +
