@@ -4,7 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Models — Axion Labs</title>
+  <meta name="description" content="Explore Lumen, Veil, Axion safety research, and the experimental Project Crucible model architecture.">
+  <link rel="canonical" href="https://axion.amplifiedsmp.org/models">
+  <meta property="og:title" content="Models — Axion Labs">
+  <meta property="og:description" content="Explore Lumen, Veil, Axion safety research, and Project Crucible.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://axion.amplifiedsmp.org/models">
+  <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
+  <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="/assets/theme-adaptive.css">
+  <link rel="stylesheet" href="/assets/site-shell.css">
+  <script src="/assets/site-nav.js" defer></script>
+  <script src="/assets/model-lifecycle.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -170,7 +181,7 @@
   <section>
     <p class="section-tag">Axion Labs</p>
     <h2>Built, trained, and hosted by us</h2>
-    <p class="section-lead">Free to chat with — no API key, no account required.</p>
+    <p class="section-lead">Free to chat with after creating an Axion account. Browser chat does not require an API key.</p>
 
     <div class="model-grid">
       <div class="model-card featured">
@@ -210,7 +221,7 @@
     <h2>Safety is the point, not a checkbox</h2>
     <p class="section-lead">Every model we ship goes through adversarial safety testing before release, and we publish the results.</p>
 
-    <div class="model-grid" style="grid-template-columns: repeat(2, 1fr);">
+    <div class="model-grid" style="grid-template-columns: repeat(3, 1fr);">
       <div class="model-card">
         <div class="card-top">
           <div class="card-name">Lumen 1.2.5 Safety Report</div>
@@ -229,6 +240,15 @@
           <a class="card-link" href="/announcements">View announcements →</a>
         </div>
       </div>
+      <div class="model-card">
+        <div class="card-top">
+          <div class="card-name">Project Crucible</div>
+        </div>
+        <p class="card-desc">Our active R&amp;D sprint exploring ternary weights, mixture-of-experts routing, and efficient model training.</p>
+        <div class="card-footer">
+          <a class="card-link" href="/project-crucible">Explore the research →</a>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -240,28 +260,5 @@
 
 <script src="/assets/profile.js"></script>
 
-<script>
-function toggleNav(){document.querySelector("nav")?.classList.toggle("nav-links-visible")}
-document.addEventListener("click",function(e){if(!e.target.closest("nav"))document.querySelector("nav")?.classList.remove("nav-links-visible")})
-
-// ── Veil deprecation lifecycle — same client-side date check as index.html ──
-;(function () {
-  const badge = document.getElementById('veil-badge')
-  const desc = document.getElementById('veil-desc')
-  if (!badge || !desc) return
-  const deprecatedAt = new Date('2026-07-25T00:00:00Z')
-  const retiredAt = new Date('2026-07-30T00:00:00Z')
-  const now = new Date()
-  if (now >= retiredAt) {
-    badge.textContent = 'Retired'
-    badge.className = 'badge badge-paid'
-    desc.textContent = 'Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat. Retired July 30, 2026 — kept here as a memory: Axion’s first model, and the reason Lumen exists.'
-  } else if (now >= deprecatedAt) {
-    badge.textContent = 'Deprecated'
-    badge.className = 'badge badge-paid'
-    desc.textContent = 'Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat. Deprecated as of July 25, 2026 and retiring July 30 — still usable until then, but no longer actively developed.'
-  }
-})()
-</script>
 </body>
 </html>

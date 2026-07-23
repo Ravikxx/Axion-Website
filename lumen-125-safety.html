@@ -4,8 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lumen 1.2.5 Safety Testing — Full Results — Axion Labs</title>
+  <meta name="description" content="Full Lumen 1.2.5 adversarial safety results, including every prompt, response, score, and analysis.">
+  <link rel="canonical" href="https://axion.amplifiedsmp.org/lumen-125-safety">
+  <meta property="og:title" content="Lumen 1.2.5 Safety Testing — Full Results">
+  <meta property="og:description" content="Every prompt, response, score, and analysis from Lumen 1.2.5 adversarial safety testing.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://axion.amplifiedsmp.org/lumen-125-safety">
+  <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
+  <meta name="twitter:card" content="summary">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="/assets/theme-adaptive.css">
+  <link rel="stylesheet" href="/assets/site-shell.css">
+  <script src="/assets/site-nav.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -865,9 +875,5 @@ trap '' SIGTERM
 
 <script src="/assets/profile.js"></script>
 
-<script>
-function toggleNav(){document.querySelector("nav")?.classList.toggle("nav-links-visible")}
-document.addEventListener("click",function(e){if(!e.target.closest("nav"))document.querySelector("nav")?.classList.remove("nav-links-visible")})
-</script>
 </body>
 </html>

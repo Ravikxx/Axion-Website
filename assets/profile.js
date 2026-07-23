@@ -1,7 +1,7 @@
 /* Signed-in profile menu. Include on any page with a top <nav>.
  * Shows an avatar in the top-right when localStorage.axion_token exists;
- * clicking it opens a dropdown (Chat, API Keys, Playground, Settings,
- * Admin, Log out). Settings links to /settings — a real page, not a modal.
+ * clicking it opens a dropdown (Chat, API Keys, Settings, Admin, Log out).
+ * Settings links to /settings — a real page, not a modal.
  */
 (function () {
   'use strict'
@@ -34,7 +34,6 @@
     '<div class="ax-menu-group-label">Navigate</div>' +
     '<a class="ax-menu-item" href="/chat">Chat</a>' +
     '<a class="ax-menu-item" href="/keys">API Keys</a>' +
-    '<a class="ax-menu-item" href="/playground">Playground</a>' +
     '<div class="ax-menu-group-label">Account</div>' +
     '<a class="ax-menu-item" href="/settings">Settings</a>' +
     '<div class="ax-admin-slot"></div>' +

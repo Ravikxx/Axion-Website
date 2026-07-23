@@ -4,12 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Axion Labs — Free, Open AI Models</title>
-  <meta name="description" content="Axion Labs builds and hosts free AI models. Chat with Lumen in the browser, call it through an OpenAI-compatible API, or use it from the terminal — no signup needed.">
+  <meta name="description" content="Axion Labs builds and hosts free AI models. Create a free account to chat with Lumen in the browser, call it through an OpenAI-compatible API, or use it from the terminal.">
+  <link rel="canonical" href="https://axion.amplifiedsmp.org/">
+  <meta property="og:title" content="Axion Labs — Free, Open AI Models">
+  <meta property="og:description" content="Create a free account to chat with Lumen, use the OpenAI-compatible API, or bring Axion into your terminal.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://axion.amplifiedsmp.org/">
+  <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
+  <meta name="twitter:card" content="summary">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/theme-adaptive.css">
+  <link rel="stylesheet" href="/assets/site-shell.css">
   <link rel="stylesheet" href="/assets/paper-banner.css">
+  <script src="/assets/site-nav.js" defer></script>
+  <script src="/assets/model-lifecycle.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -366,11 +376,11 @@
   <div class="hero">
     <div class="hero-text">
       <p class="hero-eyebrow">Axion Labs · open models</p>
-      <h1>Meet <span class="lumen">Lumen</span>.<br>Free AI, no signup.</h1>
-      <p class="hero-sub">We build and host our own models. Chat with <b>Lumen 1.2.5</b> in the browser, call it through an <b>OpenAI-compatible API</b>, or bring it into your terminal — with free keyless access available.</p>
+      <h1>Meet <span class="lumen">Lumen</span>.<br>Free AI with an account.</h1>
+      <p class="hero-sub">We build and host our own models. Create a free Axion account to chat with <b>Lumen 1.2.5</b> in the browser, call it through an <b>OpenAI-compatible API</b>, or bring it into your terminal.</p>
       <p class="hero-status"><span class="led" id="status-led"></span> <span id="status-text">checking model status…</span></p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="/chat">Chat with Lumen</a>
+        <a class="btn btn-primary" href="/chat">Create account &amp; chat</a>
         <a class="btn btn-ghost" href="/keys">Get API key</a>
       </div>
     </div>
@@ -416,7 +426,7 @@
         <div class="model-facts">
           <div class="fact"><div class="n">8B</div><div class="l">parameters</div></div>
           <div class="fact"><div class="n">73%</div><div class="l">safety pass rate</div></div>
-          <div class="fact"><div class="n">Free</div><div class="l">no key required</div></div>
+          <div class="fact"><div class="n">Free</div><div class="l">account required</div></div>
         </div>
         <a class="model-link" href="/lumen-model">model details →</a>
       </div>
@@ -499,8 +509,8 @@
   <section class="reveal">
     <div class="cta-section">
       <h2>Start talking to Lumen</h2>
-      <p>Free in the browser, free in the API, free in your terminal.</p>
-      <a class="btn btn-primary" href="/chat">Chat now</a>
+      <p>Create a free Axion account, then use Lumen in the browser, API, or terminal.</p>
+      <a class="btn btn-primary" href="/chat">Create account &amp; chat</a>
       <a class="btn btn-ghost" href="/keys">Get API key</a>
     </div>
   </section>
@@ -518,7 +528,9 @@
   const chatLed = document.getElementById('chat-led')
   const lumenStatus = document.getElementById('lumen-status')
 
-  fetch('https://api.amplifiedsmp.org/health')
+  const healthController = new AbortController()
+  const healthTimeout = setTimeout(() => healthController.abort(), 6000)
+  fetch('https://api.amplifiedsmp.org/health', { signal: healthController.signal })
     .then((r) => r.json())
     .then((d) => {
       // `ok` is just the API worker; `model_up` is a real probe of the model.
@@ -536,24 +548,7 @@
       lumenStatus.className = 'model-status down'
       lumenStatus.innerHTML = '<span class="led down"></span> migrating · back soon'
     })
-
-  // ── Veil deprecation card — client-side date check, no server round trip ──
-  ;(function () {
-    const veilStatus = document.getElementById('veil-status')
-    const veilDesc = document.getElementById('veil-desc')
-    if (!veilStatus || !veilDesc) return
-    const deprecatedAt = new Date('2026-07-25T00:00:00Z')
-    const retiredAt = new Date('2026-07-30T00:00:00Z')
-    const now = new Date()
-    if (now >= retiredAt) {
-      veilStatus.innerHTML = '<span class="led down"></span> retired'
-      veilDesc.textContent = 'Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat. Retired July 30, 2026 — kept here as a memory: Axion’s first model, and the reason Lumen exists.'
-    } else if (now >= deprecatedAt) {
-      veilStatus.innerHTML = '<span class="led down"></span> deprecated'
-      veilDesc.textContent = 'Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat. Deprecated as of July 25, 2026 and retiring July 30 — still usable until then, but no longer actively developed.'
-    }
-    // Before July 25: leave the existing "migrating · back soon" markup as-is.
-  })()
+    .finally(() => clearTimeout(healthTimeout))
 
   // ── Animated chat demo ──────────────────────────────────────────────────
   const chatBody = document.getElementById('chat-body')
@@ -648,9 +643,5 @@
 <script src="/assets/paper-banner.js"></script>
 <script src="/assets/profile.js"></script>
 
-<script>
-function toggleNav(){document.querySelector("nav")?.classList.toggle("nav-links-visible")}
-document.addEventListener("click",function(e){if(!e.target.closest("nav"))document.querySelector("nav")?.classList.remove("nav-links-visible")})
-</script>
 </body>
 </html>

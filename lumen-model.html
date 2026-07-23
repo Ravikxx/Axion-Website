@@ -4,7 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lumen — Axion Labs</title>
+  <meta name="description" content="Meet Lumen 1.2.5, Axion Labs' flagship 8B model for general chat, writing, questions, and code explanations.">
+  <link rel="canonical" href="https://axion.amplifiedsmp.org/lumen-model">
+  <meta property="og:title" content="Meet Lumen — Axion Labs">
+  <meta property="og:description" content="Explore Lumen 1.2.5, its architecture, release history, usage options, and published safety results.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://axion.amplifiedsmp.org/lumen-model">
+  <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
+  <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="/assets/theme-adaptive.css">
+  <link rel="stylesheet" href="/assets/site-shell.css">
+  <script src="/assets/site-nav.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -221,7 +231,7 @@
   <h1>Meet <span>Lumen</span></h1>
   <p class="hero-sub">
     A fine-tuned Llama 3.1 8B built and safety-tested by Axion Labs.
-    Free to use — no account, no API key.
+    Free to use with an Axion account — no API key needed in the browser.
   </p>
   <div class="hero-actions">
     <a class="btn btn-primary" href="/lumen">Chat now →</a>
@@ -303,7 +313,7 @@
     <div class="use-tabs">
       <a class="use-card" href="/lumen">
         <div class="use-title">Browser chat</div>
-        <div class="use-desc">Chat at axion.amplifiedsmp.org/lumen — no install, no account.</div>
+        <div class="use-desc">Chat at axion.amplifiedsmp.org/lumen — no install; a free Axion account is required.</div>
       </a>
       <a class="use-card" href="/docs#free-models">
         <div class="use-title">Axion CLI</div>
@@ -443,9 +453,5 @@
 
 <script src="/assets/profile.js"></script>
 
-<script>
-function toggleNav(){document.querySelector("nav")?.classList.toggle("nav-links-visible")}
-document.addEventListener("click",function(e){if(!e.target.closest("nav"))document.querySelector("nav")?.classList.remove("nav-links-visible")})
-</script>
 </body>
 </html>
