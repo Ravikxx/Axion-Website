@@ -986,10 +986,20 @@
       border-radius: 9px;
       background: var(--surface2);
       color: var(--muted2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
       font-size: 12px;
       font-weight: 500;
       cursor: pointer;
       transition: color .15s, border-color .15s, background .15s, transform .15s;
+    }
+    .quick-action svg {
+      width: 14px;
+      height: 14px;
+      flex: 0 0 auto;
+      opacity: .78;
     }
     .quick-action:hover,
     .quick-action:focus-visible {
@@ -1284,10 +1294,19 @@
         </div>
       </div>
       <div class="quick-actions" aria-label="Prompt suggestions">
-        <button class="quick-action" type="button" data-prompt="Explain a complex idea in simple terms, with a practical example." onclick="useSuggestion(this)">Explain</button>
+        <button class="quick-action" type="button" data-prompt="Explain a complex idea in simple terms, with a practical example." onclick="useSuggestion(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11a3 3 0 0 1 3 3v15a3 3 0 0 0-3-3H4Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H14v18a3 3 0 0 1 3-3h3Z"/></svg>
+          <span>Explain</span>
+        </button>
         <button class="quick-action" type="button" data-prompt="Help me write or improve something. Ask what it is for and what tone I want." onclick="useSuggestion(this)">Write</button>
-        <button class="quick-action" type="button" data-prompt="Help me debug a technical problem. Ask for the error, expected behavior, and relevant code." onclick="useSuggestion(this)">Debug</button>
-        <button class="quick-action" type="button" data-prompt="Help me brainstorm ideas, options, or next steps for something I am working on." onclick="useSuggestion(this)">Brainstorm</button>
+        <button class="quick-action" type="button" data-prompt="Help me debug a technical problem. Ask for the error, expected behavior, and relevant code." onclick="useSuggestion(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 9h6v7a3 3 0 0 1-6 0Z"/><path d="M10 9V7a2 2 0 0 1 4 0v2M5 13h4m6 0h4M6 8l3 2m9-2-3 2M6 18l3-2m9 2-3-2"/></svg>
+          <span>Debug</span>
+        </button>
+        <button class="quick-action" type="button" data-prompt="Help me brainstorm ideas, options, or next steps for something I am working on." onclick="useSuggestion(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 22h4"/><path d="M8.2 14.8A7 7 0 1 1 15.8 14.8C14.6 15.6 14 16.5 14 18h-4c0-1.5-.6-2.4-1.8-3.2Z"/></svg>
+          <span>Brainstorm</span>
+        </button>
       </div>
       <div class="input-hint">These are AIs and can make mistakes. Please double check everything. Free tier: 50/day · <a href="/keys">get a key</a> for more.</div>
     </div>
