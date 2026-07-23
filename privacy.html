@@ -199,10 +199,10 @@
 
 <main>
 
-  <p class="last-updated">Last updated: July 21, 2026</p>
+  <p class="last-updated">Last updated: July 23, 2026</p>
 
   <div class="callout">
-    <strong>Short version:</strong> Most CLI work happens on your machine. Model inference, accounts, signed-in web chat, usage tracking, billing, email, vision, and connected integrations may send data to remote services. Axion's hosted backend runs on Cloudflare, and Lumen and the default vision model run on Hugging Face. We do not use your conversations for training unless you explicitly opt in with <code>/contribute</code>.
+    <strong>Short version:</strong> Most CLI work happens on your machine. Model inference, accounts, signed-in web chat, usage tracking, billing, email, vision, connected integrations, and asynchronous safety moderation may send data to remote services. Axion's hosted backend runs on Cloudflare, Lumen runs on RunPod, the default vision model runs on Hugging Face, and logged chat exchanges are sent to Mistral for safety classification. We do not use your conversations for training unless you explicitly opt in with <code>/contribute</code>.
   </div>
 
   <div class="policy-section">
@@ -218,7 +218,7 @@
       <li>Axion-issued API keys and their status, request counts, token counts, calculated usage cost, allowance windows, and rate-limit records.</li>
       <li>Plan and subscription status, credit balances, credit-code redemptions, and Square customer or subscription identifiers.</li>
       <li>Signed-in web chat history and chat metadata used to sync conversations across sessions.</li>
-      <li>A separate, permanent log of message content and model responses across signed-in, API-key, and anonymous usage, kept independently of your visible chat history and retained even after you delete a chat or your account. An automated process periodically reviews this log — separately from and after your live conversation, not in real time — and classifies each exchange as safe or in need of human review; anything it cannot confirm is safe is escalated to a person on the Axion Labs team. This log exists for abuse detection, safety enforcement, and legal compliance.</li>
+      <li>A separate, permanent log of message content, model responses, and model-requested tool calls across signed-in, API-key, and anonymous usage, kept independently of your visible chat history and retained even after you delete a chat or your account. An automated process periodically sends the latest user message and the corresponding assistant response to Mistral's moderation service — separately from and after your live conversation, not in real time. Exchanges matched to Axion's selected safety categories may be escalated to a person on the Axion Labs team. Moderation-service or parsing failures are recorded as operational errors rather than user-safety violations. This log exists for abuse detection, safety enforcement, and legal compliance.</li>
       <li>Email and announcement preferences, organization membership and invitations, and CLI device-login codes.</li>
       <li>Administrative test changes to plan, allowance usage, or credit balances, including who made the change and when.</li>
     </ul>
@@ -254,7 +254,7 @@
     <p style="margin-top:16px"><strong>AI model inference.</strong> Your prompt, plus any file contents, command output, or page text included as context, is sent to the model provider you select with <code>/model</code>:</p>
     <ul>
       <li><strong>Third-party providers</strong> (Anthropic, OpenAI, Google Gemini, Groq, Mistral, OpenRouter, OpenCode) receive your requests directly, authenticated with the key you supplied. See each provider's own policy.</li>
-      <li><strong>Lumen</strong> routes through Axion Labs' Cloudflare backend at <code>api.amplifiedsmp.org</code> and then to Lumen inference on Hugging Face. Keyless access is limited to 50 requests per day per IP address. Signed-in usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.</li>
+      <li><strong>Lumen</strong> routes through Axion Labs' Cloudflare backend at <code>api.amplifiedsmp.org</code> and then to Lumen inference on RunPod. Keyless access is limited to 50 requests per day per IP address. Signed-in usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.</li>
       <li><strong>IP addresses</strong> are collected during registration and used for duplicate-account and abuse detection. Registration IPs are kept with the account; operational rate-limit records expire according to their configured windows.</li>
     </ul>
 
@@ -287,7 +287,9 @@
   <div class="policy-section">
     <h2>Third-party privacy policies</h2>
     <ul>
-      <li><strong>Hugging Face</strong> (Lumen &amp; vision inference) — <a href="https://huggingface.co/privacy">huggingface.co/privacy</a></li>
+      <li><strong>RunPod</strong> (Lumen inference) — <a href="https://www.runpod.io/legal/privacy-policy">runpod.io privacy policy</a></li>
+      <li><strong>Hugging Face</strong> (default vision inference) — <a href="https://huggingface.co/privacy">huggingface.co/privacy</a></li>
+      <li><strong>Mistral</strong> (asynchronous safety moderation of logged chat exchanges) — <a href="https://legal.mistral.ai/terms/privacy-policy">mistral.ai privacy policy</a></li>
       <li><strong>Cloudflare</strong> (API backend &amp; contribution endpoint) — <a href="https://www.cloudflare.com/policies/privacy/">cloudflare.com/policies/privacy</a></li>
       <li><strong>Square</strong> (payments &amp; subscriptions) — <a href="https://squareup.com/us/en/legal/general/privacy">squareup.com privacy notice</a></li>
       <li><strong>Resend</strong> (transactional &amp; announcement email) — <a href="https://resend.com/legal/privacy-policy">resend.com privacy policy</a></li>
