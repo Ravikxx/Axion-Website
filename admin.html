@@ -171,6 +171,8 @@
     .review-runner p { color: var(--muted); font-size: 13px; max-width: 700px; }
     .review-runner .btn { flex-shrink: 0; }
     #message-review-msg { margin: 12px 0 0; }
+    .run-link { color: var(--accent); font-weight: 600; text-decoration: none; }
+    .run-link:hover { color: var(--accent-dim); }
 
     /* ── Section ── */
     section { margin-bottom: 48px; }
@@ -466,6 +468,28 @@
         <button class="btn btn-sm" id="run-message-review" type="button" onclick="runMessageReview()">Run moderation test</button>
       </div>
       <div id="message-review-msg" class="invite-msg" style="display:none" role="status" aria-live="polite"></div>
+    </section>
+
+    <section>
+      <h2>Recent moderation runs</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Started</th>
+              <th>Trigger</th>
+              <th>Reviewed</th>
+              <th>Flagged</th>
+              <th>Errors</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="moderation-runs-body">
+            <tr class="empty-row"><td colspan="7">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <!-- Daily chart -->
@@ -817,6 +841,12 @@
   // ── App ───────────────────────────────────────────────────────────────────
 
   function showApp(email) {
+    const returnTo = sessionStorage.getItem('axion_admin_return_to')
+    if (returnTo && /^\/admin-moderation(?:-account)?(?:\?|$)/.test(returnTo)) {
+      sessionStorage.removeItem('axion_admin_return_to')
+      location.replace(returnTo)
+      return
+    }
     document.getElementById('auth-gate').style.display = 'none'
     const app = document.getElementById('app')
     app.style.display = 'flex'
@@ -836,6 +866,7 @@
 
   async function loadAll() {
     loadStats()
+    loadModerationRuns()
     loadUsers()
     loadAllowlist()
     loadCreditCodes()
@@ -882,6 +913,10 @@
       const reviewed = Number(data.reviewed_count || 0)
       const flagged = Number(data.flagged_count || 0)
       const errors = Number(data.error_count || 0)
+      if (data.run_id) {
+        location.href = `/admin-moderation?run=${encodeURIComponent(data.run_id)}`
+        return
+      }
       message.className = `invite-msg ${errors ? 'error' : 'success'}`
       message.textContent = `Reviewed ${reviewed} pending exchange${reviewed === 1 ? '' : 's'}. ${flagged} flagged; ${errors} operational error${errors === 1 ? '' : 's'}.`
       message.style.display = 'block'
@@ -894,6 +929,31 @@
     } finally {
       button.disabled = false
       button.textContent = 'Run moderation test'
+    }
+  }
+
+  async function loadModerationRuns() {
+    const tbody = document.getElementById('moderation-runs-body')
+    try {
+      const res = await apiFetch('/admin/moderation/runs?limit=20')
+      if (!res.ok) throw new Error('Could not load moderation runs.')
+      const { runs } = await res.json()
+      if (!runs?.length) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No recorded runs yet</td></tr>'
+        return
+      }
+      tbody.innerHTML = runs.map(run => `
+        <tr>
+          <td>${esc(fmtDateTimeMs(run.started_at))}</td>
+          <td>${esc(run.trigger)}</td>
+          <td>${fmt(run.reviewed_count)}</td>
+          <td>${fmt(run.flagged_count)}</td>
+          <td>${fmt(run.error_count)}</td>
+          <td><span class="badge ${run.status === 'completed' ? 'badge-green' : run.status === 'failed' ? 'badge-red' : 'badge-owner'}">${esc(run.status)}</span></td>
+          <td><a class="run-link" href="/admin-moderation?run=${encodeURIComponent(run.id)}">View run</a></td>
+        </tr>`).join('')
+    } catch {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Could not load moderation runs</td></tr>'
     }
   }
 
@@ -1469,6 +1529,17 @@
   function fmtDate(ts) {
     if (!ts) return '—'
     return new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  }
+
+  function fmtDateTimeMs(ts) {
+    if (!ts) return '—'
+    return new Date(Number(ts)).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    })
   }
 
   function esc(s) {
