@@ -157,6 +157,21 @@
     .stat-label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; }
     .stat-value { font-size: 32px; font-weight: 700; }
 
+    .review-runner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .review-runner h2 { margin-bottom: 4px; }
+    .review-runner p { color: var(--muted); font-size: 13px; max-width: 700px; }
+    .review-runner .btn { flex-shrink: 0; }
+    #message-review-msg { margin: 12px 0 0; }
+
     /* ── Section ── */
     section { margin-bottom: 48px; }
 
@@ -279,7 +294,10 @@
       color: var(--muted); font-size: 13px;
     }
     .credit-variable input { accent-color: var(--accent); }
-    @media (max-width: 760px) { .credit-create-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 760px) {
+      .credit-create-grid { grid-template-columns: 1fr 1fr; }
+      .review-runner { align-items: flex-start; flex-direction: column; }
+    }
 
     /* ── Account testing editor ── */
     .account-email { font-weight: 600; }
@@ -438,6 +456,17 @@
         <div class="stat-value" id="stat-free">—</div>
       </div>
     </div>
+
+    <section>
+      <div class="review-runner">
+        <div>
+          <h2>Safety Review</h2>
+          <p>Pending chat exchanges are reviewed automatically each hour. Run the same Mistral moderation job now; any findings or operational errors send the usual admin digest.</p>
+        </div>
+        <button class="btn btn-sm" id="run-message-review" type="button" onclick="runMessageReview()">Run review now</button>
+      </div>
+      <div id="message-review-msg" class="invite-msg" style="display:none" role="status" aria-live="polite"></div>
+    </section>
 
     <!-- Daily chart -->
     <section>
@@ -836,6 +865,36 @@
         <td>${fmt(k.requests)}</td>
         <td>${fmt(k.month_requests)}</td>
       </tr>`).join('')
+  }
+
+  async function runMessageReview() {
+    const button = document.getElementById('run-message-review')
+    const message = document.getElementById('message-review-msg')
+    button.disabled = true
+    button.textContent = 'Running…'
+    message.style.display = 'none'
+
+    try {
+      const res = await apiFetch('/admin/message-review/run', { method: 'POST' })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || 'The review could not be started.')
+
+      const reviewed = Number(data.reviewed_count || 0)
+      const flagged = Number(data.flagged_count || 0)
+      const errors = Number(data.error_count || 0)
+      message.className = `invite-msg ${errors ? 'error' : 'success'}`
+      message.textContent = `Reviewed ${reviewed} pending exchange${reviewed === 1 ? '' : 's'}. ${flagged} flagged; ${errors} operational error${errors === 1 ? '' : 's'}.`
+      message.style.display = 'block'
+    } catch (error) {
+      message.className = 'invite-msg error'
+      message.textContent = error.name === 'AbortError'
+        ? 'The review request timed out. Check the queue before trying again.'
+        : error.message || 'The review could not be started.'
+      message.style.display = 'block'
+    } finally {
+      button.disabled = false
+      button.textContent = 'Run review now'
+    }
   }
 
   async function loadUsers() {
