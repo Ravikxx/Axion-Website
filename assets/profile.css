@@ -37,7 +37,13 @@ nav .nav-btn-ghost:hover { color: var(--text, #e8e9f0); border-color: var(--mute
 }
 .ax-menu.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
-.ax-menu-head { padding: 12px 14px 10px; }
+.ax-menu-head {
+  display: block; padding: 12px 14px 10px;
+  border-radius: 5px; text-decoration: none;
+  transition: background .12s;
+}
+.ax-menu-head:hover { background: rgba(184,162,125,.07); }
+.ax-menu-head:focus-visible { outline: 2px solid #b8a27d; outline-offset: -3px; }
 .ax-menu-head .ax-hi {
   font-family: "IBM Plex Mono", "SF Mono", Consolas, monospace;
   font-size: 10px; color: #6b6d80; text-transform: uppercase; letter-spacing: .08em;
