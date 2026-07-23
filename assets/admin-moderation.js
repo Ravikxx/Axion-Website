@@ -90,7 +90,12 @@
     const accountHref = item.user_id
       ? `/admin-moderation-account?user=${encodeURIComponent(item.user_id)}`
       : ''
-    const canBan = Boolean(item.user_id) && !item.account_banned
+    const canBan = Boolean(item.user_id) && !item.account_banned && !item.account_protected
+    const banLabel = item.account_banned
+      ? 'Account banned'
+      : item.account_protected
+        ? 'Protected admin'
+        : 'Ban account'
     const accountLink = accountHref
       ? `<a class="account-link" href="${accountHref}">View all ${Number(item.account_flagged_count || 0)} flagged exchange${Number(item.account_flagged_count || 0) === 1 ? '' : 's'} on this account</a>`
       : '<span class="account-link" style="color:var(--muted)">Anonymous exchange — no account history</span>'
@@ -99,7 +104,7 @@
         ${accountLink}
         <button data-action="dismiss" data-message-id="${Number(item.id)}" ${disposition === 'dismissed' ? 'disabled' : ''}>Dismiss finding</button>
         <button data-action="confirm" data-message-id="${Number(item.id)}" ${!item.user_id || disposition === 'confirmed' ? 'disabled' : ''} title="${item.user_id ? 'Confirm this finding on the account' : 'This exchange is not attached to an account'}">Flag account</button>
-        <button data-action="ban" data-message-id="${Number(item.id)}" data-account="${esc(accountLabel)}" ${canBan ? '' : 'disabled'}>${item.account_banned ? 'Account banned' : 'Ban account'}</button>
+        <button data-action="ban" data-message-id="${Number(item.id)}" data-account="${esc(accountLabel)}" ${canBan ? '' : 'disabled'} title="${item.account_protected ? 'Admin allowlist accounts cannot be banned from moderation' : ''}">${banLabel}</button>
       </div>` : ''
     const runLink = item.run_id
       ? `<a href="/admin-moderation?run=${encodeURIComponent(item.run_id)}">Run ${esc(item.run_id)}</a>`
