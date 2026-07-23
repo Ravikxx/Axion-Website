@@ -570,7 +570,11 @@
 
   <div class="sidebar-bottom">
     <a class="sidebar-user" href="/settings" title="Open settings" aria-label="Open account settings">
-      <div class="sidebar-email" id="sidebar-email"></div>
+      <div class="sidebar-avatar" id="sidebar-avatar" aria-hidden="true">A</div>
+      <div class="sidebar-account-copy">
+        <div class="sidebar-email" id="sidebar-email"></div>
+        <div class="sidebar-account-label">Account settings</div>
+      </div>
     </a>
     <button class="sidebar-signout" onclick="logout()">Sign out</button>
   </div>
@@ -751,6 +755,7 @@
   </div>
 </div>
 
+<script src="/assets/account-profile.js"></script>
 <script>
   const API = 'https://api.amplifiedsmp.org';
   let _turnstileToken = null;
@@ -922,6 +927,7 @@
       sessionToken = data.token;
       localStorage.setItem('axion_token', sessionToken);
       localStorage.setItem('axion_email', data.email || email);
+      AxionAccountProfile.clear();
       currentUser = { email: data.email || email };
       // Pick up pending device code stored before auth
       const storedDevice = sessionStorage.getItem('axion_pending_device')
@@ -951,6 +957,7 @@
     currentUser = null; keys = []; accountState = null; sessionToken = null;
     currentOrg = null; orgs = [];
     localStorage.removeItem('axion_token'); localStorage.removeItem('axion_email');
+    AxionAccountProfile.clear();
     document.getElementById('sidebar').style.display = 'none';
     document.getElementById('main-panel').style.display = 'none';
     document.getElementById('auth-screen').style.display = 'flex';
@@ -964,6 +971,11 @@
     document.getElementById('sidebar').style.display = 'flex';
     document.getElementById('main-panel').style.display = 'flex';
     document.getElementById('sidebar-email').textContent = currentUser.email;
+    AxionAccountProfile.renderAvatar(
+      document.getElementById('sidebar-avatar'),
+      currentUser.email,
+      AxionAccountProfile.cachedAvatar(),
+    );
     loadKeys();
     loadDailyChart();
     await loadOrgs();
@@ -990,6 +1002,14 @@
       if (!keysRes.ok) throw new Error('Session expired');
       const keysData = await keysRes.json();
       accountState = accountRes.ok ? await accountRes.json() : null;
+      if (accountState) {
+        AxionAccountProfile.cacheAvatar(accountState.avatar_url || '');
+        AxionAccountProfile.renderAvatar(
+          document.getElementById('sidebar-avatar'),
+          currentUser.email,
+          accountState.avatar_url,
+        );
+      }
       keys = (keysData.keys || []).map(k => ({
         id: k.id,
         name: k.label,
@@ -1575,6 +1595,7 @@
       sessionToken = tok;
       localStorage.setItem('axion_token', tok);
       localStorage.setItem('axion_email', em || '');
+      AxionAccountProfile.clear();
       currentUser = { email: em || 'your account' };
 
       // Check for pending invite stored before OAuth redirect
@@ -1628,10 +1649,10 @@
     if (!sessionToken) return;
     try {
       const res = await fetch(API + '/dashboard/keys', { headers: { Authorization: `Bearer ${sessionToken}` } });
-      if (!res.ok) { sessionToken = null; localStorage.removeItem('axion_token'); return; }
+      if (!res.ok) { sessionToken = null; localStorage.removeItem('axion_token'); AxionAccountProfile.clear(); return; }
       currentUser = { email: localStorage.getItem('axion_email') || 'your account' };
       await showDashboard();
-    } catch { sessionToken = null; localStorage.removeItem('axion_token'); }
+    } catch { sessionToken = null; localStorage.removeItem('axion_token'); AxionAccountProfile.clear(); }
   })();
 </script>
 <script src="/assets/profile.js"></script>

@@ -28,6 +28,31 @@
   avatar.setAttribute('aria-label', 'Account menu')
   wrap.appendChild(avatar)
 
+  function cacheAvatar(url) {
+    if (url) localStorage.setItem('axion_avatar_url', url)
+    else localStorage.removeItem('axion_avatar_url')
+  }
+
+  function renderAvatar(url) {
+    avatar.dataset.avatarUrl = url || ''
+    avatar.textContent = initial
+    if (!url) return
+    var image = document.createElement('img')
+    image.alt = ''
+    image.decoding = 'async'
+    image.src = url
+    image.addEventListener('load', function () {
+      if (avatar.dataset.avatarUrl === url) avatar.replaceChildren(image)
+    })
+    image.addEventListener('error', function () {
+      if (avatar.dataset.avatarUrl !== url) return
+      if (localStorage.getItem('axion_avatar_url') === url) cacheAvatar('')
+      avatar.textContent = initial
+    })
+  }
+
+  renderAvatar(localStorage.getItem('axion_avatar_url') || '')
+
   var menu = el('div', 'ax-menu')
   menu.innerHTML =
     '<a class="ax-menu-head" href="/settings" title="Open settings" aria-label="Open account settings"><div class="ax-hi">Signed in as</div><div class="ax-email"></div></a>' +
@@ -64,6 +89,21 @@
   })
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu() })
 
+  var profileController = new AbortController()
+  var profileTimeout = setTimeout(function () { profileController.abort() }, 8000)
+  fetch(API + '/dashboard/account', {
+    headers: { Authorization: 'Bearer ' + token },
+    signal: profileController.signal,
+  })
+    .then(function (response) { return response.ok ? response.json() : null })
+    .then(function (account) {
+      if (!account) return
+      cacheAvatar(account.avatar_url || '')
+      renderAvatar(account.avatar_url || '')
+    })
+    .catch(function () {})
+    .finally(function () { clearTimeout(profileTimeout) })
+
   // ── Admin link (only if the user is an admin) ────────────────────────
   fetch(API + '/admin/check', { headers: { Authorization: 'Bearer ' + token } })
     .then(function (r) { return r.json() })
@@ -83,6 +123,7 @@
     if (item.dataset.act === 'logout') {
       localStorage.removeItem('axion_token')
       localStorage.removeItem('axion_email')
+      localStorage.removeItem('axion_avatar_url')
       location.href = '/'
     }
   })

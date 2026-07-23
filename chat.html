@@ -633,7 +633,9 @@
       font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
+      overflow: hidden;
     }
+    .account-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .account-copy {
       min-width: 0;
       flex: 1;
@@ -1261,7 +1263,7 @@
       <div class="account-avatar" id="acct-avatar" aria-hidden="true">A</div>
       <div class="account-copy">
         <span class="account-email" id="acct-email">Signed in</span>
-        <span class="account-plan">Free tier</span>
+        <span class="account-plan" id="acct-plan">Free tier</span>
       </div>
     </a>
     <button class="sidebar-icon-btn signout-btn" onclick="logout()" title="Sign out" aria-label="Sign out">
@@ -1347,6 +1349,7 @@
   </div>
 </div>
 
+<script src="/assets/account-profile.js"></script>
 <script>
   const API = 'https://api.amplifiedsmp.org'
 
@@ -2438,6 +2441,7 @@
       sessionToken = data.token; userEmail = data.email || email
       localStorage.setItem('axion_token', sessionToken)
       localStorage.setItem('axion_email', userEmail)
+      AxionAccountProfile.clear()
       showApp()
     } catch { showErr('Network error — try again.') }
     finally { btn.disabled = false; btn.textContent = authMode === 'signin' ? 'Sign in' : 'Create account' }
@@ -2447,13 +2451,24 @@
     sessionToken = null; userEmail = null
     chats = []; currentId = null
     localStorage.removeItem('axion_token'); localStorage.removeItem('axion_email')
+    AxionAccountProfile.clear()
     document.getElementById('auth-overlay').style.display = 'flex'
+  }
+
+  async function loadAccountProfile() {
+    const avatar = document.getElementById('acct-avatar')
+    AxionAccountProfile.renderAvatar(avatar, userEmail, AxionAccountProfile.cachedAvatar())
+    try {
+      const account = await AxionAccountProfile.fetchAccount(sessionToken)
+      AxionAccountProfile.renderAvatar(avatar, userEmail, account.avatar_url)
+      document.getElementById('acct-plan').textContent = account.plan === 'pro' ? 'Pro plan' : 'Free tier'
+    } catch {}
   }
 
   async function showApp() {
     document.getElementById('auth-overlay').style.display = 'none'
     document.getElementById('acct-email').textContent = userEmail || 'Signed in'
-    document.getElementById('acct-avatar').textContent = (userEmail || 'A').trim().charAt(0) || 'A'
+    void loadAccountProfile()
     initModelSelect()
     renderMessages()
     await fetchChatList()
@@ -2470,12 +2485,13 @@
       history.replaceState(null, '', location.pathname)
       sessionToken = tok; userEmail = em
       localStorage.setItem('axion_token', tok); localStorage.setItem('axion_email', em)
+      AxionAccountProfile.clear()
       showApp(); return
     }
     if (!sessionToken) return   // show auth overlay
     try {
       const res = await fetch(`${API}/dashboard/keys`, { headers: { Authorization: `Bearer ${sessionToken}` } })
-      if (!res.ok) { sessionToken = null; localStorage.removeItem('axion_token'); return }
+      if (!res.ok) { sessionToken = null; localStorage.removeItem('axion_token'); AxionAccountProfile.clear(); return }
       showApp()
     } catch { /* offline — still let them in with cached token */ showApp() }
   })()
