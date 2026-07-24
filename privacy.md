@@ -1,12 +1,12 @@
 # Privacy Policy
 
-**Last updated: July 21, 2026**
+**Last updated: July 24, 2026**
 
 ## Overview
 
 Axion is an open-source AI coding agent with local software and hosted services. Most CLI work happens on your machine, while model inference, accounts, web chat, usage tracking, billing, email, vision, and connected integrations may send data to remote services. This policy explains what stays local, what Axion Labs stores, and which providers process data.
 
-Axion Labs operates a hosted API, authentication, usage, billing, email-preference, and chat backend on Cloudflare. Lumen and the default vision model run on Hugging Face infrastructure. Axion does not use your conversations for model training unless you explicitly opt in with `/contribute`.
+Axion Labs operates a hosted API, authentication, usage, billing, email-preference, and chat backend on Cloudflare. Lumen runs on RunPod, and the default vision model runs on Hugging Face infrastructure. Axion does not use your conversations for model training unless you explicitly opt in with `/contribute`.
 
 ## Local-only features
 
@@ -32,7 +32,7 @@ Axion's Cloudflare-hosted backend stores and processes data needed to run accoun
 - Axion-issued API keys and their status, request counts, token counts, calculated usage cost, allowance windows, and rate-limit records;
 - plan and subscription status, credit balances, credit-code redemptions, and Square customer or subscription identifiers;
 - signed-in web chat history and chat metadata used to sync conversations across sessions;
-- a separate, permanent log of message content and model responses across signed-in, API-key, and anonymous usage, kept independently of your visible chat history and retained even after you delete a chat or your account. An automated process periodically reviews this log — separately from and after your live conversation, not in real time — and classifies each exchange as safe or in need of human review; anything it cannot confirm is safe is escalated to a person on the Axion Labs team. This log exists for abuse detection, safety enforcement, and legal compliance;
+- a separate server-side log of message content, model responses, and model-requested tool calls across signed-in, API-key, and anonymous usage, kept independently of your visible chat history. An automated process periodically sends recent role-labeled context, the target user message, and the corresponding assistant response to Mistral for asynchronous safety classification. Routine rows classified as safe, operational review errors, and dismissed findings are retained for up to 30 days. Unreviewed rows and pending or confirmed findings are retained for up to one year for human review, safety enforcement, and legal compliance;
 - email and announcement preferences, organization membership and invitations, and CLI device-login codes;
 - administrative test changes to plan, allowance usage, or credit balances, including who made the change and when.
 
@@ -45,7 +45,7 @@ Axion does not store your full payment-card number. Square processes payment det
 Your prompt and any file contents, command output, page text, or other context included with it are transmitted to the selected model provider.
 
 - **Third-party providers** such as Anthropic, OpenAI, Google Gemini, Groq, Mistral, OpenRouter, and OpenCode receive requests directly when you configure and select them.
-- **Lumen** routes through Axion Labs' Cloudflare backend at `api.amplifiedsmp.org` and then to Lumen inference on Hugging Face. Keyless access is limited to 50 requests per day per IP address. Signed-in usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.
+- **Lumen** routes through Axion Labs' Cloudflare backend at `api.amplifiedsmp.org` and then to Lumen inference on RunPod. Keyless access is limited to 50 requests per day per IP address. Signed-in usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.
 - **IP addresses** are collected during registration and used for duplicate-account and abuse detection. Registration IPs are kept with the account; operational rate-limit records expire according to their configured windows.
 
 ### Voice transcription and text-to-speech
@@ -77,7 +77,9 @@ Contributing is opt-in. Nothing is submitted merely because a contribution promp
 
 ## Third-party privacy policies
 
-- Hugging Face (Lumen and vision inference): https://huggingface.co/privacy
+- RunPod (Lumen inference): https://www.runpod.io/legal/privacy-policy
+- Hugging Face (default vision inference): https://huggingface.co/privacy
+- Mistral (asynchronous safety classification): https://legal.mistral.ai/terms/privacy-policy
 - Cloudflare (hosted backend and contribution endpoint): https://www.cloudflare.com/policies/privacy/
 - Square (payments and subscriptions): https://squareup.com/us/en/legal/general/privacy
 - Resend (transactional and announcement email): https://resend.com/legal/privacy-policy
@@ -85,13 +87,13 @@ Contributing is opt-in. Nothing is submitted merely because a contribution promp
 
 ## Your control
 
-- Delete individual signed-in web chats from the chat interface, or delete your account and linked account data from Settings — this removes them from your own history and dashboard, but the separate compliance log described above is retained and is not deleted by these actions.
+- Delete individual signed-in web chats from the chat interface. Deleting your account also removes account identifiers from retained safety-log rows and redacts routine content. A pending or confirmed flagged exchange may remain without account identifiers until its human-review need ends or the one-year retention limit expires.
 - Use the unsubscribe link in an announcement email to remove a separate announcement subscription.
 - Disconnect an OAuth service with `/oauth revoke <service>`, or delete `~/.axion/oauth.json`.
 - Use your own provider keys or a local model through Ollama to keep inference off Axion Labs' model endpoint.
 - Opt out of contribution prompts with `/contribute optout`, and delete local files under `~/.axion/donations/` yourself.
-- Axion is open source — review the code at [github.com/AxionLabsAI/axion](https://github.com/AxionLabsAI/axion).
+- Axion is open source — review the code at [github.com/Ravikxx/Axion](https://github.com/Ravikxx/Axion).
 
 ## Contact
 
-For questions, open an issue at [github.com/AxionLabsAI/axion/issues](https://github.com/AxionLabsAI/axion/issues) or visit [axion.amplifiedsmp.org](https://axion.amplifiedsmp.org).
+For questions, open an issue at [github.com/Ravikxx/Axion/issues](https://github.com/Ravikxx/Axion/issues) or visit [axion.amplifiedsmp.org](https://axion.amplifiedsmp.org).
