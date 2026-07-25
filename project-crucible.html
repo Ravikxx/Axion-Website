@@ -165,6 +165,24 @@
     }
     .accent-block p:last-child { margin-bottom: 0; }
 
+    /* Outbound references to other people's work read as conventional links —
+       blue and underlined — so they're obviously leaving the site, rather than
+       blending into the gold used for our own internal navigation. */
+    .ext-link { color: var(--blue); text-decoration: underline; text-underline-offset: 2px; }
+    .ext-link:hover { text-decoration-thickness: 2px; }
+    .fn-ref {
+      color: var(--blue); text-decoration: none; font-weight: 700;
+      font-size: 0.7em; vertical-align: super; padding-left: 1px;
+    }
+    .fn-ref:hover { text-decoration: underline; }
+    .footnote {
+      font-size: 13px; line-height: 1.7; color: var(--muted3);
+      border-top: 1px solid var(--border);
+      padding-top: 20px; margin-top: 40px;
+    }
+    .footnote .fn-mark { color: var(--blue); font-weight: 700; }
+    .footnote:target { border-left: 3px solid var(--accent); padding-left: 16px; }
+
     .arch-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -715,7 +733,7 @@
     <div class="timeline-item">
       <div class="date">Next</div>
       <h3>Head-to-Head Against Microsoft's BitDistill</h3>
-      <p>Once the rerun finishes we're evaluating it against <strong>BitNet Distillation (BitDistill)</strong>, Microsoft's pipeline for taking an off-the-shelf full-precision model down to 1.58-bit. It's the right yardstick because it lands in the same place we do — ternary weights, and SubLN in the stack — from the opposite direction: BitDistill distils an existing model down, TAME trains ternary from scratch.</p>
+      <p>Once the rerun finishes we're evaluating it against <a class="ext-link" href="https://arxiv.org/abs/2510.13998" target="_blank" rel="noopener noreferrer">BitDistill</a><a class="fn-ref" href="#fn-bitdistill" aria-label="Footnote: what BitDistill is">*</a>, Microsoft's pipeline for taking an off-the-shelf full-precision model down to 1.58-bit. It's the right yardstick because it lands in the same place we do — ternary weights, and SubLN in the stack — from the opposite direction: BitDistill distils an existing model down, TAME trains ternary from scratch.</p>
       <p>That comparison is also what decides the road to 300M. If distillation gets closer to full-precision quality than training from scratch does at our scale, the ~300M target is a distillation problem rather than a training-budget one.</p>
     </div>
   </div>
@@ -788,6 +806,18 @@
   <div class="accent-block">
     <strong>What's next?</strong> Crucible Axon-Chat (102M) is training now on a mixed UltraChat + TinyChat dataset. Beyond that, we're exploring whether TAME's efficiency techniques can convert existing full-precision models to ternary via distillation, aiming toward a ~300M target model — with the long-term goal of open-sourcing the architecture and tooling. Follow along on <a href="https://github.com/Ravikxx/Axion">GitHub</a>.
   </div>
+
+  <p class="footnote" id="fn-bitdistill">
+    <span class="fn-mark">*</span> <strong>BitDistill</strong> (BitNet Distillation) is Microsoft's pipeline for
+    converting an off-the-shelf full-precision language model into 1.58-bit ternary weights for a given task,
+    instead of training a ternary model from scratch. It combines three pieces: the SubLN normalisation module
+    from BitNet, multi-head attention distillation from the full-precision teacher, and a continual pre-training
+    warm-up that stops the quality gap between the full-precision and ternary versions widening as models get
+    larger. Microsoft reports quality comparable to the full-precision original with up to 10× memory savings and
+    roughly 2.65× faster CPU inference. Paper:
+    <a class="ext-link" href="https://arxiv.org/abs/2510.13998" target="_blank" rel="noopener noreferrer">arXiv:2510.13998</a> ·
+    code: <a class="ext-link" href="https://github.com/microsoft/BitNet" target="_blank" rel="noopener noreferrer">github.com/microsoft/BitNet</a>.
+  </p>
 
 </main>
 
