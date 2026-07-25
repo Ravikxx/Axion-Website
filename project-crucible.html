@@ -295,15 +295,15 @@
     </div>
     <div class="stat">
       <div class="stat-num">102M</div>
-      <div class="stat-label">Chat Model (in progress)</div>
+      <div class="stat-label">Chat Model (rerunning)</div>
     </div>
     <div class="stat">
       <div class="stat-num">300M</div>
       <div class="stat-label">Target Parameters</div>
     </div>
     <div class="stat">
-      <div class="stat-num">~Day 3</div>
-      <div class="stat-label">Full Stack Verified</div>
+      <div class="stat-num">0.009</div>
+      <div class="stat-label">Cost us the 102M run</div>
     </div>
   </div>
   <p class="last-updated">Last updated: July 25, 2026</p>
@@ -687,15 +687,10 @@
   </div>
 
   <div class="section-title">Progress</div>
-  <h2>Day 1–3 Sprint Status</h2>
-  <p class="lead">Despite officially starting today (July 4), the team has been moving fast — here's where we stand after roughly three days of work.</p>
+  <h2>Day 22 Sprint Status</h2>
+  <p class="lead">Real progress, and one expensive mistake. The architecture holds up everywhere we've tested it at small scale — but the 102M run has to be thrown away and done again, because a single number was slightly wrong.</p>
 
   <div class="timeline">
-    <div class="timeline-item">
-      <div class="date">Day ~1</div>
-      <h3>Full Stack Verification</h3>
-      <p>Automated checks confirmed each component works in isolation: ternary weight values are exactly -1, 0, or +1 after quantization; MoE routing distributes tokens across experts with healthy load spread; the MTP auxiliary head produces meaningful gradients. The integration test passes end-to-end.</p>
-    </div>
     <div class="timeline-item">
       <div class="date">Day ~2</div>
       <h3>14M Proof-of-Concept Trained</h3>
@@ -707,14 +702,21 @@
       <p>A second variant swapping in Grouped Query Attention and aux-loss-free load balancing was built and validated against the first variant at identical step count for a controlled head-to-head comparison. Result: <strong>equivalent quality with ~600K fewer parameters and a 4× smaller KV cache</strong> — confirming the efficiency techniques hold up in practice, not just in theory.</p>
     </div>
     <div class="timeline-item">
-      <div class="date">In Progress</div>
-      <h3>Crucible Axon-Chat (102M) Training</h3>
-      <p>Training a larger conversational model on a mixed UltraChat + TinyChat dataset, using the full validated TAME stack plus SubLN and dual-GPU training support. Loss is dropping cleanly and outputs already show real structure — topically relevant responses, correct poem formatting, natural stopping points. Full results and samples coming once training wraps.</p>
+      <div class="date">Setback</div>
+      <h3>Off by 0.009 — the 102M Run Is Scrapped</h3>
+      <p>A single constant in the training configuration was wrong by <strong>0.009</strong>. That is the whole story, and it was expensive precisely because it was small: nothing crashed, the loss curve fell cleanly, and the samples read like the coherent output we reported here while it was still running. The run looked healthy right up until we checked the number it was built on.</p>
+      <p>There's no partial credit to salvage. Every result downstream of that constant is untrustworthy, and a run you can't trust is worse than no run at all — you end up stacking the next experiment on top of it. So the 102M model goes in the bin and we start it again.</p>
     </div>
     <div class="timeline-item">
-      <div class="date">Current</div>
-      <h3>Scaling Toward 300M</h3>
-      <p>With the small-scale variants validated, we're exploring whether TAME's efficiency techniques can convert existing full-precision models to ternary via distillation — a path toward a ~300M target model without training fully from scratch.</p>
+      <div class="date">In Progress</div>
+      <h3>Rerunning Crucible Axon-Chat (102M)</h3>
+      <p>Same architecture, same mixed UltraChat + TinyChat data, same dual-GPU setup — corrected constant. The one upside of losing a run this way is that nothing about the design is in question, so there is nothing to redesign before starting over.</p>
+    </div>
+    <div class="timeline-item">
+      <div class="date">Next</div>
+      <h3>Head-to-Head Against Microsoft's BitDistill</h3>
+      <p>Once the rerun finishes we're evaluating it against <strong>BitNet Distillation (BitDistill)</strong>, Microsoft's pipeline for taking an off-the-shelf full-precision model down to 1.58-bit. It's the right yardstick because it lands in the same place we do — ternary weights, and SubLN in the stack — from the opposite direction: BitDistill distils an existing model down, TAME trains ternary from scratch.</p>
+      <p>That comparison is also what decides the road to 300M. If distillation gets closer to full-precision quality than training from scratch does at our scale, the ~300M target is a distillation problem rather than a training-budget one.</p>
     </div>
   </div>
 
