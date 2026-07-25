@@ -396,7 +396,7 @@
         <div class="chat-status">
           <span class="seg ep">POST /v1/chat/completions</span>
           <span class="seg"><b>$0.125</b> included / week</span>
-          <span class="seg"><b>no key</b> needed to try</span>
+          <span class="seg"><b>free account</b> required</span>
           <span class="seg right">OpenAI-compatible</span>
         </div>
       </div>
@@ -438,7 +438,7 @@
         <p class="model-desc" id="veil-desc">Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat.</p>
         <div class="model-facts">
           <div class="fact"><div class="n">3B</div><div class="l">parameters</div></div>
-          <div class="fact"><div class="n">Free</div><div class="l">no key required</div></div>
+          <div class="fact"><div class="n">Free</div><div class="l">account required</div></div>
         </div>
         <a class="model-link" href="/models">model details →</a>
       </div>
@@ -452,9 +452,10 @@
     <p class="section-lead">The API speaks the OpenAI chat-completions format, so every SDK and tool that works with OpenAI works with Lumen — just change the base URL.</p>
 
     <div class="code-block">
-      <span class="comment"># no key needed on the free tier</span><br>
+      <span class="comment"># free Axion account and API key required</span><br>
       <span class="prompt">$ </span><span class="cmd">curl https://api.amplifiedsmp.org/v1/chat/completions \</span><br>
       <span class="cmd">&nbsp;&nbsp;-H <span class="str">"Content-Type: application/json"</span> \</span><br>
+      <span class="cmd">&nbsp;&nbsp;-H <span class="str">"Authorization: Bearer $AXION_API_KEY"</span> \</span><br>
       <span class="cmd">&nbsp;&nbsp;-d <span class="str">'{"model": "lumen", "messages": [{"role": "user", "content": "hello!"}]}'</span></span>
     </div>
     <div class="api-points">

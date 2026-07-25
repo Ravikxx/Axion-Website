@@ -2195,6 +2195,10 @@
 
   async function sendMessage() {
     if (streaming) return
+    if (!sessionToken) {
+      showAuthenticationRequired('Create a free Axion account or sign in to chat.')
+      return
+    }
     const input = document.getElementById('user-input')
     const content = input.value.trim()
     if (!content) return
@@ -2237,6 +2241,10 @@
   // hard cap (TOOL_STEP_LIMIT) stops a runaway "call tool, get result, call
   // tool again..." loop instead of looping forever.
   async function generateReply(c, depth = 0) {
+    if (!sessionToken) {
+      showAuthenticationRequired('Create a free Axion account or sign in to chat.')
+      return
+    }
     if (depth === 0) stopRequested = false
     await ensureSandboxMode()
     setSendingState(true)
@@ -2297,8 +2305,7 @@
       systemHints.push({ role: 'system', content: 'Tool access has been disabled for this entire chat because you repeated an already-blocked run_code call. You cannot call any tool right now, in this reply or any future one in this chat, until the user clicks "Re-enable" — answer the user directly in plain text using the information already in this conversation.' })
     }
     const body = { model: selectedModel, messages: [...systemHints, ...apiMessages], stream: true, ...(tools ? { tools } : {}) }
-    const headers = { 'Content-Type': 'application/json' }
-    if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`
+    const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionToken}` }
 
     let full = '', failed = false
     let toolCallsAcc = []
@@ -2306,6 +2313,12 @@
       const res = await fetch(`${API}/v1/chat/completions`, { method: 'POST', headers, body: JSON.stringify(body), signal: abortCtrl.signal })
       if (!res.ok) {
         const err = await res.json().catch(() => ({}))
+        if (res.status === 401) {
+          setSendingState(false)
+          abortCtrl = null
+          showAuthenticationRequired(err.error?.message || 'Your session expired. Sign in again to continue.')
+          return
+        }
         live.textContent = '⚠ ' + (err.error?.message || `Error ${res.status}`)
         live.classList.remove('streaming'); failed = true
       } else {
@@ -2456,6 +2469,11 @@
     document.getElementById('auth-overlay').style.display = 'flex'
   }
 
+  function showAuthenticationRequired(message) {
+    logout()
+    showErr(message || 'Create a free Axion account or sign in to continue.')
+  }
+
   async function loadAccountProfile() {
     const avatar = document.getElementById('acct-avatar')
     AxionAccountProfile.renderAvatar(avatar, userEmail, AxionAccountProfile.cachedAvatar())
@@ -2492,7 +2510,7 @@
     if (!sessionToken) return   // show auth overlay
     try {
       const res = await fetch(`${API}/dashboard/keys`, { headers: { Authorization: `Bearer ${sessionToken}` } })
-      if (!res.ok) { sessionToken = null; localStorage.removeItem('axion_token'); AxionAccountProfile.clear(); return }
+      if (!res.ok) { showAuthenticationRequired('Your session expired. Sign in again to continue.'); return }
       showApp()
     } catch { /* offline — still let them in with cached token */ showApp() }
   })()

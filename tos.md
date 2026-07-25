@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated: July 19, 2026**
+**Last updated: July 25, 2026**
 
 ## Overview
 
@@ -12,14 +12,14 @@ The Service provides access to AI models and developer tools. Lumen requests are
 
 ## Accounts
 
-- You may use limited parts of the Service without an account.
+- Public informational pages, including documentation, status, privacy, and terms, may be read without an account. Hosted model and compute access requires an account.
 - You are responsible for your account credentials and Axion-issued API keys.
 - Do not publish, sell, or share an Axion-issued API key outside its intended use.
 - **One account per person.** Accounts detected sharing an IP address with another verified account may be suspended. If you believe this is an error, you may use the appeal link in the suspension email.
 
 ## Usage, plans, and billing
 
-- Without an API key, Lumen is limited to 50 requests per day per IP address.
+- Lumen and other Axion-hosted model or compute access requires a Free or Pro account, authenticated by a signed-in browser session or an Axion-issued API key.
 - A Free account includes an account-wide $0.125 weekly usage allowance and a $0.05 allowance per rolling two-hour window, with up to three active API keys. Both allowances are lazy-start: a period doesn't begin, or count down toward reset, until your account's first chargeable request after the previous one has fully elapsed.
 - Pro costs $7 per month through Square and includes an account-wide $1.25 weekly usage allowance and a $0.50 allowance per rolling two-hour window, with unlimited active API keys.
 - Included usage is measured from input and output tokens. The current accounting rates are $0.15 per million input tokens and $0.50 per million output tokens.
