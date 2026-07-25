@@ -44,7 +44,7 @@
     nav {
       border-bottom: 1px solid var(--border);
       padding: 0 32px;
-      display: flex; align-items: center; height: 54px; gap: 24px;
+      display: flex; align-items: center; height: 56px; gap: 24px;
       position: sticky; top: 0; z-index: 100;
     }
     /* Blur lives on a pseudo-element, not nav itself — backdrop-filter on
@@ -440,7 +440,7 @@
           <div class="fact"><div class="n">3B</div><div class="l">parameters</div></div>
           <div class="fact"><div class="n">Free</div><div class="l">account required</div></div>
         </div>
-        <a class="model-link" href="/models">model details →</a>
+        <a class="model-link" href="/veil">model details →</a>
       </div>
 
     </div>
@@ -468,13 +468,18 @@
   <section class="reveal">
     <p class="section-tag">ways to use it</p>
     <h2 class="section-heading">Wherever you work</h2>
-    <p class="section-lead">The same models, two doors in.</p>
+    <p class="section-lead">The same models, three doors in.</p>
 
     <div class="ways">
       <a class="way-card" href="/chat">
         <span class="way-kbd">browser</span>
         <p class="way-title">Chat</p>
         <p class="way-desc">A clean chat interface for Lumen. Signed-in chats sync across your devices.</p>
+      </a>
+      <a class="way-card" href="/docs#axion-api">
+        <span class="way-kbd">POST /v1/chat/completions</span>
+        <p class="way-title">API</p>
+        <p class="way-desc">An OpenAI-compatible endpoint, so every SDK and tool that already speaks OpenAI works by changing the base URL.</p>
       </a>
       <a class="way-card" href="/docs">
         <span class="way-kbd">$ npm i -g @axion-labs-ai/quark-cli</span>
