@@ -152,7 +152,7 @@
 
     .ann { border-top: 1px solid var(--hair); }
     .ann.filter-hide, .ann.pending { display: none; }
-    #dynamicAnns:empty { display: none; }
+    .filter-chip[hidden] { display: none; }
 
     .ann-head {
       width: 100%; display: flex; align-items: baseline; gap: 18px;
@@ -173,6 +173,8 @@
     .ann-cat.update  { background: var(--cat-update-bg);  color: var(--cat-update-fg); }
     .ann-cat.notice  { background: var(--cat-notice-bg);  color: var(--cat-notice-fg); }
     .ann-cat.safety  { background: var(--cat-safety-bg);  color: var(--cat-safety-fg); }
+    /* Backend rows that carry no category of their own. */
+    .ann-cat.announcement { background: var(--cat-notice-bg); color: var(--cat-notice-fg); }
     .ann-title {
       flex: 1 1 auto;
       font-size: 20px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3;
@@ -274,11 +276,12 @@
   <button class="filter-chip" data-cat="update" onclick="filterAnns('update', this)">Updates</button>
   <button class="filter-chip" data-cat="safety" onclick="filterAnns('safety', this)">Safety</button>
   <button class="filter-chip" data-cat="notice" onclick="filterAnns('notice', this)">Notices</button>
+  <!-- Revealed by loadAnnouncements() only when a backend row arrives without a
+       category, so the "Announcement" label always has a filter behind it. -->
+  <button class="filter-chip" id="chip-announcement" hidden data-cat="announcement" onclick="filterAnns('announcement', this)">Announcements</button>
 </nav>
 
 <main>
-  <div id="dynamicAnns"></div>
-
   <!-- Parsed by .github/scripts/send-announcement.cjs on push and emailed to
        subscribers, then stored server-side and rendered dynamically above by
        loadAnnouncements() — hidden here so it doesn't duplicate that render. -->
@@ -791,43 +794,103 @@
     else setTimeout(show, release - Date.now())
   })()
 
-  // Load dynamic announcements from DB and render them as rows at the top
+  // The categories the filter chips above understand. A backend row that
+  // names one of these is filed under it; anything else falls back to the
+  // generic "announcement" bucket, whose chip is revealed on demand.
+  const ANN_CATS = { release: 'Release', update: 'Update', safety: 'Safety Update', notice: 'Notice' }
+
+  // Loose key for matching a backend row against a hand-authored article.
+  // The two are written at different times by different hands, so straight vs
+  // curly quotes, hyphen vs en/em dash, and stray whitespace are all expected
+  // drift — comparing raw strings meant any of them silently produced a
+  // duplicate row on the page.
+  function annKey(s) {
+    return String(s)
+      .normalize('NFKC')
+      .replace(/[‐-―]/g, '-')
+      .replace(/[‘’]/g, "'")
+      .replace(/[“”]/g, '"')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase()
+  }
+
+  // Put a row where its date says it belongs. Dynamic rows used to be stacked
+  // in a container above every static article, so a backend announcement from
+  // July 7 rendered above a hand-authored one from July 20.
+  function insertByDate(main, article, when) {
+    for (const el of main.querySelectorAll('.ann')) {
+      const t = Date.parse(el.querySelector('.ann-when')?.textContent.trim() || '')
+      if (!Number.isNaN(t) && t < when) { main.insertBefore(article, el); return }
+    }
+    const empty = main.querySelector('.news-empty')
+    if (empty) main.insertBefore(article, empty)
+    else main.appendChild(article)
+  }
+
+  // The top row is styled as the lead — oversized and expanded. That's a class
+  // on a static article, so once something sorts above it the lead styling ends
+  // up on the second row. Move it to whatever is actually newest.
+  function promoteLead(main) {
+    const rows = [...main.querySelectorAll('.ann:not(.pending)')]
+    if (!rows.length) return
+    rows.forEach(r => {
+      r.classList.remove('lead', 'open')
+      r.querySelector('.ann-head')?.setAttribute('aria-expanded', 'false')
+    })
+    rows[0].classList.add('lead', 'open')
+    rows[0].querySelector('.ann-head')?.setAttribute('aria-expanded', 'true')
+  }
+
+  // Load announcements from the DB and merge them into the static feed
   async function loadAnnouncements() {
     try {
-      const res = await fetch(`${API}/announcements`)
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 8000)
+      const res = await fetch(`${API}/announcements`, { signal: controller.signal })
+        .finally(() => clearTimeout(timer))
       const { announcements } = await res.json()
       if (!announcements?.length) return
       const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      const container = document.getElementById('dynamicAnns')
+      const main = document.querySelector('main')
 
       // Once an announcement gets hand-authored into a permanent, properly
-      // categorized <article> further down the page, it stays in the D1
-      // table (needed for the email webhook's dedup), but rendering it here
-      // too would show it twice — once generic, once properly formatted.
-      // Skip anything whose title already has a static article.
-      const existingTitles = new Set(
-        [...document.querySelectorAll('.ann-title')].map(el => el.textContent.trim())
-      )
-      const fresh = announcements.filter(a => !existingTitles.has(a.title.trim()))
+      // categorized <article> below, it stays in the D1 table (needed for the
+      // email webhook's dedup), but rendering it here too would show it twice
+      // — once generic, once properly formatted.
+      const existing = new Set([...document.querySelectorAll('.ann-title')].map(el => annKey(el.textContent)))
+      const fresh = announcements.filter(a => !existing.has(annKey(a.title)))
       if (!fresh.length) return
 
-      container.innerHTML = fresh.map(a => {
-        const date = new Date(a.created_at * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+      let uncategorized = false
+      for (const a of fresh) {
+        const when = a.created_at * 1000
+        const date = new Date(when).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+        const cat = ANN_CATS[a.category] ? a.category : 'announcement'
+        const label = ANN_CATS[cat] || 'Announcement'
+        if (cat === 'announcement') uncategorized = true
         const body = esc(a.body).replace(/\n/g, '<br>')
         const title = a.link ? `<a href="${esc(a.link)}" style="color:inherit;text-decoration:none">${esc(a.title)}</a>` : esc(a.title)
-        return `<article class="ann release" data-cat="release">
+
+        const article = document.createElement('article')
+        article.className = `ann ${cat}`
+        article.dataset.cat = cat
+        article.innerHTML = `
           <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
             <span class="ann-when">${date}</span>
-            <span class="ann-cat release">Announcement</span>
+            <span class="ann-cat ${cat}">${label}</span>
             <span class="ann-title">${title}</span>
-            ${'<svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'}
+            <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
           <div class="ann-panel"><div class="ann-panel-inner"><div class="ann-body">
             <p style="white-space:pre-wrap">${body}</p>
             ${a.link ? `<div class="ann-footer"><a class="ann-link" href="${esc(a.link)}">Read more →</a></div>` : ''}
-          </div></div></div>
-        </article>`
-      }).join('')
+          </div></div></div>`
+        insertByDate(main, article, when)
+      }
+
+      if (uncategorized) document.getElementById('chip-announcement')?.removeAttribute('hidden')
+      promoteLead(main)
     } catch {}
   }
 
