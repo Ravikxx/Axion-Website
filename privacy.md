@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated: July 24, 2026**
+**Last updated: July 25, 2026**
 
 ## Overview
 
@@ -45,7 +45,7 @@ Axion does not store your full payment-card number. Square processes payment det
 Your prompt and any file contents, command output, page text, or other context included with it are transmitted to the selected model provider.
 
 - **Third-party providers** such as Anthropic, OpenAI, Google Gemini, Groq, Mistral, OpenRouter, and OpenCode receive requests directly when you configure and select them.
-- **Lumen** routes through Axion Labs' Cloudflare backend at `api.amplifiedsmp.org` and then to Lumen inference on RunPod. Keyless access is limited to 50 requests per day per IP address. Signed-in usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.
+- **Lumen** routes through Axion Labs' Cloudflare backend at `api.amplifiedsmp.org` and then to Lumen inference on RunPod. Hosted access requires an Axion account, authenticated by a browser session or Axion API key. Usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.
 - **IP addresses** are collected during registration and used for duplicate-account and abuse detection. Registration IPs are kept with the account; operational rate-limit records expire according to their configured windows.
 
 ### Voice transcription and text-to-speech
