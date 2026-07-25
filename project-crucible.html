@@ -291,12 +291,12 @@
 <div class="crucible-art">
   <div class="crucible-art-frame" id="crucible-frame">
 
-    <!-- TAME hero. On a visitor's FIRST ever load the letters knit together
-         from loose torn scraps (one-time intro, remembered via localStorage);
-         after that, and on every later visit, it falls back to the collage that
-         re-randomizes every half second. Everything is cut through the
-         ripped-letterform mask so the word stays crisp. Motion is skipped
-         entirely for visitors who prefer reduced motion. -->
+    <!-- TAME hero. A scene engine: every load picks one of four short intro
+         scenes at random (forge / cycle / trailer / telemetry), each ending on
+         a solid TAME, then hands off to a collage that re-randomizes every half
+         second. Everything is cut through the ripped-letterform mask so the
+         word stays crisp. Motion is skipped entirely for visitors who prefer
+         reduced motion. See AGENTS.md for the shared primitives. -->
     <svg id="crucible-tame" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs id="tame-defs">
         <radialGradient id="tame-glow" cx="50%" cy="52%" r="46%">

@@ -501,9 +501,9 @@
         <p class="safety-desc">Testing showed dangerous self-preservation behavior. We took it offline and published the findings.</p>
       </a>
       <a class="safety-card" href="/lumen-safety">
-        <p class="safety-date">Methodology</p>
-        <p class="safety-title">How we test</p>
-        <p class="safety-desc">The scenarios, scoring, and thresholds behind every Lumen safety report.</p>
+        <p class="safety-date">Lumen 1.2.1 · June 2026</p>
+        <p class="safety-title">Safety report: 26% pass rate</p>
+        <p class="safety-desc">The full 1.2.1 results — 7 scenarios, 5 runs each, every prompt and response published.</p>
       </a>
     </div>
   </section>
@@ -539,16 +539,18 @@
       const up = !!(d.ok && d.model_up)
       statusLed.className = 'led ' + (up ? 'live' : 'down')
       chatLed.className = 'led ' + (up ? 'live' : 'down')
-      statusText.textContent = up ? 'Lumen is live right now' : 'Lumen is migrating — back soon'
+      statusText.textContent = up ? 'Lumen is live right now' : 'Lumen is temporarily unavailable'
       lumenStatus.className = 'model-status ' + (up ? 'live' : 'down')
-      lumenStatus.innerHTML = '<span class="led ' + (up ? 'live' : 'down') + '"></span> ' + (up ? 'live · free' : 'migrating · back soon')
+      lumenStatus.innerHTML = '<span class="led ' + (up ? 'live' : 'down') + '"></span> ' + (up ? 'live · free' : 'temporarily unavailable')
     })
+    // A failed probe means we couldn't reach the status API — not that the
+    // model is down. Say that, rather than asserting an outage we can't see.
     .catch(() => {
-      statusLed.className = 'led down'
-      chatLed.className = 'led down'
-      statusText.textContent = 'Lumen is migrating — back soon'
-      lumenStatus.className = 'model-status down'
-      lumenStatus.innerHTML = '<span class="led down"></span> migrating · back soon'
+      statusLed.className = 'led'
+      chatLed.className = 'led'
+      statusText.textContent = 'Model status unavailable — see the status page'
+      lumenStatus.className = 'model-status'
+      lumenStatus.innerHTML = '<span class="led"></span> status unavailable'
     })
     .finally(() => clearTimeout(healthTimeout))
 
