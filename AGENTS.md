@@ -97,7 +97,7 @@ All scenes are built from the same primitives — reuse them, don't fork:
    read as bursts.
 4. **Telemetry** — an ambient training-run: a loss curve draws left-to-right
    like a ridgeline with an area fill, milestone flags plant at checkpoints
-   (`14.5M/102M/300M`), light paper precipitation falls, then the field pours
+   (`14.5M/102M/600M`), light paper precipitation falls, then the field pours
    down and converges into TAME.
 
 ### Steady state

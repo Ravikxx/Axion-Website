@@ -313,15 +313,15 @@
     </div>
     <div class="stat">
       <div class="stat-num">102M</div>
-      <div class="stat-label">Chat Model (rerunning)</div>
+      <div class="stat-label">Chat Model</div>
     </div>
     <div class="stat">
-      <div class="stat-num">300M</div>
-      <div class="stat-label">Target Parameters</div>
+      <div class="stat-num">600M</div>
+      <div class="stat-label">Current run · Qwen 0.6B</div>
     </div>
     <div class="stat">
       <div class="stat-num">0.009</div>
-      <div class="stat-label">Cost us the 102M run</div>
+      <div class="stat-label">Cost us the 600M run</div>
     </div>
   </div>
   <p class="last-updated">Last updated: July 25, 2026</p>
@@ -597,7 +597,7 @@
     var area = EL('polygon', { points: '', fill: 'url(#tame-area-grad)' });
     var line = EL('polyline', { points: '', fill: 'none', stroke: '#ecdfb0', 'stroke-width': 3.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
     chartG.appendChild(axis); chartG.appendChild(area); chartG.appendChild(line);
-    var flagDefs = [{ t: 0.26, l: '14.5M' }, { t: 0.56, l: '102M' }, { t: 0.85, l: '300M' }];
+    var flagDefs = [{ t: 0.26, l: '14.5M' }, { t: 0.56, l: '102M' }, { t: 0.85, l: '600M' }];
     var flags = flagDefs.map(function (f) {
       var k = Math.round(f.t * (CN - 1)), g = EL('g', { opacity: 0, transform: 'translate(' + curve[k].x + ' ' + curve[k].y + ')', 'font-family': 'IBM Plex Mono, monospace' });
       g.appendChild(EL('line', { x1: 0, y1: 0, x2: 0, y2: -30, stroke: '#b8a27d', 'stroke-width': 1.5 }));
@@ -706,7 +706,7 @@
 
   <div class="section-title">Progress</div>
   <h2>Day 22 Sprint Status</h2>
-  <p class="lead">Real progress, and one expensive mistake. The architecture holds up everywhere we've tested it at small scale — but the 102M run has to be thrown away and done again, because a single number was slightly wrong.</p>
+  <p class="lead">Real progress, and one expensive mistake. The architecture holds up everywhere we've tested it at small scale — but the 600M run has to be thrown away and done again, because a single number was slightly wrong.</p>
 
   <div class="timeline">
     <div class="timeline-item">
@@ -720,21 +720,27 @@
       <p>A second variant swapping in Grouped Query Attention and aux-loss-free load balancing was built and validated against the first variant at identical step count for a controlled head-to-head comparison. Result: <strong>equivalent quality with ~600K fewer parameters and a 4× smaller KV cache</strong> — confirming the efficiency techniques hold up in practice, not just in theory.</p>
     </div>
     <div class="timeline-item">
+      <div class="date">Scaling up</div>
+      <h3>102M Trained, 300M Came Up Short</h3>
+      <p>Crucible Axon-Chat (102M) trained on a mixed UltraChat + TinyChat dataset using the full validated stack — topically relevant responses, correct poem formatting, natural stopping points. Scaling the same recipe to 300M was a <strong>partial failure</strong>: enough of it worked to be worth diagnosing, not enough to keep.</p>
+      <p>Having fixed what caused it, we skipped retrying at 300M and went straight to <strong>600M</strong>, built on Qwen 0.6B — the same base model Microsoft used for BitDistill, which makes the head-to-head below a fair fight instead of an apples-to-oranges one.</p>
+    </div>
+    <div class="timeline-item">
       <div class="date">Setback</div>
-      <h3>Off by 0.009 — the 102M Run Is Scrapped</h3>
-      <p>A single constant in the training configuration was wrong by <strong>0.009</strong>. That is the whole story, and it was expensive precisely because it was small: nothing crashed, the loss curve fell cleanly, and the samples read like the coherent output we reported here while it was still running. The run looked healthy right up until we checked the number it was built on.</p>
-      <p>There's no partial credit to salvage. Every result downstream of that constant is untrustworthy, and a run you can't trust is worse than no run at all — you end up stacking the next experiment on top of it. So the 102M model goes in the bin and we start it again.</p>
+      <h3>Off by 0.009 — the 600M Run Is Scrapped</h3>
+      <p>A single constant in the training configuration was wrong by <strong>0.009</strong>. That is the whole story, and it was expensive precisely because it was small: nothing crashed and nothing looked obviously broken while it ran. The run looked healthy right up until we checked the number it was built on.</p>
+      <p>There's no partial credit to salvage. Every result downstream of that constant is untrustworthy, and a run you can't trust is worse than no run at all — you end up stacking the next experiment on top of it. So the 600M model goes in the bin and we start it again.</p>
     </div>
     <div class="timeline-item">
       <div class="date">In Progress</div>
-      <h3>Rerunning Crucible Axon-Chat (102M)</h3>
-      <p>Same architecture, same mixed UltraChat + TinyChat data, same dual-GPU setup — corrected constant. The one upside of losing a run this way is that nothing about the design is in question, so there is nothing to redesign before starting over.</p>
+      <h3>Rerunning the 600M Model</h3>
+      <p>Same architecture, same Qwen 0.6B base, same setup — corrected constant. The one upside of losing a run this way is that nothing about the design is in question, so there is nothing to redesign before starting over.</p>
     </div>
     <div class="timeline-item">
       <div class="date">Next</div>
       <h3>Head-to-Head Against Microsoft's BitDistill</h3>
-      <p>Once the rerun finishes we're evaluating it against <a class="ext-link" href="https://arxiv.org/abs/2510.13998" target="_blank" rel="noopener noreferrer">BitDistill</a><a class="fn-ref" href="#fn-bitdistill" aria-label="Footnote: what BitDistill is">*</a>, Microsoft's pipeline for taking an off-the-shelf full-precision model down to 1.58-bit. It's the right yardstick because it lands in the same place we do — ternary weights, and SubLN in the stack — from the opposite direction: BitDistill distils an existing model down, TAME trains ternary from scratch.</p>
-      <p>That comparison is also what decides the road to 300M. If distillation gets closer to full-precision quality than training from scratch does at our scale, the ~300M target is a distillation problem rather than a training-budget one.</p>
+      <p>Once the rerun finishes we're evaluating it against <a class="ext-link" href="https://arxiv.org/abs/2510.13998" target="_blank" rel="noopener noreferrer">BitDistill</a><a class="fn-ref" href="#fn-bitdistill" aria-label="Footnote: what BitDistill is">*</a>, Microsoft's pipeline for taking an off-the-shelf full-precision model down to 1.58-bit. The comparison is deliberately tight: BitDistill's published results start from Qwen 0.6B, so our 600M run starts from the same weights. Same base model, same target precision, two different routes there — which means whatever gap shows up is attributable to the method rather than to a difference in the models being compared.</p>
+      <p>Either result is worth having. If TAME comes out ahead, we have a reason to keep building it. If BitDistill does, we have a better starting point than the one we were about to build ourselves — which is a cheaper thing to learn now than at 300M of wasted compute.</p>
     </div>
   </div>
 
@@ -764,7 +770,7 @@
     <tr>
       <th>Property</th>
       <th>PoC (14M)</th>
-      <th>Target (300M)</th>
+      <th>From scratch (300M)</th>
     </tr>
     <tr>
       <td><strong>Parameters</strong></td>
@@ -803,8 +809,14 @@
     </tr>
   </table>
 
+  <p style="font-size:14px;color:var(--muted3);margin-top:-12px">
+    The 300M column is the from-scratch design that came up short. The current 600M run starts from Qwen 0.6B
+    instead, so it inherits that model's configuration rather than this one — its specs will go up here once the
+    rerun finishes.
+  </p>
+
   <div class="accent-block">
-    <strong>What's next?</strong> Crucible Axon-Chat (102M) is training now on a mixed UltraChat + TinyChat dataset. Beyond that, we're exploring whether TAME's efficiency techniques can convert existing full-precision models to ternary via distillation, aiming toward a ~300M target model — with the long-term goal of open-sourcing the architecture and tooling. Follow along on <a href="https://github.com/Ravikxx/Axion">GitHub</a>.
+    <strong>What's next?</strong> The 600M run is training again after a bad constant cost us the first attempt. Once it lands, it goes head-to-head with Microsoft's BitDistill from the same Qwen 0.6B starting point — with the long-term goal of open-sourcing the architecture and tooling either way. Follow along on <a href="https://github.com/Ravikxx/Axion">GitHub</a>.
   </div>
 
   <p class="footnote" id="fn-bitdistill">
