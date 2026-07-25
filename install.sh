@@ -20,17 +20,22 @@ if ! command -v npm >/dev/null 2>&1; then
   fail "npm wasn't found alongside Node.js. Reinstall Node.js from https://nodejs.org."
 fi
 
+ERR_LOG=$(mktemp "${TMPDIR:-/tmp}/axion-install-err.XXXXXX")
+# Clean up on every exit path, including the `fail` calls below — the previous
+# version only removed the log on the failure branch, so a successful install
+# left it behind.
+trap 'rm -f "$ERR_LOG"' EXIT
+
 info "Installing Axion ($PACKAGE) globally via npm..."
-if npm install -g "$PACKAGE" 2>/tmp/axion-install-err.log; then
+if npm install -g "$PACKAGE" 2>"$ERR_LOG"; then
   info "Installed! Run 'axion' to get started."
 else
-  if grep -qi "EACCES\|permission denied" /tmp/axion-install-err.log 2>/dev/null; then
+  if grep -qi "EACCES\|permission denied" "$ERR_LOG" 2>/dev/null; then
     info "Permission error — retrying with sudo..."
     sudo npm install -g "$PACKAGE"
     info "Installed! Run 'axion' to get started."
   else
-    cat /tmp/axion-install-err.log >&2
+    cat "$ERR_LOG" >&2
     fail "npm install failed. See the output above."
   fi
-  rm -f /tmp/axion-install-err.log
 fi

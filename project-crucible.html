@@ -177,12 +177,15 @@
       border-radius: 10px;
       padding: 24px;
     }
-    .arch-card h4 {
+    .arch-card h3 {
       font-size: 14px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--accent);
+      /* margin-top resets the generic h3 rule's 40px — these are card titles,
+         not section headings, and sit flush against the top of the card. */
+      margin-top: 0;
       margin-bottom: 8px;
     }
     .arch-card p { font-size: 14px; margin-bottom: 0; }
@@ -218,7 +221,7 @@
       border: 2px solid var(--bg);
     }
     .timeline-item .date { font-size: 12px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; }
-    .timeline-item h4 { font-size: 16px; margin: 4px 0 6px; }
+    .timeline-item h3 { font-size: 16px; margin: 4px 0 6px; }
     .timeline-item p { font-size: 14px; margin-bottom: 0; }
 
     .spec-table {
@@ -654,27 +657,27 @@
 
   <div class="arch-grid">
     <div class="arch-card">
-      <h4>Ternary Weights</h4>
+      <h3>Ternary Weights</h3>
       <p>1.58-bit BitLinear with straight-through estimation. Weights are ternary (-1, 0, +1), giving extreme memory savings while STE preserves a usable gradient signal through the hard quantization.</p>
     </div>
     <div class="arch-card">
-      <h4>MoE (MoTE-style)</h4>
+      <h3>MoE (MoTE-style)</h3>
       <p>A single full-precision shared expert handles common patterns; multiple ternary routed experts specialize via top-1 gating. This keeps the compute profile close to a dense model of equivalent size while expanding capacity.</p>
     </div>
     <div class="arch-card">
-      <h4>Multi-Token Prediction</h4>
+      <h3>Multi-Token Prediction</h3>
       <p>An auxiliary head predicts t+2 alongside the standard t+1 head. The auxiliary loss provides a richer training signal per step without additional autoregressive decoding during inference.</p>
     </div>
     <div class="arch-card">
-      <h4>Grouped Query Attention</h4>
+      <h3>Grouped Query Attention</h3>
       <p>8 query heads share 2 KV heads, cutting the KV cache footprint by 4× compared to full multi-head attention. This is critical for deployment on memory-constrained hardware.</p>
     </div>
     <div class="arch-card">
-      <h4>Aux-Loss-Free Balancing</h4>
+      <h3>Aux-Loss-Free Balancing</h3>
       <p>DeepSeek-V3-style per-expert bias that adjusts routing logits directly, with no auxiliary load-balancing loss term. This eliminates a known source of gradient interference in MoE training.</p>
     </div>
     <div class="arch-card">
-      <h4>SubLN</h4>
+      <h3>SubLN</h3>
       <p>Sub-layer normalization adapted from Microsoft's BitDistill research, added to stabilize training at the larger Axon-Chat scale where ternary quantization noise compounds across more layers.</p>
     </div>
   </div>
@@ -690,27 +693,27 @@
   <div class="timeline">
     <div class="timeline-item">
       <div class="date">Day ~1</div>
-      <h4>Full Stack Verification</h4>
+      <h3>Full Stack Verification</h3>
       <p>Automated checks confirmed each component works in isolation: ternary weight values are exactly -1, 0, or +1 after quantization; MoE routing distributes tokens across experts with healthy load spread; the MTP auxiliary head produces meaningful gradients. The integration test passes end-to-end.</p>
     </div>
     <div class="timeline-item">
       <div class="date">Day ~2</div>
-      <h4>14M Proof-of-Concept Trained</h4>
+      <h3>14M Proof-of-Concept Trained</h3>
       <p>We trained a ~14M parameter TAME model on TinyStories for 10,000 steps on a free Colab T4. Despite the tiny scale, the model produces <strong>coherent multi-paragraph English with dialogue and narrative structure</strong> — promising signal for the architecture.</p>
     </div>
     <div class="timeline-item">
       <div class="date">Day ~3</div>
-      <h4>GQA + Aux-Loss-Free Variant Built</h4>
+      <h3>GQA + Aux-Loss-Free Variant Built</h3>
       <p>A second variant swapping in Grouped Query Attention and aux-loss-free load balancing was built and validated against the first variant at identical step count for a controlled head-to-head comparison. Result: <strong>equivalent quality with ~600K fewer parameters and a 4× smaller KV cache</strong> — confirming the efficiency techniques hold up in practice, not just in theory.</p>
     </div>
     <div class="timeline-item">
       <div class="date">In Progress</div>
-      <h4>Crucible Axon-Chat (102M) Training</h4>
+      <h3>Crucible Axon-Chat (102M) Training</h3>
       <p>Training a larger conversational model on a mixed UltraChat + TinyChat dataset, using the full validated TAME stack plus SubLN and dual-GPU training support. Loss is dropping cleanly and outputs already show real structure — topically relevant responses, correct poem formatting, natural stopping points. Full results and samples coming once training wraps.</p>
     </div>
     <div class="timeline-item">
       <div class="date">Current</div>
-      <h4>Scaling Toward 300M</h4>
+      <h3>Scaling Toward 300M</h3>
       <p>With the small-scale variants validated, we're exploring whether TAME's efficiency techniques can convert existing full-precision models to ternary via distillation — a path toward a ~300M target model without training fully from scratch.</p>
     </div>
   </div>

@@ -1149,6 +1149,9 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.json">
+  <!-- Not deferred: the inline model-picker script below reads
+       window.AxionModelLifecycle synchronously while building the catalog. -->
+  <script src="/assets/model-lifecycle.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1397,7 +1400,21 @@
       tags: ['Fast', 'Legacy'],
     },
   }
-  const LEGACY_MODEL_IDS = ['veil']
+
+  // Veil's deprecation and retirement dates live in model-lifecycle.js, the
+  // same source index.html, models.html, and veil.html read. Mirror it here so
+  // the picker can't drift from the rest of the site.
+  const VEIL_LIFECYCLE = (window.AxionModelLifecycle || {}).veil || null
+  if (VEIL_LIFECYCLE) {
+    MODEL_CATALOG.veil.description = VEIL_LIFECYCLE.chatDescription
+    if (VEIL_LIFECYCLE.isDeprecated) {
+      MODEL_CATALOG.veil.tags = [VEIL_LIFECYCLE.isRetired ? 'Retired' : 'Deprecated']
+      MODEL_CATALOG.veil.statusLabel = VEIL_LIFECYCLE.badge
+    }
+  }
+  // Once retired, Veil stops being offered at all — its model card stays up on
+  // /models, but it is no longer an endpoint anyone can pick.
+  const LEGACY_MODEL_IDS = VEIL_LIFECYCLE && VEIL_LIFECYCLE.isRetired ? [] : ['veil']
   let availableModels = new Map([['lumen', { id: 'lumen', owned_by: 'axion-labs' }]])
   let selectedModel = localStorage.getItem('axion_chat_model') || 'lumen'
   if (!availableModels.has(selectedModel)) selectedModel = 'lumen'
@@ -1448,7 +1465,7 @@
       button.disabled = !isAvailable
       button.dataset.model = id
 
-      const status = isAvailable ? (info.recommended ? 'Recommended' : 'Live') : 'Legacy'
+      const status = isAvailable ? (info.recommended ? 'Recommended' : 'Live') : (info.statusLabel || 'Legacy')
       const tags = (info.tags || []).map(tag => `<span class="model-tag">${escHtml(tag)}</span>`).join('')
       button.innerHTML = `
         <span class="model-option-mark" aria-hidden="true"></span>
