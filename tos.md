@@ -8,7 +8,7 @@ These Terms of Service ("Terms") govern your use of the Axion web chat, API, CLI
 
 ## Service description
 
-The Service provides access to AI models and developer tools. Lumen requests are routed through Axion Labs' hosted backend to model infrastructure on Hugging Face. The CLI can also connect directly to third-party AI providers that you configure. Features, models, limits, and availability may change. The Service is provided on an "as is" basis.
+The Service provides access to AI models and developer tools. Lumen requests are routed through Axion Labs' hosted backend to dedicated model infrastructure on RunPod. The CLI can also connect directly to third-party AI providers that you configure. Features, models, limits, and availability may change. The Service is provided on an "as is" basis.
 
 ## Accounts
 
@@ -40,7 +40,7 @@ You agree not to:
 
 ## Third-party providers
 
-Depending on the feature you use, content may be processed by Hugging Face, an AI provider you configure, Cloudflare, Square, or Resend. Their handling of data is also governed by their own terms and privacy policies. See the [Privacy Policy](/privacy) for the providers used by each feature.
+Depending on the feature you use, content may be processed by RunPod, Hugging Face, Mistral, an AI provider you configure, Cloudflare, Square, or Resend. Their handling of data is also governed by their own terms and privacy policies. See the [Privacy Policy](/privacy) for the providers used by each feature.
 
 ## Data handling
 

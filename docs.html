@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -32,7 +32,7 @@
       border-bottom: 1px solid var(--border);
       background: var(--surface);
       padding: 0 32px;
-      display: flex; align-items: center; height: 52px; gap: 24px;
+      display: flex; align-items: center; height: 56px; gap: 24px;
       position: sticky; top: 0; z-index: 100;
     }
     .nav-logo { font-weight: 800; font-size: 16px; display: flex; align-items: center; gap: 8px; }
@@ -335,6 +335,8 @@
       <div class="code-block">
         <span class="comment"># Install globally</span><br>
         <span class="prompt">$ </span>npm install -g @axion-labs-ai/quark-cli<br><br>
+        <span class="comment"># Or use the install script (checks Node, retries with sudo on EACCES)</span><br>
+        <span class="prompt">$ </span>curl -fsSL https://axion.amplifiedsmp.org/install.sh | sh<br><br>
         <span class="comment"># Verify</span><br>
         <span class="prompt">$ </span>axion --version
       </div>
@@ -344,7 +346,7 @@
       <h3>Requirements</h3>
       <ul>
         <li><strong>Node.js 18+</strong> — required</li>
-        <li><strong>An account or provider key</strong> — use <code>/login</code> for Lumen, or supply an API key for Claude, GPT-4o, Gemini, or Groq.</li>
+        <li><strong>An account or provider key</strong> — use <code>/login</code> for Lumen, or supply an API key for any of the third-party providers below.</li>
         <li><strong>Python 3 (optional)</strong> — needed for computer use / screen overlay</li>
         <li><strong>Tesseract (optional)</strong> — for OCR / find-by-text in computer use</li>
       </ul>
@@ -400,6 +402,12 @@
           <div class="model-card-name">Gemini</div>
           <div class="model-card-alias"><code>/model gemini</code></div>
           <div class="model-card-desc">Google Gemini. Free tier at <a href="https://aistudio.google.com" style="color:var(--accent)">aistudio.google.com</a>.</div>
+        </div>
+        <div class="model-card">
+          <div class="model-card-badge badge-key">Requires key</div>
+          <div class="model-card-name">Mistral</div>
+          <div class="model-card-alias"><code>/model mistral</code></div>
+          <div class="model-card-desc">Mistral's hosted models. Get a key at <a href="https://console.mistral.ai" style="color:var(--accent)">console.mistral.ai</a>.</div>
         </div>
         <div class="model-card">
           <div class="model-card-badge badge-free">Free tier</div>

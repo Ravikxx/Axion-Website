@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -14,6 +14,20 @@
   <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
   <meta name="twitter:card" content="summary">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script>
+  /* Chart.js is loaded from a CDN. If it is blocked or fails, `new Chart(...)`
+     below would throw a ReferenceError and leave blank canvases behind. Stub it
+     so each chart degrades to a short note instead. */
+  if (typeof Chart === 'undefined') {
+    window.Chart = function (canvas) {
+      if (!canvas || !canvas.parentNode) return
+      var note = document.createElement('p')
+      note.textContent = 'Chart unavailable \u2014 Chart.js could not be loaded.'
+      note.style.cssText = 'font-size:13px;color:var(--text-muted,#9899a8);text-align:center;padding:28px 12px;margin:0'
+      canvas.parentNode.replaceChild(note, canvas)
+    }
+  }
+</script>
   <link rel="stylesheet" href="/assets/theme-adaptive.css">
   <link rel="stylesheet" href="/assets/site-shell.css">
   <script src="/assets/site-nav.js" defer></script>
@@ -284,10 +298,13 @@
 
 <nav>
   <a href="/" class="brand"><img src="/assets/logo.png" alt="Axion" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Axion</a>
-  <a href="/announcements">Announcements</a>
-  <a href="/lumen-12">Lumen 1.2</a>
-  <a href="https://github.com/Ravikxx/Axion">GitHub</a>
-  <span style="margin-left:auto"></span>
+  <a href="/models">Models</a>
+  <a href="/chat">Chat</a>
+  <a href="/docs">Docs</a>
+  <div class="nav-right">
+    <a href="https://github.com/Ravikxx/Axion" class="nav-btn-ghost">GitHub</a>
+    <a href="/keys" class="nav-btn">API Keys</a>
+  </div>
   <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>
 

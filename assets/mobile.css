@@ -20,7 +20,7 @@
 
   /* Nav links drawer (shown when open) */
   .nav-links {
-    position: fixed; top: 52px; left: 0; right: 0; bottom: 0;
+    position: fixed; top: 56px; left: 0; right: 0; bottom: 0;
     background: var(--surface, #12131a);
     flex-direction: column; padding: 16px; gap: 4px !important;
     display: none !important; z-index: 90;
@@ -212,6 +212,8 @@
 }
 
 /* ── 404 page ────────────────────────────────────────────────────────────────── */
+/* 404.html renders the field as .stars — .stars-container never existed, so this
+   rule was silently doing nothing and all 120 animated stars stayed on mobile. */
 @media (max-width: 600px) {
-  .stars-container { display: none !important; }
+  .stars { display: none !important; }
 }

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -294,7 +294,7 @@
       </div>
       <div class="spec-card">
         <div class="spec-label">Inference</div>
-        <div class="spec-value">llama_cpp · HF Space</div>
+        <div class="spec-value">llama_cpp · dedicated GPU</div>
         <div class="spec-sub">OpenAI-compatible API endpoint</div>
       </div>
       <div class="spec-card">
@@ -333,6 +333,7 @@
       <span class="comment"># API — OpenAI-compatible</span><br>
       <span class="prompt">$ </span>curl https://api.amplifiedsmp.org/v1/chat/completions \<br>
       &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
+      &nbsp;&nbsp;-H "Authorization: Bearer axion-sk-…" \<br>
       &nbsp;&nbsp;-d '{"model":"lumen","messages":[{"role":"user","content":"Hello"}]}'
     </div>
   </section>
@@ -383,7 +384,7 @@
         <p class="tl-desc">
           Patch release targeting catastrophic forgetting from the 1.2 mixed dataset.
           Improved coding performance (+7pts) but introduced safety regressions.
-          Safety tested with 35 scenarios — 26% pass rate under adversarial prompting.
+          Safety tested across 7 scenarios at 5 runs each — 26% pass rate under adversarial prompting.
         </p>
         <a class="tl-link" href="/lumen-safety">1.2.1 safety report →</a>
         &nbsp;&nbsp;
@@ -423,7 +424,7 @@
       </div>
       <div class="safety-card">
         <div class="safety-score bad">26%</div>
-        <div class="safety-label">Lumen 1.2.1<br>7/35 scenarios (old suite)</div>
+        <div class="safety-label">Lumen 1.2.1<br>9/35 runs (old suite)</div>
       </div>
       <div class="safety-card">
         <div class="safety-score" style="color:var(--accent)">+47pts</div>

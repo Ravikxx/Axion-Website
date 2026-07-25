@@ -6,7 +6,7 @@
 
 Axion is an open-source AI coding agent with local software and hosted services. Most CLI work happens on your machine, while model inference, accounts, web chat, usage tracking, billing, email, vision, and connected integrations may send data to remote services. This policy explains what stays local, what Axion Labs stores, and which providers process data.
 
-Axion Labs operates a hosted API, authentication, usage, billing, email-preference, and chat backend on Cloudflare. Lumen runs on RunPod, and the default vision model runs on Hugging Face infrastructure. Axion does not use your conversations for model training unless you explicitly opt in with `/contribute`.
+Axion Labs operates a hosted API, authentication, usage, billing, email-preference, and chat backend on Cloudflare. Lumen runs on RunPod, the default vision model runs on Hugging Face infrastructure, and logged chat exchanges are sent to Mistral for asynchronous safety classification. Axion does not use your conversations for model training unless you explicitly opt in with `/contribute`.
 
 ## Local-only features
 
@@ -32,7 +32,7 @@ Axion's Cloudflare-hosted backend stores and processes data needed to run accoun
 - Axion-issued API keys and their status, request counts, token counts, calculated usage cost, allowance windows, and rate-limit records;
 - plan and subscription status, credit balances, credit-code redemptions, and Square customer or subscription identifiers;
 - signed-in web chat history and chat metadata used to sync conversations across sessions;
-- a separate server-side log of message content, model responses, and model-requested tool calls across signed-in, API-key, and anonymous usage, kept independently of your visible chat history. An automated process periodically sends recent role-labeled context, the target user message, and the corresponding assistant response to Mistral for asynchronous safety classification. Routine rows classified as safe, operational review errors, and dismissed findings are retained for up to 30 days. Unreviewed rows and pending or confirmed findings are retained for up to one year for human review, safety enforcement, and legal compliance;
+- a separate server-side log of message content, model responses, and model-requested tool calls across signed-in, API-key, and anonymous usage, kept independently of your visible chat history. An automated process periodically sends recent role-labeled context, the target user message, and the corresponding assistant response to Mistral for asynchronous safety classification. Every reviewed exchange comes back as one of three outcomes: **safe**, and nothing further happens; **an operational error**, meaning the model, the API, or response parsing failed and the exchange could not be classified at all — this is recorded as a system fault, never as a user-safety violation; or **flagged for human review**, where a member of our team reads the exchange and either dismisses or confirms the finding. Safe rows, operational errors, and dismissed findings are retained for up to 30 days. Unreviewed rows and pending or confirmed findings are retained for up to one year for human review, safety enforcement, and legal compliance. A confirmed finding may lead to suspension of the attached account; suspended users receive access to the appeal process;
 - email and announcement preferences, organization membership and invitations, and CLI device-login codes;
 - administrative test changes to plan, allowance usage, or credit balances, including who made the change and when.
 
@@ -59,7 +59,7 @@ Screen-vision and computer-use features capture a screenshot and send it to a vi
 
 ### Browser control
 
-The Chrome extension requests broad browser permissions so it can read pages, click elements, fill forms, and capture the visible tab when you direct it. In standalone extension chat, page data sent for model reasoning goes to the provider configured in the extension. When the authenticated local bridge is enabled, Axion Desktop can request page reads and actions over a loopback WebSocket; returned page data may then become prompt context sent by Desktop to its configured model provider. If Lumen is selected in either flow, the request follows the Cloudflare-to-Hugging-Face path described above. Provider keys and the bridge pairing token are stored in extension-owned Chrome storage.
+The Chrome extension requests broad browser permissions so it can read pages, click elements, fill forms, and capture the visible tab when you direct it. In standalone extension chat, page data sent for model reasoning goes to the provider configured in the extension. When the authenticated local bridge is enabled, Axion Desktop can request page reads and actions over a loopback WebSocket; returned page data may then become prompt context sent by Desktop to its configured model provider. If Lumen is selected in either flow, the request follows the Cloudflare-to-RunPod path described above. Provider keys and the bridge pairing token are stored in extension-owned Chrome storage.
 
 ### Email and payments
 

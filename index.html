@@ -44,7 +44,7 @@
     nav {
       border-bottom: 1px solid var(--border);
       padding: 0 32px;
-      display: flex; align-items: center; height: 54px; gap: 24px;
+      display: flex; align-items: center; height: 56px; gap: 24px;
       position: sticky; top: 0; z-index: 100;
     }
     /* Blur lives on a pseudo-element, not nav itself — backdrop-filter on
@@ -440,7 +440,7 @@
           <div class="fact"><div class="n">3B</div><div class="l">parameters</div></div>
           <div class="fact"><div class="n">Free</div><div class="l">account required</div></div>
         </div>
-        <a class="model-link" href="/models">model details →</a>
+        <a class="model-link" href="/veil">model details →</a>
       </div>
 
     </div>
@@ -468,13 +468,18 @@
   <section class="reveal">
     <p class="section-tag">ways to use it</p>
     <h2 class="section-heading">Wherever you work</h2>
-    <p class="section-lead">The same models, two doors in.</p>
+    <p class="section-lead">The same models, three doors in.</p>
 
     <div class="ways">
       <a class="way-card" href="/chat">
         <span class="way-kbd">browser</span>
         <p class="way-title">Chat</p>
         <p class="way-desc">A clean chat interface for Lumen. Signed-in chats sync across your devices.</p>
+      </a>
+      <a class="way-card" href="/docs#axion-api">
+        <span class="way-kbd">POST /v1/chat/completions</span>
+        <p class="way-title">API</p>
+        <p class="way-desc">An OpenAI-compatible endpoint, so every SDK and tool that already speaks OpenAI works by changing the base URL.</p>
       </a>
       <a class="way-card" href="/docs">
         <span class="way-kbd">$ npm i -g @axion-labs-ai/quark-cli</span>
@@ -501,9 +506,9 @@
         <p class="safety-desc">Testing showed dangerous self-preservation behavior. We took it offline and published the findings.</p>
       </a>
       <a class="safety-card" href="/lumen-safety">
-        <p class="safety-date">Methodology</p>
-        <p class="safety-title">How we test</p>
-        <p class="safety-desc">The scenarios, scoring, and thresholds behind every Lumen safety report.</p>
+        <p class="safety-date">Lumen 1.2.1 · June 2026</p>
+        <p class="safety-title">Safety report: 26% pass rate</p>
+        <p class="safety-desc">The full 1.2.1 results — 7 scenarios, 5 runs each, every prompt and response published.</p>
       </a>
     </div>
   </section>
@@ -539,16 +544,18 @@
       const up = !!(d.ok && d.model_up)
       statusLed.className = 'led ' + (up ? 'live' : 'down')
       chatLed.className = 'led ' + (up ? 'live' : 'down')
-      statusText.textContent = up ? 'Lumen is live right now' : 'Lumen is migrating — back soon'
+      statusText.textContent = up ? 'Lumen is live right now' : 'Lumen is temporarily unavailable'
       lumenStatus.className = 'model-status ' + (up ? 'live' : 'down')
-      lumenStatus.innerHTML = '<span class="led ' + (up ? 'live' : 'down') + '"></span> ' + (up ? 'live · free' : 'migrating · back soon')
+      lumenStatus.innerHTML = '<span class="led ' + (up ? 'live' : 'down') + '"></span> ' + (up ? 'live · free' : 'temporarily unavailable')
     })
+    // A failed probe means we couldn't reach the status API — not that the
+    // model is down. Say that, rather than asserting an outage we can't see.
     .catch(() => {
-      statusLed.className = 'led down'
-      chatLed.className = 'led down'
-      statusText.textContent = 'Lumen is migrating — back soon'
-      lumenStatus.className = 'model-status down'
-      lumenStatus.innerHTML = '<span class="led down"></span> migrating · back soon'
+      statusLed.className = 'led'
+      chatLed.className = 'led'
+      statusText.textContent = 'Model status unavailable — see the status page'
+      lumenStatus.className = 'model-status'
+      lumenStatus.innerHTML = '<span class="led"></span> status unavailable'
     })
     .finally(() => clearTimeout(healthTimeout))
 

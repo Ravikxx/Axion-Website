@@ -92,12 +92,12 @@ All scenes are built from the same primitives — reuse them, don't fork:
    TAME` (spelling out the caption's own expansion). Words dissolve/reform via
    the masked engine; long words auto-fit width via `measureText`.
 3. **Trailer** — a rhythmic cold-open: one scrap flutters in → beat → flurry →
-   torn-paper stat card `1.58-BIT` → flurry → `3-WEEK SPRINT` → flurry → TAME
+   torn-paper stat card `1.58-BIT` → flurry → `6-WEEK SPRINT` → flurry → TAME
    slams as the title card. Flurries briefly drop the mask so scattered scraps
    read as bursts.
 4. **Telemetry** — an ambient training-run: a loss curve draws left-to-right
    like a ridgeline with an area fill, milestone flags plant at checkpoints
-   (`14.5M/102M/300M`), light paper precipitation falls, then the field pours
+   (`14.5M/102M/600M`), light paper precipitation falls, then the field pours
    down and converges into TAME.
 
 ### Steady state
