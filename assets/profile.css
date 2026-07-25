@@ -1,4 +1,4 @@
-﻿/* Signed-in profile menu — self-contained dark styling so it looks consistent
+/* Signed-in profile menu — self-contained dark styling so it looks consistent
    on every page regardless of that page's theme. */
 
 nav .nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
