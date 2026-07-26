@@ -7,6 +7,7 @@
   <title>Axion Admin</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="stylesheet" href="/assets/theme-dark.css">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -81,8 +82,11 @@
 
     .error-msg { color: var(--red); font-size: 13px; margin-top: 10px; text-align: center; }
     .auth-toggle { margin-top: 14px; text-align: center; font-size: 12.5px; color: var(--muted); }
-    .auth-toggle a { color: var(--accent); cursor: pointer; font-weight: 600; }
-    .auth-toggle a:hover { text-decoration: underline; }
+    .auth-toggle button {
+      padding: 0; border: 0; background: none; color: var(--accent);
+      cursor: pointer; font: inherit; font-weight: 600;
+    }
+    .auth-toggle button:hover { text-decoration: underline; }
     .tos-checkbox {
       display: flex; align-items: center; gap: 8px;
       margin-bottom: 4px; font-size: 12px; color: var(--muted);
@@ -387,6 +391,7 @@
       <label>Password</label>
       <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
     </div>
+    <div class="cf-turnstile" data-sitekey="0x4AAAAAADoVQKWELQ0qH97B" data-callback="onTurnstile" data-theme="dark" style="margin-bottom:12px"></div>
     <div class="tos-checkbox" id="tos-field" style="display:none">
       <input type="checkbox" id="login-tos">
       <label for="login-tos">I agree to the <a href="/tos" target="_blank" rel="noopener">Terms of Service</a> and <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a></label>
@@ -397,7 +402,7 @@
 
     <div class="auth-toggle">
       <span id="auth-toggle-text">Don't have an account?</span>
-      <a onclick="toggleAuthMode()"> <span id="auth-toggle-link">Sign up</span></a>
+      <button type="button" onclick="toggleAuthMode()"><span id="auth-toggle-link">Sign up</span></button>
     </div>
 
     <div style="display:flex;align-items:center;gap:12px;margin:20px 0 4px">
@@ -720,6 +725,7 @@
   </div>
 </dialog>
 
+<script src="/assets/fetch-timeout.js"></script>
 <script>
   const API = 'https://api.amplifiedsmp.org'
   const OWNER = 'fearlessaviatorclan@gmail.com'
@@ -734,6 +740,14 @@
 
   // ── Auth ──────────────────────────────────────────────────────────────────
   let authMode = 'signin'
+  let turnstileToken = null
+  function onTurnstile(token) { turnstileToken = token }
+  function resetTurnstile() {
+    turnstileToken = null
+    if (window.turnstile) {
+      try { window.turnstile.reset() } catch {}
+    }
+  }
 
   function toggleAuthMode() {
     authMode = authMode === 'signin' ? 'signup' : 'signin'
@@ -780,12 +794,19 @@
       btn.textContent = 'Create account'
       return
     }
+    if (!turnstileToken) {
+      errEl.textContent = 'Security check not complete — please wait a moment.'
+      errEl.style.display = 'block'
+      btn.disabled = false
+      btn.textContent = authMode === 'signin' ? 'Sign in' : 'Create account'
+      return
+    }
 
     try {
       const endpoint = authMode === 'signin' ? '/auth/login' : '/auth/register'
-      const body = { email, password, turnstile: '' }
+      const body = { email, password, turnstile: turnstileToken }
       if (authMode === 'signup') body.name = document.getElementById('login-name')?.value || ''
-      const res = await fetch(`${API}${endpoint}`, {
+      const res = await axionFetch(`${API}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -799,7 +820,7 @@
         document.getElementById('auth-gate').innerHTML = `
           <div class="auth-card" style="text-align:center">
             <h1>Check your inbox</h1>
-            <p style="margin-bottom:0">We sent a verification link to <strong>${email}</strong>. Click it to activate your account.</p>
+            <p style="margin-bottom:0">We sent a verification link to <strong>${esc(email)}</strong>. Click it to activate your account.</p>
           </div>`
         return
       }
@@ -811,7 +832,7 @@
       }
 
       // Check admin status
-      const checkRes = await fetch(`${API}/admin/check`, {
+      const checkRes = await axionFetch(`${API}/admin/check`, {
         headers: { Authorization: `Bearer ${data.token}` },
       })
       if (!checkRes.ok) {
@@ -828,6 +849,7 @@
       errEl.textContent = 'Network error — try again.'
       errEl.style.display = 'block'
     } finally {
+      resetTurnstile()
       btn.disabled = false
       btn.textContent = authMode === 'signin' ? 'Sign in' : 'Create account'
     }
@@ -1569,9 +1591,17 @@
     const email = localStorage.getItem('axion_email')
     if (!token) return
 
-    const res = await fetch(`${API}/admin/check`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    let res
+    try {
+      res = await axionFetch(`${API}/admin/check`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+    } catch {
+      const errEl = document.getElementById('login-error')
+      errEl.textContent = 'Could not verify your session — check your connection and try again.'
+      errEl.style.display = 'block'
+      return
+    }
     if (!res.ok) {
       localStorage.removeItem('axion_token')
       const errEl = document.getElementById('login-error')

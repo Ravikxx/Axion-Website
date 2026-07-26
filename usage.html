@@ -195,7 +195,6 @@
       .meter-labels, .meter-meta { gap: 8px; }
       .meter-meta { flex-direction: column; }
       .meter-meta span:last-child { text-align: left; }
-      .mobile-back { display: inline !important; }
     }
   </style>
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
@@ -250,7 +249,6 @@
 
 <main class="main" id="main-panel">
   <div class="topbar">
-    <a href="/keys" class="mobile-back" style="display:none;color:var(--muted2);font-size:12px">API Keys</a>
     <span class="topbar-title">Usage</span>
     <span class="plan-pill" id="plan-pill">Loading</span>
   </div>
@@ -362,6 +360,7 @@
   </div>
 </main>
 
+<script src="/assets/account-mobile-nav.js"></script>
 <script src="/assets/account-profile.js"></script>
 <script>
   const API = 'https://api.amplifiedsmp.org';
