@@ -79,10 +79,14 @@
       homeStatus.innerHTML = '<span class="led down"></span> ' + copy.short
     }
 
+    // Swap only the state modifier — models.html bases its pill on .badge and
+    // docs.html on .model-card-badge, so overwriting className wholesale would
+    // strip one page's styling to suit the other's.
     var badge = document.getElementById('veil-badge')
     if (badge && state !== 'migrating') {
       badge.textContent = copy.badge
-      badge.className = 'badge badge-paid'
+      badge.classList.remove('badge-free', 'badge-key', 'badge-freetier')
+      badge.classList.add('badge-paid')
     }
 
     var description = document.getElementById('veil-desc')
