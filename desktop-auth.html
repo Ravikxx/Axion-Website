@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authorize Axion Desktop — Axion Labs</title>
+  <meta name="robots" content="noindex, nofollow">
+  <!-- Matters more here than on most pages: this URL carries the PKCE
+       challenge and state in its fragment. Fragments are not sent in Referer
+       headers, but the policy keeps the path off cross-origin requests too. -->
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="stylesheet" href="/assets/theme-dark.css">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      font-size: 14px; line-height: 1.5;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px; overflow-y: auto;
+    }
+    a { color: var(--accent); }
+
+    .card {
+      width: 100%; max-width: 460px; margin: auto;
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 16px; padding: 32px;
+    }
+    .logo { display: flex; align-items: center; gap: 9px; margin-bottom: 22px; font-size: 20px; font-weight: 700; }
+    .logo img { height: 24px; width: auto; }
+    .logo span { color: var(--accent); }
+
+    h1 { font-size: 19px; font-weight: 600; line-height: 1.35; margin-bottom: 6px; }
+    .sub { color: var(--muted); font-size: 13px; margin-bottom: 22px; }
+
+    .account {
+      display: flex; align-items: center; gap: 11px;
+      padding: 12px 14px; margin-bottom: 20px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .avatar {
+      width: 34px; height: 34px; flex: 0 0 auto; display: grid; place-items: center;
+      border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+      font-size: 13px; font-weight: 700; text-transform: uppercase;
+    }
+    .account-email { font-size: 13px; word-break: break-all; }
+    .account-plan { color: var(--muted); font-size: 11.5px; }
+
+    .scopes { list-style: none; margin-bottom: 24px; }
+    .scopes li {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 8px 0; color: var(--muted2); font-size: 13px;
+    }
+    .scopes svg { flex: 0 0 auto; width: 16px; height: 16px; margin-top: 2px; color: var(--accent); }
+
+    .actions { display: flex; gap: 10px; }
+    .btn {
+      flex: 1; padding: 11px; border-radius: 9px; border: 0;
+      font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: opacity .2s, background .15s, color .15s, border-color .15s;
+    }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-approve { background: var(--accent); color: var(--accent-ink); }
+    .btn-approve:hover:not(:disabled) { background: var(--accent-d); }
+    .btn-deny { background: transparent; border: 1px solid var(--border2); color: var(--muted2); }
+    .btn-deny:hover:not(:disabled) { color: var(--text); border-color: var(--accent); }
+
+    .field { margin-bottom: 13px; }
+    .field label {
+      display: block; margin-bottom: 6px; color: var(--muted);
+      font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+    }
+    .field input {
+      width: 100%; padding: 10px 12px; border-radius: 8px;
+      border: 1px solid var(--border2); background: var(--bg);
+      color: var(--text); font-family: inherit; font-size: 14px; outline: none;
+      transition: border-color .15s;
+    }
+    .field input:focus { border-color: var(--accent); }
+
+    .notice {
+      padding: 10px 14px; margin-bottom: 16px; border-radius: 8px;
+      font-size: 13px; display: none;
+    }
+    .notice.show { display: block; }
+    .notice.error {
+      background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.25); color: var(--red);
+    }
+    .notice.info {
+      background: var(--surface2); border: 1px solid var(--border2); color: var(--muted2);
+    }
+
+    .oauth-divider { display: flex; align-items: center; gap: 10px; margin: 16px 0 12px; }
+    .oauth-divider::before, .oauth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border2); }
+    .oauth-divider span { color: var(--muted); font-size: 11px; }
+    .oauth-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 10px; margin-bottom: 8px; border-radius: 8px;
+      background: var(--surface2); border: 1px solid var(--border2);
+      color: var(--muted2); font-size: 13px; font-weight: 500; text-decoration: none;
+      transition: border-color .12s, color .12s;
+    }
+    .oauth-btn:hover { border-color: var(--border); color: var(--text); }
+    .toggle { margin-top: 12px; text-align: center; color: var(--muted); font-size: 12.5px; }
+    .toggle a { cursor: pointer; font-weight: 600; }
+    .fine { margin-top: 20px; color: var(--muted); font-size: 11.5px; line-height: 1.5; text-align: center; }
+    .ax-hidden { display: none !important; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo"><img src="/assets/logo.png" alt=""><span>Axion</span></div>
+
+  <div class="notice" id="notice"></div>
+
+  <!-- Shown when the request itself is unusable; there is nothing to approve. -->
+  <section id="view-invalid" class="ax-hidden">
+    <h1>This authorization link isn't valid</h1>
+    <p class="sub">
+      It's missing information the desktop app needs to complete sign-in. Open Axion
+      Desktop and start the sign-in again from there.
+    </p>
+  </section>
+
+  <!-- Shown when nobody is signed in yet. -->
+  <section id="view-signin" class="ax-hidden">
+    <h1>Sign in to continue</h1>
+    <p class="sub" id="signin-sub">Axion Desktop is waiting for you to sign in.</p>
+
+    <form id="signin-form" onsubmit="doSignIn(); return false">
+      <div class="field ax-hidden" id="name-field">
+        <label for="input-name">Name</label>
+        <input type="text" id="input-name" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="input-email">Email</label>
+        <input type="email" id="input-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="input-password">Password</label>
+        <input type="password" id="input-password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-approve" id="signin-submit">Sign in</button>
+    </form>
+
+    <div class="toggle">
+      <span id="toggle-text">Don't have an account?</span>
+      <a onclick="toggleMode()"><span id="toggle-link">Sign up</span></a>
+    </div>
+
+    <div class="oauth-divider"><span>or continue with</span></div>
+    <a class="oauth-btn" id="oauth-google">Google</a>
+    <a class="oauth-btn" id="oauth-github">GitHub</a>
+    <a class="oauth-btn" id="oauth-discord">Discord</a>
+  </section>
+
+  <!-- The consent step. -->
+  <section id="view-consent" class="ax-hidden">
+    <h1>Axion Desktop wants to access your account</h1>
+    <p class="sub">Approve only if you started this from the Axion Desktop app on this computer.</p>
+
+    <div class="account">
+      <div class="avatar" id="avatar" aria-hidden="true">A</div>
+      <div>
+        <div class="account-email" id="account-email">Signed in</div>
+        <div class="account-plan" id="account-plan">Free tier</div>
+      </div>
+    </div>
+
+    <ul class="scopes">
+      <li>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        See your account email and plan
+      </li>
+      <li>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Use Axion models on your behalf, counted against your usage
+      </li>
+      <li>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Read and write your saved conversations
+      </li>
+    </ul>
+
+    <div class="actions">
+      <button class="btn btn-deny" id="btn-deny" onclick="deny()">Deny</button>
+      <button class="btn btn-approve" id="btn-approve" onclick="approve()">Approve</button>
+    </div>
+
+    <p class="fine">
+      Your password is never shared with the app. You can sign it out at any time from
+      <a href="/settings">account settings</a>.
+    </p>
+  </section>
+
+  <!-- Terminal state: the browser has handed control back to the app. -->
+  <section id="view-done" class="ax-hidden">
+    <h1 id="done-title">Signed in</h1>
+    <p class="sub" id="done-sub">You can close this tab and return to Axion Desktop.</p>
+  </section>
+</div>
+
+<script>
+  const API = 'https://api.amplifiedsmp.org'
+  // The PKCE challenge and state arrive in the URL fragment rather than the
+  // query string so they never reach a server log or a Referer header.
+  const STASH_KEY = 'axion_desktop_auth_request'
+  const REQUEST_TIMEOUT = 12000
+
+  let sessionToken = localStorage.getItem('axion_token') || null
+  let userEmail = localStorage.getItem('axion_email') || null
+  let request = null   // { challenge, state }
+  let mode = 'signin'
+
+  function show(id) {
+    for (const section of document.querySelectorAll('section')) section.classList.add('ax-hidden')
+    document.getElementById(id).classList.remove('ax-hidden')
+  }
+  function notify(message, kind = 'error') {
+    const el = document.getElementById('notice')
+    el.textContent = message
+    el.className = `notice show ${kind}`
+  }
+  function clearNotice() { document.getElementById('notice').className = 'notice' }
+
+  // fetch() has no built-in timeout; every call here is wrapped so a hung
+  // request can't leave the user staring at a disabled button.
+  async function api(path, options = {}) {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT)
+    try {
+      return await fetch(`${API}${path}`, { ...options, signal: controller.signal })
+    } finally {
+      clearTimeout(timer)
+    }
+  }
+
+  // ── Reading the request ───────────────────────────────────────────────────
+  // Parsed from the fragment on first arrival, then stashed so an OAuth
+  // round-trip (which replaces the fragment with its own token payload) can
+  // pick it back up on return.
+  function readRequest(params) {
+    const challenge = params.get('challenge')
+    const state = params.get('state')
+    if (challenge && state) {
+      const parsed = { challenge, state }
+      sessionStorage.setItem(STASH_KEY, JSON.stringify(parsed))
+      return parsed
+    }
+    try {
+      const stashed = JSON.parse(sessionStorage.getItem(STASH_KEY) || 'null')
+      if (stashed?.challenge && stashed?.state) return stashed
+    } catch {}
+    return null
+  }
+
+  function handBackToApp(params) {
+    sessionStorage.removeItem(STASH_KEY)
+    // A custom-scheme navigation is what reopens the desktop app. If no handler
+    // is registered the browser simply does nothing, which is why the page also
+    // renders a terminal message rather than relying on the redirect alone.
+    location.href = `axion://auth?${params.toString()}`
+  }
+
+  // ── Consent ──────────────────────────────────────────────────────────────
+  async function loadAccount() {
+    document.getElementById('account-email').textContent = userEmail || 'Signed in'
+    document.getElementById('avatar').textContent = (userEmail || 'A').trim().charAt(0) || 'A'
+    try {
+      const res = await api('/dashboard/keys', { headers: { Authorization: `Bearer ${sessionToken}` } })
+      if (res.status === 401) { signOutLocally(); return false }
+      if (!res.ok) return true
+      const data = await res.json()
+      if (data.plan) {
+        document.getElementById('account-plan').textContent = data.plan === 'pro' ? 'Pro plan' : 'Free tier'
+      }
+    } catch {
+      // Offline or slow: the consent decision doesn't depend on this.
+    }
+    return true
+  }
+
+  function setBusy(busy) {
+    document.getElementById('btn-approve').disabled = busy
+    document.getElementById('btn-deny').disabled = busy
+    document.getElementById('btn-approve').textContent = busy ? 'Approving…' : 'Approve'
+  }
+
+  async function approve() {
+    clearNotice()
+    setBusy(true)
+    try {
+      const res = await api('/auth/desktop/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionToken}` },
+        body: JSON.stringify({ code_challenge: request.challenge, code_challenge_method: 'S256' }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (res.status === 401) { signOutLocally(); return }
+      if (!res.ok) { notify(data.error || 'Could not authorize the app. Try again.'); setBusy(false); return }
+
+      document.getElementById('done-title').textContent = 'Signed in'
+      document.getElementById('done-sub').textContent =
+        'Axion Desktop should be signed in now. You can close this tab.'
+      show('view-done')
+      handBackToApp(new URLSearchParams({ code: data.code, state: request.state }))
+    } catch (error) {
+      notify(error.name === 'AbortError' ? 'That took too long. Check your connection and try again.'
+        : 'Network error. Try again.')
+      setBusy(false)
+    }
+  }
+
+  function deny() {
+    document.getElementById('done-title').textContent = 'Request denied'
+    document.getElementById('done-sub').textContent =
+      'Axion Desktop was not signed in. You can close this tab.'
+    show('view-done')
+    handBackToApp(new URLSearchParams({ error: 'access_denied', state: request.state }))
+  }
+
+  // ── Sign-in ──────────────────────────────────────────────────────────────
+  function signOutLocally() {
+    sessionToken = null
+    userEmail = null
+    localStorage.removeItem('axion_token')
+    localStorage.removeItem('axion_email')
+    notify('Your session expired. Sign in again to continue.', 'info')
+    show('view-signin')
+  }
+
+  function toggleMode() {
+    mode = mode === 'signin' ? 'signup' : 'signin'
+    const signup = mode === 'signup'
+    document.getElementById('signin-submit').textContent = signup ? 'Create account' : 'Sign in'
+    document.getElementById('toggle-text').textContent = signup ? 'Already have an account?' : "Don't have an account?"
+    document.getElementById('toggle-link').textContent = signup ? 'Sign in' : 'Sign up'
+    document.getElementById('name-field').classList.toggle('ax-hidden', !signup)
+    document.getElementById('input-password').setAttribute('autocomplete', signup ? 'new-password' : 'current-password')
+    clearNotice()
+  }
+
+  async function doSignIn() {
+    const email = document.getElementById('input-email').value.trim()
+    const password = document.getElementById('input-password').value
+    clearNotice()
+    if (!email || !password) { notify('Enter your email and password.'); return }
+    if (password.length < 8) { notify('Password must be at least 8 characters.'); return }
+
+    const button = document.getElementById('signin-submit')
+    button.disabled = true
+    const original = button.textContent
+    button.textContent = mode === 'signup' ? 'Creating account…' : 'Signing in…'
+    try {
+      const body = { email, password, turnstile: '' }
+      if (mode === 'signup') body.name = document.getElementById('input-name').value || ''
+      const res = await api(mode === 'signin' ? '/auth/login' : '/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        credentials: 'include',
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) { notify(data.error || 'Something went wrong.'); return }
+      if (data.pending) {
+        document.getElementById('done-title').textContent = 'Check your inbox'
+        document.getElementById('done-sub').textContent =
+          `We sent a verification link to ${email}. Click it, then start sign-in again from Axion Desktop.`
+        show('view-done')
+        return
+      }
+      sessionToken = data.token
+      userEmail = data.email || email
+      localStorage.setItem('axion_token', sessionToken)
+      localStorage.setItem('axion_email', userEmail)
+      await enterConsent()
+    } catch (error) {
+      notify(error.name === 'AbortError' ? 'That took too long. Check your connection and try again.'
+        : 'Network error — try again.')
+    } finally {
+      button.disabled = false
+      button.textContent = original
+    }
+  }
+
+  async function enterConsent() {
+    clearNotice()
+    show('view-consent')
+    if (!await loadAccount()) return
+  }
+
+  // ── Init ─────────────────────────────────────────────────────────────────
+  ;(async function init() {
+    const params = new URLSearchParams(location.hash.slice(1))
+
+    // Returning from an OAuth provider: the Worker put the freshly minted
+    // session token in the fragment.
+    const verified = params.get('verified')
+    if (verified) {
+      sessionToken = decodeURIComponent(verified)
+      userEmail = decodeURIComponent(params.get('email') || '')
+      localStorage.setItem('axion_token', sessionToken)
+      localStorage.setItem('axion_email', userEmail)
+    }
+
+    request = readRequest(params)
+    history.replaceState(null, '', location.pathname)
+
+    if (!request) { show('view-invalid'); return }
+
+    for (const provider of ['google', 'github', 'discord']) {
+      document.getElementById(`oauth-${provider}`).href = `${API}/auth/${provider}?return_to=desktop`
+    }
+
+    if (!sessionToken) { show('view-signin'); return }
+    await enterConsent()
+  })()
+</script>
+</body>
+</html>
