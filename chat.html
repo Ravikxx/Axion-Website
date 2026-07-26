@@ -14,6 +14,7 @@
   <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
   <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="/assets/theme-dark.css">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&display=swap');
 
@@ -99,12 +100,20 @@
       flex: 1; min-width: 0; white-space: nowrap;
       overflow: hidden; text-overflow: ellipsis;
     }
+    .chat-item-open {
+      display: flex; flex: 1; min-width: 0; padding: 0; border: 0;
+      background: none; color: inherit; font: inherit; text-align: left; cursor: pointer;
+    }
+    .chat-item-open:focus-visible {
+      outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px;
+    }
     .chat-item-del {
       flex-shrink: 0; opacity: 0; border: none; background: none;
       color: var(--muted); cursor: pointer; font-size: 14px; padding: 2px 4px;
       border-radius: 5px; line-height: 1; transition: opacity .12s, color .12s, background .12s;
     }
     .chat-item:hover .chat-item-del { opacity: 1; }
+    .chat-item:focus-within .chat-item-del { opacity: 1; }
     .chat-item-del:hover { color: var(--red); background: rgba(248,113,113,.1); }
 
     .sidebar-bottom { border-top: 1px solid var(--border); padding: 8px; }
@@ -345,7 +354,7 @@
     /* ── Drawer overlay (mobile) ── */
     .drawer-overlay {
       display: none; position: fixed; inset: 0; z-index: 40;
-      background: rgba(0,0,0,.5); backdrop-filter: blur(1px);
+      border: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(1px);
     }
     .drawer-overlay.show { display: block; }
 
@@ -385,8 +394,11 @@
       border-radius: 7px; margin-bottom: 14px; display: none;
     }
     .auth-toggle { margin-top: 10px; text-align: center; font-size: 12.5px; color: var(--muted); }
-    .auth-toggle a { color: var(--accent); cursor: pointer; font-weight: 600; }
-    .auth-toggle a:hover { text-decoration: underline; }
+    .auth-toggle button {
+      padding: 0; border: 0; background: none; color: var(--accent);
+      cursor: pointer; font: inherit; font-weight: 600;
+    }
+    .auth-toggle button:hover { text-decoration: underline; }
     .tos-checkbox {
       display: flex; align-items: center; gap: 8px;
       margin-bottom: 13px; font-size: 12px; color: var(--muted);
@@ -1183,6 +1195,8 @@
       <input type="password" id="input-password" placeholder="••••••••" autocomplete="current-password">
     </div>
 
+    <div class="cf-turnstile" data-sitekey="0x4AAAAAADoVQKWELQ0qH97B" data-callback="onTurnstile" data-theme="dark" style="margin-bottom:13px"></div>
+
     <div class="tos-checkbox" id="tos-field" style="display:none">
       <input type="checkbox" id="input-tos">
       <label for="input-tos">I agree to the <a href="/tos" target="_blank" rel="noopener">Terms of Service</a> and <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a></label>
@@ -1193,7 +1207,7 @@
 
     <div class="auth-toggle">
       <span id="auth-toggle-text">Don't have an account?</span>
-      <a onclick="toggleAuthMode()"> <span id="auth-toggle-link">Sign up</span></a>
+      <button type="button" onclick="toggleAuthMode()"><span id="auth-toggle-link">Sign up</span></button>
     </div>
 
     <div class="oauth-divider"><span>or continue with</span></div>
@@ -1276,7 +1290,7 @@
   </div>
 </aside>
 
-<div class="drawer-overlay" id="drawer-overlay" onclick="toggleDrawer(false)"></div>
+<button type="button" class="drawer-overlay" id="drawer-overlay" onclick="toggleDrawer(false)" aria-label="Close chat navigation"></button>
 
 <!-- Main -->
 <div class="main empty-chat" id="main">
@@ -1353,6 +1367,7 @@
   </div>
 </div>
 
+<script src="/assets/fetch-timeout.js"></script>
 <script src="/assets/account-profile.js"></script>
 <script>
   const API = 'https://api.amplifiedsmp.org'
@@ -1371,7 +1386,7 @@
     if (sandboxModeLoaded || !sessionToken) return
     sandboxModeLoaded = true
     try {
-      const res = await fetch(`${API}/dashboard/prefs`, { headers: authHeaders() })
+      const res = await axionFetch(`${API}/dashboard/prefs`, { headers: authHeaders() })
       if (res.ok) { const data = await res.json(); sandboxMode = data.sandbox_mode === 'auto' ? 'auto' : 'ask' }
     } catch {}
   }
@@ -1561,7 +1576,7 @@
   // ── Server sync ────────────────────────────────────────────────────────────
   async function fetchChatList() {
     try {
-      const res = await fetch(`${API}/chats`, { headers: authHeaders() })
+      const res = await axionFetch(`${API}/chats`, { headers: authHeaders() })
       if (!res.ok) return
       const data = await res.json()
       chats = (data.chats || []).map(c => ({ id: c.id, title: c.title, updated: c.updated, messages: [], loaded: false }))
@@ -1570,7 +1585,7 @@
   async function fetchChatMessages(c) {
     if (c.loaded) return
     try {
-      const res = await fetch(`${API}/chats/${c.id}`, { headers: authHeaders() })
+      const res = await axionFetch(`${API}/chats/${c.id}`, { headers: authHeaders() })
       if (!res.ok) return
       const data = await res.json()
       c.messages = data.messages || []
@@ -1579,7 +1594,7 @@
   }
   async function persistChat(c) {
     try {
-      await fetch(`${API}/chats/${c.id}`, {
+      await axionFetch(`${API}/chats/${c.id}`, {
         method: 'PUT',
         headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ title: c.title, messages: c.messages, updated: c.updated }),
@@ -1587,7 +1602,7 @@
     } catch {}
   }
   async function deleteChatServer(id) {
-    try { await fetch(`${API}/chats/${id}`, { method: 'DELETE', headers: authHeaders() }) } catch {}
+    try { await axionFetch(`${API}/chats/${id}`, { method: 'DELETE', headers: authHeaders() }) } catch {}
   }
   // ── Chat management ───────────────────────────────────────────────────────
   function newChat() {
@@ -1680,10 +1695,12 @@
     }
     const sorted = [...filtered].sort((a, b) => b.updated - a.updated)
     list.innerHTML = sorted.map(c => `
-      <div class="chat-item ${c.id === currentId ? 'active' : ''}" onclick="switchChat('${c.id}')">
-        <span class="chat-item-title">${escHtml(c.title)}</span>
-        <button class="chat-item-del" onclick="renameChat('${c.id}', event)" title="Rename">✎</button>
-        <button class="chat-item-del" onclick="deleteChat('${c.id}', event)" title="Delete">✕</button>
+      <div class="chat-item ${c.id === currentId ? 'active' : ''}">
+        <button type="button" class="chat-item-open" onclick="switchChat('${c.id}')" ${c.id === currentId ? 'aria-current="page"' : ''}>
+          <span class="chat-item-title">${escHtml(c.title)}</span>
+        </button>
+        <button type="button" class="chat-item-del" onclick="renameChat('${c.id}', event)" title="Rename" aria-label="Rename ${escHtml(c.title)}">✎</button>
+        <button type="button" class="chat-item-del" onclick="deleteChat('${c.id}', event)" title="Delete" aria-label="Delete ${escHtml(c.title)}">✕</button>
       </div>`).join('')
   }
 
@@ -1691,10 +1708,10 @@
     if (ev) ev.stopPropagation()
     const c = chats.find(x => x.id === id); if (!c) return
     const item = ev.target.closest('.chat-item')
-    const titleSpan = item.querySelector('.chat-item-title')
+    const openButton = item.querySelector('.chat-item-open')
     const input = document.createElement('input')
     input.className = 'chat-rename'; input.value = c.title
-    titleSpan.replaceWith(input)
+    openButton.replaceWith(input)
     input.focus(); input.select()
     let done = false
     const commit = () => {
@@ -1947,12 +1964,12 @@
 
   async function executeSandboxCode(code, language, chatId, signal) {
     try {
-      const res = await fetch(`${API}/v1/sandbox/execute`, {
+      const res = await axionFetch(`${API}/v1/sandbox/execute`, {
         method: 'POST',
         headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ code, language, chat_id: chatId }),
         signal,
-      })
+      }, 30000)
       const data = await res.json().catch(() => ({}))
       if (data.cap_exceeded) return { text: data.message || 'Weekly sandbox execution limit reached.', artifacts: [] }
       if (data.error) return { text: `Error: ${data.error}`, artifacts: [] }
@@ -2425,6 +2442,14 @@
 
   // ── Auth ─────────────────────────────────────────────────────────────────
   let authMode = 'signin'
+  let turnstileToken = null
+  function onTurnstile(token) { turnstileToken = token }
+  function resetTurnstile() {
+    turnstileToken = null
+    if (window.turnstile) {
+      try { window.turnstile.reset() } catch {}
+    }
+  }
   function showErr(msg) { const el = document.getElementById('auth-error'); el.textContent = msg; el.style.display = 'block' }
   function hideErr() { document.getElementById('auth-error').style.display = 'none' }
 
@@ -2450,13 +2475,14 @@
     if (!email || !password) { showErr('Please fill in all fields.'); return }
     if (password.length < 8) { showErr('Password must be at least 8 characters.'); return }
     if (authMode === 'signup' && !document.getElementById('input-tos').checked) { showErr('You must agree to the Terms of Service and Privacy Policy.'); return }
+    if (!turnstileToken) { showErr('Security check not complete — please wait a moment.'); return }
     const btn = document.getElementById('auth-submit')
     btn.disabled = true; btn.textContent = authMode === 'signup' ? 'Creating account…' : 'Signing in…'
     try {
       const endpoint = authMode === 'signin' ? '/auth/login' : '/auth/register'
-      const body = { email, password, turnstile: '' }
+      const body = { email, password, turnstile: turnstileToken }
       if (authMode === 'signup') body.name = document.getElementById('input-name')?.value || ''
-      const res = await fetch(`${API}${endpoint}`, {
+      const res = await axionFetch(`${API}${endpoint}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
         credentials: 'include',
@@ -2467,7 +2493,7 @@
         document.getElementById('auth-overlay').innerHTML = `
           <div class="auth-card" style="text-align:center">
             <div class="auth-title">Check your inbox</div>
-            <p class="auth-sub" style="margin-bottom:0">We sent a verification link to <strong>${email}</strong>. Click it to activate your account.</p>
+            <p class="auth-sub" style="margin-bottom:0">We sent a verification link to <strong>${escHtml(email)}</strong>. Click it to activate your account.</p>
           </div>`
         return
       }
@@ -2477,7 +2503,11 @@
       AxionAccountProfile.clear()
       showApp()
     } catch { showErr('Network error — try again.') }
-    finally { btn.disabled = false; btn.textContent = authMode === 'signin' ? 'Sign in' : 'Create account' }
+    finally {
+      resetTurnstile()
+      btn.disabled = false
+      btn.textContent = authMode === 'signin' ? 'Sign in' : 'Create account'
+    }
   }
 
   function logout() {
@@ -2528,7 +2558,7 @@
     }
     if (!sessionToken) return   // show auth overlay
     try {
-      const res = await fetch(`${API}/dashboard/keys`, { headers: { Authorization: `Bearer ${sessionToken}` } })
+      const res = await axionFetch(`${API}/dashboard/keys`, { headers: { Authorization: `Bearer ${sessionToken}` } })
       if (!res.ok) { showAuthenticationRequired('Your session expired. Sign in again to continue.'); return }
       showApp()
     } catch { /* offline — still let them in with cached token */ showApp() }

@@ -105,7 +105,12 @@
     .finally(function () { clearTimeout(profileTimeout) })
 
   // ── Admin link (only if the user is an admin) ────────────────────────
-  fetch(API + '/admin/check', { headers: { Authorization: 'Bearer ' + token } })
+  var adminController = new AbortController()
+  var adminTimeout = setTimeout(function () { adminController.abort() }, 8000)
+  fetch(API + '/admin/check', {
+    headers: { Authorization: 'Bearer ' + token },
+    signal: adminController.signal,
+  })
     .then(function (r) { return r.json() })
     .then(function (d) {
       if (d && d.admin) {
@@ -115,6 +120,7 @@
       }
     })
     .catch(function () {})
+    .finally(function () { clearTimeout(adminTimeout) })
 
   // ── Actions ──────────────────────────────────────────────────────────
   menu.addEventListener('click', function (e) {

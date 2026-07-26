@@ -10,6 +10,7 @@
        headers, but the policy keeps the path off cross-origin requests too. -->
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <link rel="stylesheet" href="/assets/theme-dark.css">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -105,7 +106,16 @@
     }
     .oauth-btn:hover { border-color: var(--border); color: var(--text); }
     .toggle { margin-top: 12px; text-align: center; color: var(--muted); font-size: 12.5px; }
-    .toggle a { cursor: pointer; font-weight: 600; }
+    .toggle button {
+      padding: 0; border: 0; background: none; color: var(--accent);
+      cursor: pointer; font: inherit; font-weight: 600;
+    }
+    .toggle button:hover { text-decoration: underline; }
+    .tos-checkbox {
+      display: flex; align-items: flex-start; gap: 8px;
+      margin: 12px 0; color: var(--muted); font-size: 12px;
+    }
+    .tos-checkbox input { width: 16px; height: 16px; margin-top: 1px; accent-color: var(--accent); }
     .fine { margin-top: 20px; color: var(--muted); font-size: 11.5px; line-height: 1.5; text-align: center; }
     .ax-hidden { display: none !important; }
   </style>
@@ -143,12 +153,17 @@
         <label for="input-password">Password</label>
         <input type="password" id="input-password" placeholder="••••••••" autocomplete="current-password">
       </div>
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAADoVQKWELQ0qH97B" data-callback="onTurnstile" data-theme="dark"></div>
+      <div class="tos-checkbox ax-hidden" id="tos-field">
+        <input type="checkbox" id="input-tos">
+        <label for="input-tos">I agree to the <a href="/tos" target="_blank" rel="noopener">Terms of Service</a> and <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a></label>
+      </div>
       <button type="submit" class="btn btn-approve" id="signin-submit">Sign in</button>
     </form>
 
     <div class="toggle">
       <span id="toggle-text">Don't have an account?</span>
-      <a onclick="toggleMode()"><span id="toggle-link">Sign up</span></a>
+      <button type="button" onclick="toggleMode()"><span id="toggle-link">Sign up</span></button>
     </div>
 
     <div class="oauth-divider"><span>or continue with</span></div>
@@ -214,6 +229,14 @@
   let userEmail = localStorage.getItem('axion_email') || null
   let request = null   // { challenge, state }
   let mode = 'signin'
+  let turnstileToken = null
+  function onTurnstile(token) { turnstileToken = token }
+  function resetTurnstile() {
+    turnstileToken = null
+    if (window.turnstile) {
+      try { window.turnstile.reset() } catch {}
+    }
+  }
 
   function show(id) {
     for (const section of document.querySelectorAll('section')) section.classList.add('ax-hidden')
@@ -339,7 +362,9 @@
     document.getElementById('toggle-text').textContent = signup ? 'Already have an account?' : "Don't have an account?"
     document.getElementById('toggle-link').textContent = signup ? 'Sign in' : 'Sign up'
     document.getElementById('name-field').classList.toggle('ax-hidden', !signup)
+    document.getElementById('tos-field').classList.toggle('ax-hidden', !signup)
     document.getElementById('input-password').setAttribute('autocomplete', signup ? 'new-password' : 'current-password')
+    if (!signup) document.getElementById('input-tos').checked = false
     clearNotice()
   }
 
@@ -349,13 +374,18 @@
     clearNotice()
     if (!email || !password) { notify('Enter your email and password.'); return }
     if (password.length < 8) { notify('Password must be at least 8 characters.'); return }
+    if (mode === 'signup' && !document.getElementById('input-tos').checked) {
+      notify('You must agree to the Terms of Service and Privacy Policy.')
+      return
+    }
+    if (!turnstileToken) { notify('Security check not complete — please wait a moment.'); return }
 
     const button = document.getElementById('signin-submit')
     button.disabled = true
     const original = button.textContent
     button.textContent = mode === 'signup' ? 'Creating account…' : 'Signing in…'
     try {
-      const body = { email, password, turnstile: '' }
+      const body = { email, password, turnstile: turnstileToken }
       if (mode === 'signup') body.name = document.getElementById('input-name').value || ''
       const res = await api(mode === 'signin' ? '/auth/login' : '/auth/register', {
         method: 'POST',
@@ -381,6 +411,7 @@
       notify(error.name === 'AbortError' ? 'That took too long. Check your connection and try again.'
         : 'Network error — try again.')
     } finally {
+      resetTurnstile()
       button.disabled = false
       button.textContent = original
     }
