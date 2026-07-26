@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="/assets/theme-adaptive.css">
   <link rel="stylesheet" href="/assets/site-shell.css">
   <script src="/assets/site-nav.js" defer></script>
+  <script src="/assets/model-lifecycle.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -127,6 +128,11 @@
       background: var(--surface); border: 1px solid var(--border2);
       border-left: 3px solid var(--muted); color: var(--muted2);
     }
+    .callout.warn {
+      background: rgba(251,191,36,.06); border: 1px solid rgba(251,191,36,.22);
+      border-left: 3px solid var(--yellow); color: var(--muted2);
+    }
+    .callout.warn strong { color: var(--yellow); }
 
     /* ── Command table ── */
     .cmd-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 14px 0; }
@@ -150,6 +156,7 @@
     .model-card-badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; margin-bottom: 7px; }
     .badge-free { background: rgba(52,211,153,.12); color: var(--green); }
     .badge-key  { background: rgba(184, 162, 125,.12); color: var(--accent); }
+    .badge-paid { background: var(--surface2); color: var(--muted); }
 
     /* ── Footer ── */
     footer { background: var(--surface); border-top: 1px solid var(--border); text-align: center; padding: 24px 32px; font-size: 13px; color: var(--muted); }
@@ -211,7 +218,7 @@
   <aside class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-heading">Our Models</div>
-      <a href="#free-models">Lumen</a>
+      <a href="#free-models">Lumen &amp; Veil</a>
       <a href="#web-chat">Web Chat</a>
       <a href="#axion-api">API Keys & Limits</a>
       <a href="#teams">Teams</a>
@@ -235,7 +242,7 @@
   <div class="docs-content">
 
     <div class="doc-section" id="free-models">
-      <h2>Lumen</h2>
+      <h2>Lumen &amp; Veil</h2>
       <p class="lead">Free to chat with after creating an Axion account. Browser chat does not require an API key.</p>
       <div class="model-grid">
         <div class="model-card">
@@ -244,6 +251,15 @@
           <div class="model-card-alias"><code>model: "lumen"</code></div>
           <div class="model-card-desc">Fine-tuned Llama 3.1 8B with DPO safety training. General assistant — questions, writing, code, explanations. Also available at <a href="/lumen" style="color:var(--accent)">axion.amplifiedsmp.org/lumen</a>.</div>
         </div>
+        <div class="model-card">
+          <div class="model-card-badge badge-paid" id="veil-badge">Deprecated</div>
+          <div class="model-card-name">Veil 1.1</div>
+          <div class="model-card-alias"><code>model: "veil"</code></div>
+          <div class="model-card-desc" id="veil-desc">Our first model — a fine-tuned Llama 3.1 3B for quick general chat. Deprecated and on its way out; see <a href="/veil" style="color:var(--accent)">why we\'re moving on</a>.</div>
+        </div>
+      </div>
+      <div class="callout warn">
+        <strong>Veil is deprecated.</strong> Don\'t build anything new against <code>model: "veil"</code> — point it at <code>model: "lumen"</code> on the same endpoint instead. Existing integrations should migrate now rather than waiting for the retirement date; the <a href="/veil" style="color:var(--accent)">Veil page</a> carries the current status and timeline.
       </div>
       <div class="callout info">
         Response times can vary under load. Sign in for browser chat, or create an <a href="/keys" style="color:var(--accent)">Axion API key</a> for CLI and API access.

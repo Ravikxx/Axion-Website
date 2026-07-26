@@ -286,6 +286,23 @@
        subscribers, then stored server-side and rendered dynamically above by
        loadAnnouncements() — hidden here so it doesn't duplicate that render. -->
   <div class="announcement" style="display:none">
+    <h2>Veil 1.1 Is Offline Early — Back July 30, Retiring August 17</h2>
+    <p>On July 20 we said Veil 1.1 would be marked deprecated on July 25 and keep answering requests as normal until it retired on July 30. It hasn't. Veil is offline now, ahead of that schedule, and if you were relying on those five days you didn't get them. That's our miss, and this is us correcting it rather than letting the dates on the site quietly disagree with reality.</p>
+    <p>The reason is compute. The hardware Veil ran on is committed to re-running the Project Crucible 600M model, and we do not currently have enough spare capacity to keep both going. Rather than pretend otherwise, we would rather say plainly that a deprecated model lost its slot to an active one.</p>
+    <p>Veil comes back online on July 30 and stays up until August 17, 2026, when it retires for good. That is a longer real migration window than the one we originally offered, not a shorter one. If you are still calling Veil today, switch to Lumen now — model: "lumen", same OpenAI-compatible endpoint, same free Axion account — rather than waiting for it to return.</p>
+    <p>Veil's model card stays up on the Models page permanently after retirement. It was our first model and the reason Lumen exists.</p>
+  </div>
+  <!-- end pending announcement -->
+
+  <div class="announcement" style="display:none">
+    <h2>Project Crucible — Sprint Extended to August 17, 600M Run Restarted</h2>
+    <p>The Crucible R&amp;D sprint was announced on July 7 as a three-week run ending July 27. It now runs to August 17, 2026 — roughly six weeks. Here is what happened in between.</p>
+    <p>The 600M model has to be trained again from scratch. Its training configuration had the learning rate set 0.009 above where it should have been. Written down on its own, 0.009 looks like a rounding error; as a learning rate it is nothing of the sort, because they live down in the ten-thousandths. The model was taking wildly oversized steps from the first batch onward and never had a chance to settle. Everything downstream of that number is untrustworthy, so the run goes in the bin rather than getting salvaged — a run you can't trust is worse than no run, because you end up stacking the next experiment on top of it.</p>
+    <p>The rerun is under way with the architecture unchanged, on the same Qwen 0.6B base. The one upside of losing a run this way is that nothing about the design is in question, so there was nothing to redesign before starting over.</p>
+    <p>Once it finishes we're evaluating it head-to-head against Microsoft's BitNet Distillation (BitDistill), whose published results start from that same Qwen 0.6B. Same base model, same 1.58-bit target, two different routes there — so whatever gap shows up is attributable to the method rather than to a difference in the models being compared. Either result is worth having: if TAME comes out ahead we have a reason to keep building it, and if BitDistill does we have a better starting point than the one we were about to build ourselves.</p>
+  </div>
+  <!-- end pending announcement -->
+  <div class="announcement" style="display:none">
     <h2>Lumen Is Now Running on Our Own Servers — Roughly 80x Faster</h2>
     <p>Lumen has moved off shared Hugging Face Spaces and onto dedicated servers we fully control. Same model (Lumen 1.2.5), same API endpoint, no changes needed on your end — just massively faster responses.</p>
     <p>Response times dropped from around 220 seconds per prompt on shared hosting to 2–3 seconds on our own infrastructure. Shared hosting meant contending with other models for GPU time, cold starts, and rate limits we couldn't adjust. Dedicated infrastructure gives Lumen its own GPU, always-warm serving, and full uptime ownership.</p>

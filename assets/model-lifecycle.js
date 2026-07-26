@@ -1,4 +1,4 @@
-/* One source of truth for Veil's scheduled deprecation and retirement state.
+/* One source of truth for Veil's deprecation, outage, and retirement state.
  *
  * Exposes window.AxionModelLifecycle so pages that build their model list in
  * JavaScript (chat.html) can read the same state the static pages render, and
@@ -12,32 +12,47 @@
 (function () {
   'use strict'
 
-  var deprecatedAt = new Date('2026-07-25T00:00:00Z')
-  var retiredAt = new Date('2026-07-30T00:00:00Z')
+  var deprecatedAt = new Date('2026-07-25T00:00:00Z')  // marked deprecated
+  var returnsAt = new Date('2026-07-30T00:00:00Z')     // compute frees up, back online
+  var retiredAt = new Date('2026-08-17T00:00:00Z')     // final shutdown
   var now = new Date()
-  var state = now >= retiredAt ? 'retired' : now >= deprecatedAt ? 'deprecated' : 'migrating'
+
+  // Veil went offline early: the compute it ran on is committed to the Crucible
+  // 600M rerun, so it is unavailable between being deprecated and returning on
+  // July 30. It then runs until it retires for good on August 17.
+  var state = now >= retiredAt ? 'retired'
+    : now >= returnsAt ? 'deprecated'
+    : now >= deprecatedAt ? 'offline'
+    : 'migrating'
 
   var copy = {
     migrating: {
       short: 'migrating · back soon',
       badge: 'Free',
-      page: 'Veil is migrating now; deprecates July 25 and retires July 30, 2026.',
+      page: 'Veil is migrating now; deprecates July 25 and retires August 17, 2026.',
       description: 'Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat.',
       chatDescription: 'Legacy 3B model built for quick, lightweight conversations.',
     },
+    offline: {
+      short: 'offline · back July 30',
+      badge: 'Offline',
+      page: 'Veil is deprecated and temporarily offline — back July 30, retiring August 17, 2026.',
+      description: 'Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat. Deprecated as of July 25, 2026 and offline while its compute is committed elsewhere; back on July 30 and retiring August 17.',
+      chatDescription: 'Offline until July 30, 2026 and retiring August 17. Use Lumen instead.',
+    },
     deprecated: {
-      short: 'deprecated',
+      short: 'deprecated · retires Aug 17',
       badge: 'Deprecated',
-      page: 'Veil is deprecated — still usable until it retires July 30, 2026.',
-      description: 'Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat. Deprecated as of July 25, 2026 and retiring July 30 — still usable until then, but no longer actively developed.',
-      chatDescription: 'Deprecated 3B model — retiring July 30, 2026. Use Lumen instead.',
+      page: 'Veil is deprecated — still usable until it retires August 17, 2026.',
+      description: 'Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat. Deprecated as of July 25, 2026 and retiring August 17 — still usable until then, but no longer actively developed.',
+      chatDescription: 'Deprecated 3B model — retiring August 17, 2026. Use Lumen instead.',
     },
     retired: {
       short: 'retired',
       badge: 'Retired',
-      page: 'Veil is retired as of July 30, 2026.',
-      description: 'Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat. Retired July 30, 2026 — kept here as a memory: Axion’s first model, and the reason Lumen exists.',
-      chatDescription: 'Retired July 30, 2026. Use Lumen instead.',
+      page: 'Veil is retired as of August 17, 2026.',
+      description: 'Our first and fastest model — a fine-tuned Llama 3.1 3B for quick general chat. Retired August 17, 2026 — kept here as a memory: Axion’s first model, and the reason Lumen exists.',
+      chatDescription: 'Retired August 17, 2026. Use Lumen instead.',
     },
   }[state]
 
@@ -46,12 +61,14 @@
     veil: {
       state: state,
       isRetired: state === 'retired',
-      isDeprecated: state === 'deprecated' || state === 'retired',
+      isOffline: state === 'offline',
+      isDeprecated: state !== 'migrating',
       shortStatus: copy.short,
       badge: copy.badge,
       description: copy.description,
       chatDescription: copy.chatDescription,
       deprecatedAt: deprecatedAt,
+      returnsAt: returnsAt,
       retiredAt: retiredAt,
     },
   }
@@ -62,10 +79,14 @@
       homeStatus.innerHTML = '<span class="led down"></span> ' + copy.short
     }
 
+    // Swap only the state modifier — models.html bases its pill on .badge and
+    // docs.html on .model-card-badge, so overwriting className wholesale would
+    // strip one page's styling to suit the other's.
     var badge = document.getElementById('veil-badge')
     if (badge && state !== 'migrating') {
       badge.textContent = copy.badge
-      badge.className = 'badge badge-paid'
+      badge.classList.remove('badge-free', 'badge-key', 'badge-freetier')
+      badge.classList.add('badge-paid')
     }
 
     var description = document.getElementById('veil-desc')
