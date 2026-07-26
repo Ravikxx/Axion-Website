@@ -1408,7 +1408,9 @@
   if (VEIL_LIFECYCLE) {
     MODEL_CATALOG.veil.description = VEIL_LIFECYCLE.chatDescription
     if (VEIL_LIFECYCLE.isDeprecated) {
-      MODEL_CATALOG.veil.tags = [VEIL_LIFECYCLE.isRetired ? 'Retired' : 'Deprecated']
+      // Badge drives both, so an offline Veil reads "Offline" in the tag and the
+      // status rather than tagging "Deprecated" next to a status of "Offline".
+      MODEL_CATALOG.veil.tags = [VEIL_LIFECYCLE.badge]
       MODEL_CATALOG.veil.statusLabel = VEIL_LIFECYCLE.badge
     }
   }
