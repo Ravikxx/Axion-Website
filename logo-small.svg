@@ -1,11 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
-  <!-- Simplified for 16px: just the two crossed rings + center dot -->
-  <circle cx="64" cy="64" r="64" fill="#1A1208"/>
-  <ellipse cx="64" cy="64" rx="45" ry="17"
-           fill="none" stroke="#EA580C" stroke-width="7"
-           transform="rotate(-38,64,64)"/>
-  <ellipse cx="64" cy="64" rx="45" ry="17"
-           fill="none" stroke="#EA580C" stroke-width="7"
-           transform="rotate(38,64,64)"/>
-  <circle cx="64" cy="64" r="7" fill="#EA580C"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" fill="none">
+  <path
+    d="M38 158 C 20 112, 44 42, 104 32 C 160 23, 186 84, 156 124 C 128 161, 68 152, 66 110 C 65 78, 100 62, 122 86 C 138 104, 124 126, 106 118"
+    stroke="#E8B534"
+    stroke-width="18"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
 </svg>
