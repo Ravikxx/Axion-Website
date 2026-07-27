@@ -1612,16 +1612,20 @@
       const res = await axionFetch(`${API}/chats`, { headers: authHeaders() })
       if (!res.ok) return
       const data = await res.json()
-      chats = (data.chats || []).map(c => ({ id: c.id, title: c.title, updated: c.updated, messages: [], loaded: false }))
+      chats = (data.chats || []).map(c => ({
+        id: c.id, title: c.title, updated: c.updated,
+        messages: [], loaded: false, generation: c.generation || null,
+      }))
     } catch {}
   }
-  async function fetchChatMessages(c) {
-    if (c.loaded) return
+  async function fetchChatMessages(c, { force = false } = {}) {
+    if (c.loaded && !force) return
     try {
       const res = await axionFetch(`${API}/chats/${c.id}`, { headers: authHeaders() })
       if (!res.ok) return
       const data = await res.json()
       c.messages = data.messages || []
+      c.generation = data.generation || null
       c.loaded = true
     } catch {}
   }
@@ -1660,7 +1664,11 @@
       document.getElementById('messages').innerHTML = '<div class="greeting"><div class="greeting-sub">Loading…</div></div>'
       await fetchChatMessages(c)
     }
-    if (currentId === id) renderMessages()
+    if (currentId !== id) return
+    renderMessages()
+    // The reply kept running on the server while this chat was closed. Pick it
+    // back up rather than leaving a chat that looks stuck mid-answer.
+    if (generationActive(c)) void resumeGeneration(c)
   }
 
   function deleteChat(id, ev) {
@@ -1727,10 +1735,18 @@
       return
     }
     const sorted = [...filtered].sort((a, b) => b.updated - a.updated)
+    // A spiral beside a conversation means a reply is still being written on
+    // the server, even though this tab isn't the one watching it.
+    const spinner = `
+      <svg class="chat-item-thinking" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+        <path d="${THINKING_SPIRAL_PATHS[1]}" fill="none" stroke-width="15"
+              stroke-linecap="round" stroke-linejoin="round" style="--spiral-len:532" />
+      </svg>`
     list.innerHTML = sorted.map(c => `
       <div class="chat-item ${c.id === currentId ? 'active' : ''}">
         <button type="button" class="chat-item-open" onclick="switchChat('${c.id}')" ${c.id === currentId ? 'aria-current="page"' : ''}>
           <span class="chat-item-title">${escHtml(c.title)}</span>
+          ${generationActive(c) ? spinner : ''}
         </button>
         <button type="button" class="chat-item-del" onclick="renameChat('${c.id}', event)" title="Rename" aria-label="Rename ${escHtml(c.title)}">✎</button>
         <button type="button" class="chat-item-del" onclick="deleteChat('${c.id}', event)" title="Delete" aria-label="Delete ${escHtml(c.title)}">✕</button>
@@ -2347,7 +2363,9 @@
     }
     c.messages.push({ role: 'user', content, ts: Date.now() })
     c.updated = Date.now()
-    renderChatList(); renderMessages(); persistChat(c)
+    renderChatList(); renderMessages()
+    // Not awaited here: startGeneration persists again and waits, because the
+    // server answers from its own copy of the conversation.
     await generateReply(c)
   }
 
@@ -2370,57 +2388,14 @@
     await generateReply(c)
   }
 
-  // Generates an assistant reply for a chat whose messages end with a user turn.
-  // depth counts automatic tool-call round-trips within one user turn — a
-  // hard cap (TOOL_STEP_LIMIT) stops a runaway "call tool, get result, call
-  // tool again..." loop instead of looping forever.
-  async function generateReply(c, depth = 0) {
-    if (!sessionToken) {
-      showAuthenticationRequired('Create a free Axion account or sign in to chat.')
-      return
-    }
-    if (depth === 0) stopRequested = false
-    await ensureSandboxMode()
-    setSendingState(true)
-    abortCtrl = new AbortController()
-
-    const wrap = document.getElementById('msg-wrap')
-    const div = document.createElement('div')
-    div.className = 'msg'
-    div.innerHTML = `
-      <div class="msg-avatar assistant">${AVATAR}</div>
-      <div class="msg-body">
-        <div class="msg-role">Assistant</div>
-        <div class="msg-text streaming waiting" id="live">${THINKING_SPIRAL}</div>
-      </div>`
-    wrap.appendChild(div)
-    const live = document.getElementById('live')
-    startThinkingShapeVariation(live)
-    const messagesEl = document.getElementById('messages')
-    messagesEl.scrollTop = messagesEl.scrollHeight
-
-    const chartHint = { role: 'system', content: 'You can render charts. Output chart data in a ```chart code block with JSON like {"type":"bar","title":"...","data":{"labels":["A","B"],"datasets":[{"data":[1,2]}]}}. Types: bar, pie, doughnut, line.' }
-    const apiMessages = c.messages.map(m => {
-      // A pure tool-call turn (no accompanying prose) is content: null on
-      // the real API wire shape, confirmed against a live non-streaming
-      // spike response — sending '' instead risks reading as "the
-      // assistant said something" to the model and muddying its own turn.
-      const out = { role: m.role, content: m.tool_calls?.length ? (m.content || null) : (m.content ?? '') }
-      if (m.tool_calls) out.tool_calls = m.tool_calls
-      if (m.tool_call_id) out.tool_call_id = m.tool_call_id
-      return out
-    })
-    // The run_code tool is only ever offered to signed-in sessions — an
-    // axion-sk-/CLI caller hitting /v1/chat/completions directly has no
-    // client-side loop to fulfill a tool_calls turn, so injecting it for
-    // everyone would silently hand back an unfulfillable response.
-    // Also withheld once this chat is locked (see lockToolAccess) — omitting
-    // the tool entirely makes another attempt structurally impossible,
-    // rather than relying on the model to actually listen to wording. The
-    // lock is sticky across turns; only the user clicking "Re-enable" in
-    // the banner clears it.
-    const toolAccessRevoked = !!window.__toolAccessLocked[c.id]
-    const tools = (sessionToken && !toolAccessRevoked) ? [{
+  // The run_code tool offered to the model. Only ever sent for a signed-in
+  // session, and withheld once this chat is locked (see lockToolAccess) —
+  // omitting the tool makes another attempt structurally impossible rather
+  // than relying on the model to obey wording. The lock is sticky across
+  // turns; only "Re-enable" in the banner clears it.
+  function toolsForChat(c) {
+    if (!sessionToken || window.__toolAccessLocked[c.id]) return undefined
+    return [{
       type: 'function',
       function: {
         name: 'run_code',
@@ -2434,114 +2409,221 @@
           required: ['code'],
         },
       },
-    }] : undefined
-    const systemHints = [chartHint]
-    if (toolAccessRevoked) {
-      systemHints.push({ role: 'system', content: 'Tool access has been disabled for this entire chat because you repeated an already-blocked run_code call. You cannot call any tool right now, in this reply or any future one in this chat, until the user clicks "Re-enable" — answer the user directly in plain text using the information already in this conversation.' })
-    }
-    const body = { model: selectedModel, messages: [...systemHints, ...apiMessages], stream: true, ...(tools ? { tools } : {}) }
-    const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionToken}` }
+    }]
+  }
 
-    let full = '', failed = false
-    let toolCallsAcc = []
+  // Builds the assistant bubble that a reply streams into.
+  function openLiveBubble(wrap) {
+    const div = document.createElement('div')
+    div.className = 'msg'
+    div.innerHTML = `
+      <div class="msg-avatar assistant">${AVATAR}</div>
+      <div class="msg-body">
+        <div class="msg-role">Assistant</div>
+        <div class="msg-text streaming waiting" id="live">${THINKING_SPIRAL}</div>
+      </div>`
+    wrap.appendChild(div)
+    const live = document.getElementById('live')
+    startThinkingShapeVariation(live)
+    return live
+  }
+
+  // Asks the server to start a reply. The server reads the conversation from
+  // its own copy, so the chat must be persisted first — otherwise it answers
+  // the previous turn.
+  async function startGeneration(c) {
+    await persistChat(c)
+    const res = await axionFetch(`${API}/chats/${c.id}/generations`, {
+      method: 'POST',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ model: selectedModel, tools: toolsForChat(c) }),
+    })
+    const data = await res.json().catch(() => ({}))
+
+    // Another tab already started this turn. Watch that one rather than
+    // starting a second — the server refuses duplicates, and two replies to
+    // one message would bill twice.
+    if (res.status === 409 && data.generation?.id) return { generation: data.generation }
+    if (res.status === 401) return { authRequired: data.error || 'Your session expired. Sign in again to continue.' }
+    if (!res.ok) return { error: data.error || `Could not start the reply (HTTP ${res.status})` }
+    return { generation: data.generation }
+  }
+
+  // Reads a server-owned reply. `snapshot` carries everything generated before
+  // this tab attached, so joining late — or reopening the page tomorrow —
+  // shows the whole reply rather than the tail of it.
+  async function streamGeneration(c, generationId, live, messagesEl, onText) {
+    // Native fetch, not axionFetch: the wrapper drops its abort listener once
+    // response headers arrive (see assets/fetch-timeout.js), which is fine for
+    // a normal request but means Stop would never detach a long-lived stream.
+    // The completions endpoint is read the same way for the same reason.
+    const res = await fetch(
+      `${API}/chats/${c.id}/generations/${generationId}/stream`,
+      { headers: authHeaders(), signal: abortCtrl?.signal },
+    )
+    if (!res.ok || !res.body) {
+      return { status: 'failed', error: `Could not follow the reply (HTTP ${res.status})` }
+    }
+
+    const reader = res.body.getReader()
+    const dec = new TextDecoder()
+    let buf = ''
+    let text = ''
+    let outcome = { status: 'interrupted' }
+
+    const paint = () => {
+      if (text) live.classList.remove('waiting')
+      live.textContent = text
+      onText?.(text)
+      if (!_userScrolledAway) messagesEl.scrollTop = messagesEl.scrollHeight
+    }
+
+    for (;;) {
+      const { done, value } = await reader.read()
+      if (done) break
+      buf += dec.decode(value, { stream: true })
+      const blocks = buf.split('\n\n')
+      buf = blocks.pop() || ''
+
+      for (const block of blocks) {
+        const event = block.match(/^event: (.+)$/m)?.[1]
+        const raw = block.match(/^data: (.+)$/m)?.[1]
+        if (!event || !raw) continue
+        let data
+        try { data = JSON.parse(raw) } catch { continue }
+
+        if (event === 'snapshot') { text = data.text || ''; paint() }
+        else if (event === 'delta') { text += data.text || ''; paint() }
+        else if (event === 'done') { outcome = { status: 'completed' } }
+        else if (event === 'error') { outcome = { status: 'failed', error: data.error } }
+      }
+    }
+
+    return { ...outcome, text }
+  }
+
+  // Generates an assistant reply for a chat whose messages end with a user or
+  // tool turn. The model runs on the server; this only watches. depth counts
+  // automatic tool-call round-trips within one user turn — a hard cap
+  // (TOOL_STEP_LIMIT) stops a runaway "call tool, get result, call tool
+  // again..." loop instead of looping forever.
+  async function generateReply(c, depth = 0, existingGenerationId = null) {
+    if (!sessionToken) {
+      showAuthenticationRequired('Create a free Axion account or sign in to chat.')
+      return
+    }
+    if (depth === 0) stopRequested = false
+    await ensureSandboxMode()
+    setSendingState(true)
+    abortCtrl = new AbortController()
+
+    const wrap = document.getElementById('msg-wrap')
+    const live = openLiveBubble(wrap)
+    const messagesEl = document.getElementById('messages')
+    messagesEl.scrollTop = messagesEl.scrollHeight
+
+    let generationId = existingGenerationId
+    if (!generationId) {
+      const started = await startGeneration(c)
+      if (started.authRequired) {
+        setSendingState(false); abortCtrl = null
+        showAuthenticationRequired(started.authRequired)
+        return
+      }
+      if (started.error) {
+        live.classList.remove('streaming', 'waiting')
+        live.textContent = '⚠ ' + started.error
+        setSendingState(false); abortCtrl = null
+        return
+      }
+      generationId = started.generation.id
+    }
+
+    c.generation = { id: generationId, status: 'running' }
+    renderChatList()
+    // If this tab is closed or navigates away, the sidebar in any other tab
+    // still needs to learn when the reply lands.
+    startGenerationPolling()
+
+    let result
     try {
-      const res = await fetch(`${API}/v1/chat/completions`, { method: 'POST', headers, body: JSON.stringify(body), signal: abortCtrl.signal })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        if (res.status === 401) {
-          setSendingState(false)
-          abortCtrl = null
-          showAuthenticationRequired(err.error?.message || 'Your session expired. Sign in again to continue.')
-          return
-        }
-        live.textContent = '⚠ ' + (err.error?.message || `Error ${res.status}`)
-        live.classList.remove('streaming'); failed = true
-      } else {
-        const reader = res.body.getReader()
-        const dec = new TextDecoder()
-        let buf = ''
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-          buf += dec.decode(value, { stream: true })
-          const lines = buf.split('\n'); buf = lines.pop()
-          for (const line of lines) {
-            if (!line.startsWith('data: ')) continue
-            const data = line.slice(6).trim()
-            if (data === '[DONE]') continue
-            try {
-              const delta = JSON.parse(data).choices?.[0]?.delta
-              if (delta?.content) {
-                full += delta.content
-                live.classList.remove('waiting')
-                live.textContent = full
-                if (!_userScrolledAway) messagesEl.scrollTop = messagesEl.scrollHeight
-              }
-              if (delta?.tool_calls) {
-                for (const tc of delta.tool_calls) {
-                  const i = tc.index ?? 0
-                  toolCallsAcc[i] = toolCallsAcc[i] || { id: '', type: 'function', function: { name: '', arguments: '' } }
-                  if (tc.id) toolCallsAcc[i].id = tc.id
-                  if (tc.function?.name) toolCallsAcc[i].function.name += tc.function.name
-                  if (tc.function?.arguments) toolCallsAcc[i].function.arguments += tc.function.arguments
-                }
-              }
-            } catch {}
-          }
-        }
-      }
+      result = await streamGeneration(c, generationId, live, messagesEl)
     } catch (e) {
-      if (e.name === 'AbortError') { /* keep whatever streamed so far */ }
-      else { live.textContent = '⚠ Network error: ' + e.message; failed = true }
+      // Aborting only detaches this tab. The server finishes the reply and
+      // commits it, which is the whole point — it will be there on return.
+      result = e.name === 'AbortError'
+        ? { status: 'detached', text: live.textContent }
+        : { status: 'failed', error: 'Network error: ' + e.message }
     }
-    toolCallsAcc = toolCallsAcc.filter(Boolean)
 
-    live.classList.remove('streaming')
+    live.classList.remove('streaming', 'waiting')
 
-    if (!failed && toolCallsAcc.length) {
-      // Pending tool call(s): show what streamed (if any), then a card per
-      // call. Nothing is pushed to persisted history until every card in
-      // this turn has resolved, so a page refresh mid-approval can't leave
-      // a half-written turn behind.
-      live.innerHTML = full ? renderMarkdown(full) : ''
-      const results = []
-      for (const tc of toolCallsAcc) results.push(await renderToolCall(tc, wrap, c.id))
-
-      c.messages.push({ role: 'assistant', content: full, tool_calls: toolCallsAcc, ts: Date.now() })
-      toolCallsAcc.forEach((tc, i) => c.messages.push({ role: 'tool', tool_call_id: tc.id, content: results[i], ts: Date.now() }))
-      c.updated = Date.now(); persistChat(c)
-      renderChatList(); renderMessages()
-
-      setSendingState(false)
-      abortCtrl = null
-
-      if (stopRequested) {
-        document.getElementById('user-input').focus()
-        return
-      }
-
-      if (depth + 1 >= TOOL_STEP_LIMIT) {
-        const stepDiv = document.createElement('div')
-        stepDiv.className = 'msg'
-        stepDiv.innerHTML = `<div class="msg-avatar assistant">${AVATAR}</div><div class="msg-body"><div class="msg-text" style="color:var(--muted)">Step limit reached (${TOOL_STEP_LIMIT} tool calls in a row) — stopping here.</div></div>`
-        document.getElementById('msg-wrap')?.appendChild(stepDiv)
-        document.getElementById('user-input').focus()
-        return
-      }
-      await generateReply(c, depth + 1)
+    if (result.status === 'failed') {
+      live.textContent = '⚠ ' + (result.error || 'The reply failed.')
+      c.generation = null
+      setSendingState(false); abortCtrl = null
+      renderChatList()
       return
     }
 
-    if (!failed) { live.innerHTML = full ? renderMarkdown(full) : '<p style="color:var(--muted)">(stopped)</p>'; initCharts() }
-
-    if (!failed && full) {
-      c.messages.push({ role: 'assistant', content: full, ts: Date.now() })
-      c.updated = Date.now(); persistChat(c)
-      renderChatList(); renderMessages()   // re-render with actions + markdown
+    if (result.status === 'detached') {
+      setSendingState(false); abortCtrl = null
+      renderChatList()
+      return
     }
+
+    // The server has committed the assistant message; re-read rather than
+    // reconstructing it, so this tab matches every other one exactly.
+    c.generation = null
+    await fetchChatMessages(c, { force: true })
+    c.updated = Date.now()
+    renderChatList(); renderMessages()
+
+    const reply = c.messages[c.messages.length - 1]
+    const toolCalls = reply?.role === 'assistant' ? (reply.tool_calls || []) : []
+
+    if (!toolCalls.length) {
+      setSendingState(false)
+      abortCtrl = null
+      document.getElementById('user-input').focus()
+      return
+    }
+
+    // The model asked for code. Sandbox execution stays client-side: it needs
+    // the Run/Deny card in front of the user.
+    const results = []
+    for (const tc of toolCalls) results.push(await renderToolCall(tc, document.getElementById('msg-wrap'), c.id))
+    toolCalls.forEach((tc, i) => c.messages.push({ role: 'tool', tool_call_id: tc.id, content: results[i], ts: Date.now() }))
+    c.updated = Date.now()
+    await persistChat(c)
+    renderChatList(); renderMessages()
+
     setSendingState(false)
     abortCtrl = null
-    document.getElementById('user-input').focus()
+
+    if (stopRequested) {
+      document.getElementById('user-input').focus()
+      return
+    }
+
+    if (depth + 1 >= TOOL_STEP_LIMIT) {
+      const stepDiv = document.createElement('div')
+      stepDiv.className = 'msg'
+      stepDiv.innerHTML = `<div class="msg-avatar assistant">${AVATAR}</div><div class="msg-body"><div class="msg-text" style="color:var(--muted)">Step limit reached (${TOOL_STEP_LIMIT} tool calls in a row) — stopping here.</div></div>`
+      document.getElementById('msg-wrap')?.appendChild(stepDiv)
+      document.getElementById('user-input').focus()
+      return
+    }
+    await generateReply(c, depth + 1)
+  }
+
+  // Re-attaches to a reply that was already running — after a reload, or after
+  // switching back to a chat that was left mid-answer.
+  async function resumeGeneration(c) {
+    if (!generationActive(c) || streaming) return
+    const wrap = document.getElementById('msg-wrap')
+    if (!wrap) return
+    await generateReply(c, 0, c.generation.id)
   }
 
   // ── Auth ─────────────────────────────────────────────────────────────────
@@ -2637,6 +2719,53 @@
     } catch {}
   }
 
+  // Keeps the sidebar honest about replies running in chats this tab isn't
+  // looking at. Only runs while something is actually in flight, and stops
+  // itself once nothing is.
+  async function syncGenerations() {
+    if (generationPollInFlight) return
+    if (!chats.some(generationActive)) { stopGenerationPolling(); return }
+    generationPollInFlight = true
+    try {
+      const res = await axionFetch(`${API}/chats`, { headers: authHeaders() })
+      if (!res.ok) return
+      const data = await res.json()
+      let changed = false
+      for (const row of data.chats || []) {
+        const c = chats.find(chat => chat.id === row.id)
+        if (!c) continue
+        const wasActive = generationActive(c)
+        c.generation = row.generation || null
+        c.updated = row.updated ?? c.updated
+        if (wasActive !== generationActive(c)) changed = true
+      }
+      if (changed) {
+        renderChatList()
+        // A reply finished in the chat that's on screen but nothing was
+        // watching it — pull the committed message in.
+        const c = currentChat()
+        if (c && !generationActive(c) && !streaming) {
+          await fetchChatMessages(c, { force: true })
+          renderMessages()
+        }
+      }
+    } catch {
+      // Offline or a blip; the next tick tries again.
+    } finally {
+      generationPollInFlight = false
+    }
+  }
+
+  function startGenerationPolling() {
+    if (generationPollTimer) return
+    generationPollTimer = setInterval(syncGenerations, GENERATION_POLL_MS)
+  }
+  function stopGenerationPolling() {
+    if (!generationPollTimer) return
+    clearInterval(generationPollTimer)
+    generationPollTimer = null
+  }
+
   async function showApp() {
     document.getElementById('auth-overlay').style.display = 'none'
     document.getElementById('acct-email').textContent = userEmail || 'Signed in'
@@ -2645,6 +2774,7 @@
     renderMessages()
     await fetchChatList()
     renderChatList()
+    if (chats.some(generationActive)) startGenerationPolling()
     document.getElementById('user-input').focus()
   }
 
