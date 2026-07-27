@@ -207,9 +207,9 @@
     .thinking-spiral svg { display: block; width: 100%; height: 100%; overflow: visible; }
     .thinking-spiral path {
       stroke: currentColor;
-      stroke-dasharray: 550;
+      stroke-dasharray: 580;
       stroke-dashoffset: 0;
-      animation: spiral-think 20s steps(40, end) infinite;
+      animation: spiral-think 10s steps(40, end) infinite alternate;
     }
     .msg-text.streaming.waiting::after { content: none; }
     .msg-text.streaming:not(.waiting)::after {
@@ -218,8 +218,7 @@
     }
     @keyframes spiral-think {
       0% { stroke-dashoffset: 0; }
-      50% { stroke-dashoffset: 548; }
-      100% { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: 578; }
     }
     @keyframes blink { 50% { opacity: 0; } }
     @media (prefers-reduced-motion: reduce) {
@@ -1924,11 +1923,17 @@
   }
 
   const AVATAR = '<img src="/assets/logo-spiral.svg" alt="">'
+  const THINKING_SPIRAL_PATHS = [
+    'M106 118 C124 126,138 104,122 86 C100 62,65 78,66 110 C68 152,128 161,156 124 C186 84,160 23,104 32 C44 42,20 112,38 158',
+    'M106 118 C125 125,137 102,121 85 C98 62,64 80,67 112 C71 153,130 159,157 122 C184 81,157 25,102 34 C43 44,22 113,39 158',
+    'M106 118 C122 128,139 106,123 88 C102 63,67 76,65 108 C65 150,125 163,154 126 C188 87,163 21,106 31 C46 39,18 110,37 158',
+    'M106 118 C123 124,136 105,121 87 C101 65,66 80,67 109 C69 150,126 160,155 123 C184 85,161 25,105 33 C45 43,21 111,39 158',
+  ]
   const THINKING_SPIRAL = `
     <span class="thinking-spiral" role="status" aria-label="Axion is thinking">
       <svg viewBox="0 0 200 200" fill="none" aria-hidden="true">
         <path
-          d="M106 118 C124 126,138 104,122 86 C100 62,65 78,66 110 C68 152,128 161,156 124 C186 84,160 23,104 32 C44 42,20 112,38 158"
+          d="${THINKING_SPIRAL_PATHS[0]}"
           fill="none"
           stroke-width="15"
           stroke-linecap="round"
@@ -1936,6 +1941,21 @@
         />
       </svg>
     </span>`
+
+  function startThinkingShapeVariation(live) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const path = live.querySelector('.thinking-spiral path')
+    if (!path) return
+    let completedHalves = 0
+    let shapeIndex = 0
+    path.addEventListener('animationiteration', event => {
+      if (event.animationName !== 'spiral-think') return
+      completedHalves += 1
+      if (completedHalves % 2 === 0) return
+      shapeIndex = (shapeIndex + 1) % THINKING_SPIRAL_PATHS.length
+      path.setAttribute('d', THINKING_SPIRAL_PATHS[shapeIndex])
+    })
+  }
 
   // ── Sandbox tool calls ──────────────────────────────────────────────────
   // Renders one card per pending tool call, waits for it to resolve (either
@@ -2327,6 +2347,7 @@
       </div>`
     wrap.appendChild(div)
     const live = document.getElementById('live')
+    startThinkingShapeVariation(live)
     const messagesEl = document.getElementById('messages')
     messagesEl.scrollTop = messagesEl.scrollHeight
 
