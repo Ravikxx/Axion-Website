@@ -4,7 +4,7 @@
  *
  *   <div class="paper-banner"
  *        data-images="/assets/paper/paper-1.jpg,/assets/paper/paper-2.jpg"
- *        data-logo="/assets/logo-axion-new.png"
+ *        data-logo="/assets/logo-spiral-wordmark.svg"
  *        data-interval="500"
  *        data-zoom-min="100"
  *        data-zoom-max="106"></div>

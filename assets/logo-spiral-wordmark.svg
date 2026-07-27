@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 200" width="820" height="200" fill="none">
+  <path
+    d="M38 158 C 20 112, 44 42, 104 32 C 160 23, 186 84, 156 124 C 128 161, 68 152, 66 110 C 65 78, 100 62, 122 86 C 138 104, 124 126, 106 118"
+    stroke="#E8B534"
+    stroke-width="15"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <g fill="#E8B534" font-family="IBM Plex Sans, Arial, sans-serif">
+    <text x="220" y="112" font-size="88" font-weight="600" letter-spacing="22">AXION</text>
+    <text x="225" y="166" font-size="28" font-weight="600" letter-spacing="17">LABS AI</text>
+  </g>
+</svg>

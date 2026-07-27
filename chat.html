@@ -800,13 +800,13 @@
     .model-trigger-mark,
     .model-option-mark {
       flex: 0 0 auto;
-      background: var(--accent);
-      -webkit-mask: url("/assets/logo-axion-mark.png") center / contain no-repeat;
-      mask: url("/assets/logo-axion-mark.png") center / contain no-repeat;
+      background: var(--brand-logo, #e8b534);
+      -webkit-mask: url("/assets/logo-spiral.svg") center / contain no-repeat;
+      mask: url("/assets/logo-spiral.svg") center / contain no-repeat;
     }
     .model-trigger-mark {
-      width: 23px;
-      height: 19px;
+      width: 26px;
+      height: 26px;
       opacity: .9;
     }
     .model-trigger-copy {
@@ -935,7 +935,7 @@
     }
     .model-option-mark {
       width: 31px;
-      height: 24px;
+      height: 31px;
       margin-top: 3px;
     }
     .model-option-main { min-width: 0; }
@@ -1083,12 +1083,12 @@
       gap: 13px;
     }
     .greeting-mark {
-      width: 43px;
-      height: 32px;
+      width: 48px;
+      height: 48px;
       flex: 0 0 auto;
-      background: var(--accent);
-      -webkit-mask: url("/assets/logo-axion-mark.png") center / contain no-repeat;
-      mask: url("/assets/logo-axion-mark.png") center / contain no-repeat;
+      background: var(--brand-logo, #e8b534);
+      -webkit-mask: url("/assets/logo-spiral.svg") center / contain no-repeat;
+      mask: url("/assets/logo-spiral.svg") center / contain no-repeat;
     }
     .greeting-title {
       margin: 0;
@@ -1133,7 +1133,7 @@
       .main.empty-chat .topbar-action { display: none; }
       .main.empty-chat .greeting { padding: 64px 18px 22px; }
       .greeting-heading { gap: 9px; }
-      .greeting-mark { width: 34px; height: 26px; }
+      .greeting-mark { width: 38px; height: 38px; }
       .greeting-title { font-size: clamp(26px, 7vw, 34px); }
       .main.empty-chat .input-area { padding: 0 14px 26px; }
       .main.empty-chat .input-row { min-height: 116px; border-radius: 20px; }
@@ -1175,7 +1175,7 @@
 <!-- Auth overlay -->
 <div id="auth-overlay">
   <div class="auth-card">
-    <div class="auth-logo"><img src="/assets/logo.png" alt="Axion"><span>Axion</span></div>
+    <div class="auth-logo"><img src="/assets/logo-spiral.svg" alt="Axion"><span>Axion</span></div>
     <div class="auth-title" id="auth-title">Sign in</div>
     <div class="auth-sub" id="auth-sub">Sign in to start chatting. Your conversations sync across all your devices.</div>
 
@@ -1232,7 +1232,7 @@
   <div class="sidebar-top">
     <div class="sidebar-brand-row">
       <a href="/" class="sidebar-brand">
-        <img src="/assets/logo.png" alt=""> Axion
+        <img src="/assets/logo-spiral.svg" alt=""> Axion
       </a>
       <button class="sidebar-icon-btn" type="button" onclick="toggleChatSearch()" title="Search conversations" aria-label="Search conversations" aria-controls="chat-search" aria-expanded="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
@@ -1905,7 +1905,7 @@
     return o
   }
 
-  const AVATAR = '<img src="/assets/logo.png" alt="">'
+  const AVATAR = '<img src="/assets/logo-spiral.svg" alt="">'
 
   // ── Sandbox tool calls ──────────────────────────────────────────────────
   // Renders one card per pending tool call, waits for it to resolve (either

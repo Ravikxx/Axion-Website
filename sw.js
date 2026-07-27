@@ -1,10 +1,11 @@
-const CACHE = 'axion-chat-v1'
+const CACHE = 'axion-chat-v2'
 const PRECACHE = [
   '/chat',
   '/assets/logo-512.png',
   '/assets/favicon-32.png',
   '/assets/apple-touch-icon.png',
-  '/assets/logo.png',
+  '/assets/logo-spiral.svg',
+  '/assets/logo-spiral-wordmark.svg',
 ]
 
 self.addEventListener('install', e => {
