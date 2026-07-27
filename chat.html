@@ -197,16 +197,34 @@
       border-left: 3px solid var(--border2); padding-left: 14px;
       margin: 0 0 10px; color: var(--muted2);
     }
-    .msg-text.streaming:empty::before {
-      content: 'Thinking...'; display: inline-block; color: var(--muted);
-      font-size: 13px; font-style: italic;
+    .msg-text.streaming.waiting {
+      display: flex; align-items: center; min-height: 32px;
     }
-    .msg-text.streaming:empty::after { content: none; }
-    .msg-text.streaming:not(:empty)::after {
+    .thinking-spiral {
+      display: inline-flex; width: 32px; height: 32px;
+      color: var(--brand-logo, #e8b534);
+    }
+    .thinking-spiral svg { display: block; width: 100%; height: 100%; overflow: visible; }
+    .thinking-spiral path {
+      stroke: currentColor;
+      stroke-dasharray: 550;
+      stroke-dashoffset: 0;
+      animation: spiral-think 20s steps(40, end) infinite;
+    }
+    .msg-text.streaming.waiting::after { content: none; }
+    .msg-text.streaming:not(.waiting)::after {
       content: '▋'; display: inline-block; animation: blink .8s step-end infinite;
       color: var(--accent); margin-left: 1px;
     }
+    @keyframes spiral-think {
+      0% { stroke-dashoffset: 0; }
+      50% { stroke-dashoffset: 548; }
+      100% { stroke-dashoffset: 0; }
+    }
     @keyframes blink { 50% { opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+      .thinking-spiral path { animation: none; }
+    }
 
     .code-block {
       margin: 10px 0; border: 1px solid var(--border2); border-radius: 9px;
@@ -1906,6 +1924,18 @@
   }
 
   const AVATAR = '<img src="/assets/logo-spiral.svg" alt="">'
+  const THINKING_SPIRAL = `
+    <span class="thinking-spiral" role="status" aria-label="Axion is thinking">
+      <svg viewBox="0 0 200 200" fill="none" aria-hidden="true">
+        <path
+          d="M106 118 C124 126,138 104,122 86 C100 62,65 78,66 110 C68 152,128 161,156 124 C186 84,160 23,104 32 C44 42,20 112,38 158"
+          fill="none"
+          stroke-width="15"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </span>`
 
   // ── Sandbox tool calls ──────────────────────────────────────────────────
   // Renders one card per pending tool call, waits for it to resolve (either
@@ -2293,7 +2323,7 @@
       <div class="msg-avatar assistant">${AVATAR}</div>
       <div class="msg-body">
         <div class="msg-role">Assistant</div>
-        <div class="msg-text streaming" id="live"></div>
+        <div class="msg-text streaming waiting" id="live">${THINKING_SPIRAL}</div>
       </div>`
     wrap.appendChild(div)
     const live = document.getElementById('live')
@@ -2372,7 +2402,12 @@
             if (data === '[DONE]') continue
             try {
               const delta = JSON.parse(data).choices?.[0]?.delta
-              if (delta?.content) { full += delta.content; live.textContent = full; if (!_userScrolledAway) messagesEl.scrollTop = messagesEl.scrollHeight }
+              if (delta?.content) {
+                full += delta.content
+                live.classList.remove('waiting')
+                live.textContent = full
+                if (!_userScrolledAway) messagesEl.scrollTop = messagesEl.scrollHeight
+              }
               if (delta?.tool_calls) {
                 for (const tc of delta.tool_calls) {
                   const i = tc.index ?? 0
