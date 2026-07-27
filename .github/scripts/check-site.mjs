@@ -103,6 +103,20 @@ for (const page of pages) {
   if (page === 'settings.html' && source.includes('Permanently deletes your account, API keys, and usage history')) {
     fail(page, 'account deletion copy omits the safety-record retention exception')
   }
+  if (page === 'desktop-auth.html') {
+    for (const provider of ['google', 'github', 'discord']) {
+      const button = source.match(new RegExp(
+        `<a\\b[^>]*\\bid=["']oauth-${provider}["'][^>]*>[\\s\\S]*?<\\/a>`,
+        'i',
+      ))?.[0]
+      if (!button?.includes('<svg')) {
+        fail(page, `${provider} sign-in button is missing its provider logo`)
+      }
+    }
+    if (!source.includes('`${API}/auth/${provider}?return_to=desktop`')) {
+      fail(page, 'provider sign-in does not return to Desktop authorization')
+    }
+  }
   if (/<div\b[^>]*\bonclick\s*=/i.test(source)) {
     fail(page, 'clickable div found; use a keyboard-accessible button or link')
   }
