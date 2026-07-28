@@ -1790,6 +1790,7 @@
         branched_from_chat_id: c.branched_from_chat_id || null,
         branched_from_seq: c.branched_from_seq || null,
         project_id: c.project_id || null,
+        title_rev: c.title_rev,
         messages: [], loaded: false, generation: c.generation || null,
       }))
     } catch {}
@@ -1803,19 +1804,36 @@
       c.messages = data.messages || []
       c.generation = data.generation || null
       c.draft = data.draft || ''
+      c.title_rev = data.title_rev
       c.loaded = true
     } catch {}
   }
   // Chat metadata only (title). Messages live as their own rows now — see
   // appendMessageServer/truncateMessagesServer below — so this never carries
-  // the conversation.
+  // the conversation. expected_title_rev is only sent once c already has a
+  // known revision (i.e. not the very first PUT that creates the row) — the
+  // server rejects a stale rename with 409 instead of silently overwriting a
+  // rename made from another window/device; on that, take the server's title
+  // rather than keep the local (now-wrong) optimistic one.
   async function persistChat(c) {
     try {
-      await axionFetch(`${API}/chats/${c.id}`, {
+      const body = { title: c.title, updated: c.updated }
+      if (typeof c.title_rev === 'number') body.expected_title_rev = c.title_rev
+      const res = await axionFetch(`${API}/chats/${c.id}`, {
         method: 'PUT',
         headers: authHeaders({ 'Content-Type': 'application/json' }),
-        body: JSON.stringify({ title: c.title, updated: c.updated }),
+        body: JSON.stringify(body),
       })
+      if (res.status === 409) {
+        const conflict = await res.json()
+        c.title = conflict.title
+        c.title_rev = conflict.title_rev
+        c.updated = conflict.updated
+        if (currentId === c.id) document.getElementById('topbar-title').textContent = c.title
+        renderChatList()
+        return
+      }
+      if (res.ok) c.title_rev = (await res.json()).title_rev
     } catch {}
   }
   async function deleteChatServer(id) {
