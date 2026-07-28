@@ -1347,7 +1347,7 @@
       </div>
       <div class="input-row">
         <textarea class="input-box" id="user-input" placeholder="Message…" rows="1"
-          oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+          oninput="autoResize(this); onComposerInput()" onkeydown="handleKey(event)"></textarea>
         <div class="composer-toolbar">
           <div class="model-picker" id="model-picker">
             <button class="model-trigger" id="model-trigger" type="button" onclick="toggleModelMenu()" aria-haspopup="menu" aria-expanded="false" aria-controls="model-menu">
@@ -1634,6 +1634,7 @@
       const data = await res.json()
       c.messages = data.messages || []
       c.generation = data.generation || null
+      c.draft = data.draft || ''
       c.loaded = true
     } catch {}
   }
@@ -1663,6 +1664,15 @@
       return await res.json()
     } catch { return null }
   }
+  // Fire-and-forget: an unsent draft is best-effort persistence, not
+  // something worth blocking typing or a chat switch on.
+  function saveDraftServer(id, content) {
+    axionFetch(`${API}/chats/${id}/draft`, {
+      method: 'PUT',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ content }),
+    }).catch(() => {})
+  }
   // Appends one message and returns { seq, updated }, or null on failure.
   async function appendMessageServer(c, message) {
     try {
@@ -1687,7 +1697,37 @@
     } catch {}
   }
   // ── Chat management ───────────────────────────────────────────────────────
+  // Debounced draft autosave for the chat currently being composed in.
+  // Timer state, not per-chat, since only one chat can be open at a time.
+  let _draftTimer = null
+
+  function onComposerInput() {
+    if (!currentId) return
+    const id = currentId
+    const content = document.getElementById('user-input').value
+    clearTimeout(_draftTimer)
+    _draftTimer = setTimeout(() => {
+      const c = chats.find(x => x.id === id)
+      if (c) c.draft = content
+      saveDraftServer(id, content)
+    }, 1000)
+  }
+
+  // Saves whatever's in the composer right now as the outgoing chat's draft,
+  // bypassing the debounce — call this before switching currentId to
+  // anything else so a pending edit is never lost to a stale timer.
+  function flushDraft() {
+    clearTimeout(_draftTimer)
+    if (!currentId) return
+    const id = currentId
+    const content = document.getElementById('user-input').value
+    const c = chats.find(x => x.id === id)
+    if (c) c.draft = content
+    saveDraftServer(id, content)
+  }
+
   function newChat() {
+    flushDraft()
     currentId = null
     renderChatList()
     renderMessages()
@@ -1698,6 +1738,8 @@
   }
 
   async function switchChat(id) {
+    if (id === currentId) return
+    flushDraft()
     currentId = id
     renderChatList()
     const c = currentChat()
@@ -1710,6 +1752,9 @@
       await fetchChatMessages(c)
     }
     if (currentId !== id) return
+    const input = document.getElementById('user-input')
+    input.value = c?.draft || ''
+    autoResize(input)
     renderMessages()
     // The reply kept running on the server while this chat was closed. Pick it
     // back up rather than leaving a chat that looks stuck mid-answer.
@@ -2429,9 +2474,16 @@
     let c = currentChat()
     const isNewChat = !c
     if (!c) {
-      c = { id: uid(), title: titleFrom(content), messages: [], updated: Date.now(), loaded: true }
+      c = { id: uid(), title: titleFrom(content), messages: [], updated: Date.now(), loaded: true, draft: '' }
       chats.push(c); currentId = c.id
       document.getElementById('topbar-title').textContent = c.title
+    } else {
+      // The composed text just became a real message, not an unsent draft
+      // anymore — cancel any pending autosave and clear the stored one so
+      // it doesn't linger and reappear next time this chat is opened.
+      clearTimeout(_draftTimer)
+      c.draft = ''
+      saveDraftServer(c.id, '')
     }
     // A brand-new chat needs its row created before a message can reference it.
     if (isNewChat) await persistChat(c)
