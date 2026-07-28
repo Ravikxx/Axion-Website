@@ -1645,9 +1645,32 @@
     if (!availableModels.has(id)) return
     selectedModel = id
     localStorage.setItem('axion_chat_model', id)
+    saveModelServer(id)
     renderModelPicker()
     toggleModelMenu(false)
     document.getElementById('user-input').focus()
+  }
+
+  // Fire-and-forget: the model choice already took effect locally, this just
+  // makes it follow the account to other devices/windows.
+  function saveModelServer(id) {
+    axionFetch(`${API}/settings`, {
+      method: 'PUT',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ selected_model: id }),
+    }).catch(() => {})
+  }
+
+  async function fetchSettingsServer() {
+    try {
+      const res = await axionFetch(`${API}/settings`, { headers: authHeaders() })
+      if (!res.ok) return
+      const data = await res.json()
+      if (data.selected_model && availableModels.has(data.selected_model)) {
+        selectedModel = data.selected_model
+        localStorage.setItem('axion_chat_model', selectedModel)
+      }
+    } catch {}
   }
 
   function toggleModelMenu(force) {
@@ -1666,21 +1689,21 @@
     })
   }
 
+  // Returns a promise that resolves once the live model catalog has loaded
+  // (or failed/timed out) — callers that need availableModels to be settled
+  // before checking a model id (e.g. applying a synced setting) await this.
   function initModelSelect() {
     renderModelPicker()
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 4000)
-    fetch(`${API}/v1/models`, { signal: controller.signal })
+    return fetch(`${API}/v1/models`, { signal: controller.signal })
       .then(res => res.ok ? res.json() : Promise.reject(new Error('Model catalog unavailable')))
       .then(data => {
         const records = (data.data || []).filter(model => model && typeof model.id === 'string' && model.id)
         if (records.length) availableModels = new Map(records.map(model => [model.id, model]))
       })
       .catch(() => {})
-      .finally(() => {
-        clearTimeout(timeout)
-        renderModelPicker()
-      })
+      .finally(() => clearTimeout(timeout))
   }
 
   document.addEventListener('click', event => {
@@ -3305,9 +3328,10 @@
     document.getElementById('auth-overlay').style.display = 'none'
     document.getElementById('acct-email').textContent = userEmail || 'Signed in'
     void loadAccountProfile()
-    initModelSelect()
+    const modelCatalogReady = initModelSelect()
     renderMessages()
-    await Promise.all([fetchChatList(), fetchProjects()])
+    await Promise.all([fetchChatList(), fetchProjects(), modelCatalogReady.then(fetchSettingsServer)])
+    renderModelPicker()
     renderChatList()
     if (chats.some(generationActive)) startGenerationPolling()
     document.getElementById('user-input').focus()
