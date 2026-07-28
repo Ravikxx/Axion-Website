@@ -159,6 +159,13 @@
       color: var(--text); cursor: pointer; font-size: 17px;
     }
     .topbar-title { font-size: 14px; font-weight: 600; }
+    .topbar-branch-badge {
+      margin-left: 8px; padding: 3px 9px; border-radius: 99px;
+      border: 1px solid var(--border2); background: var(--surface2);
+      color: var(--muted); font-size: 11.5px; cursor: pointer;
+      transition: background .12s, color .12s;
+    }
+    .topbar-branch-badge:hover { color: var(--text); background: var(--surface3); }
     .theme-btn {
       width: 32px; height: 32px; border-radius: 7px; flex-shrink: 0;
       border: 1px solid var(--border2); background: var(--surface2);
@@ -1331,6 +1338,7 @@
   <div class="topbar">
     <button class="hamburger" onclick="toggleDrawer()" aria-label="Menu">☰</button>
     <span class="topbar-title" id="topbar-title">New chat</span>
+    <button type="button" class="topbar-branch-badge" id="topbar-branch-badge" style="display:none"></button>
     <div class="topbar-spacer"></div>
     <button class="topbar-action" onclick="exportChat()" title="Export chat" aria-label="Export chat">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-4-4 4 4 4-4"/><path d="M5 19h14"/></svg>
@@ -1622,6 +1630,8 @@
       chats = (data.chats || []).map(c => ({
         id: c.id, title: c.title, updated: c.updated,
         pinned: !!c.pinned, pinned_at: c.pinned_at || null,
+        branched_from_chat_id: c.branched_from_chat_id || null,
+        branched_from_seq: c.branched_from_seq || null,
         messages: [], loaded: false, generation: c.generation || null,
       }))
     } catch {}
@@ -1726,12 +1736,25 @@
     saveDraftServer(id, content)
   }
 
+  // Shows "Branched from <title>" beside the topbar title when the current
+  // chat is a branch, linking back to the source chat if it's still around.
+  function updateBranchBadge(c) {
+    const badge = document.getElementById('topbar-branch-badge')
+    if (!c || !c.branched_from_chat_id) { badge.style.display = 'none'; badge.onclick = null; return }
+    const source = chats.find(x => x.id === c.branched_from_chat_id)
+    badge.textContent = source ? `↰ Branched from ${source.title}` : '↰ Branched chat'
+    badge.style.display = ''
+    badge.onclick = source ? () => switchChat(source.id) : null
+    badge.style.cursor = source ? 'pointer' : 'default'
+  }
+
   function newChat() {
     flushDraft()
     currentId = null
     renderChatList()
     renderMessages()
     document.getElementById('topbar-title').textContent = 'New chat'
+    updateBranchBadge(null)
     toggleDrawer(false)
     document.getElementById('user-input').focus()
     updateToolLockBanner()
@@ -1744,6 +1767,7 @@
     renderChatList()
     const c = currentChat()
     document.getElementById('topbar-title').textContent = c ? c.title : 'New chat'
+    updateBranchBadge(c)
     document.getElementById('main').classList.toggle('empty-chat', !c || !c.messages.length)
     toggleDrawer(false)
     updateToolLockBanner()
@@ -1759,6 +1783,42 @@
     // The reply kept running on the server while this chat was closed. Pick it
     // back up rather than leaving a chat that looks stuck mid-answer.
     if (generationActive(c)) void resumeGeneration(c)
+  }
+
+  // Creates a new chat containing a copy of this chat's messages up to and
+  // including idx, and switches to it. idx is a c.messages array index;
+  // from_seq is idx + 1 since messages are appended in order with no gaps.
+  async function branchChat(idx) {
+    const source = currentChat(); if (!source) return
+    const fromSeq = idx + 1
+    const res = await axionFetch(`${API}/chats/${source.id}/branch`, {
+      method: 'POST',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ from_seq: fromSeq }),
+    })
+    if (!res.ok) return
+    const data = await res.json().catch(() => null)
+    if (!data) return
+
+    flushDraft()
+    const branch = {
+      id: data.id, title: data.title, updated: data.updated,
+      pinned: false, pinned_at: null, draft: '',
+      branched_from_chat_id: data.branched_from_chat_id,
+      branched_from_seq: data.branched_from_seq,
+      messages: source.messages.slice(0, fromSeq), loaded: true, generation: null,
+    }
+    chats.unshift(branch)
+    currentId = branch.id
+    renderChatList()
+    document.getElementById('topbar-title').textContent = branch.title
+    updateBranchBadge(branch)
+    document.getElementById('main').classList.remove('empty-chat')
+    toggleDrawer(false)
+    updateToolLockBanner()
+    const input = document.getElementById('user-input')
+    input.value = ''; autoResize(input)
+    renderMessages()
   }
 
   function deleteChat(id, ev) {
@@ -2388,6 +2448,7 @@
           <div class="msg-actions">
             <button class="msg-action" onclick="copyMsg(this, ${idx})">Copy</button>
             ${extraAction}
+            <button class="msg-action" onclick="branchChat(${idx})" title="Start a new chat copied up to this message">Branch</button>
           </div>
         </div>`
       wrap.appendChild(div)
