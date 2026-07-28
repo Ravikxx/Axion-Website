@@ -122,6 +122,13 @@
     .chat-item:hover .chat-item-del { opacity: 1; }
     .chat-item:focus-within .chat-item-del { opacity: 1; }
     .chat-item-del:hover { color: var(--red); background: rgba(248,113,113,.1); }
+    .chat-item-pin.pinned { opacity: 1; color: var(--brand-logo, #e8b534); }
+    .chat-item-pin.pinned:hover { color: var(--brand-logo, #e8b534); background: rgba(232,181,52,.12); }
+    .chat-list-section-title {
+      padding: 10px 10px 4px; color: var(--muted); font-size: 11px;
+      font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+    }
+    .chat-list-section-title:first-child { padding-top: 2px; }
 
     .sidebar-bottom { border-top: 1px solid var(--border); padding: 8px; }
     .sidebar-link {
@@ -1614,6 +1621,7 @@
       const data = await res.json()
       chats = (data.chats || []).map(c => ({
         id: c.id, title: c.title, updated: c.updated,
+        pinned: !!c.pinned, pinned_at: c.pinned_at || null,
         messages: [], loaded: false, generation: c.generation || null,
       }))
     } catch {}
@@ -1643,6 +1651,17 @@
   }
   async function deleteChatServer(id) {
     try { await axionFetch(`${API}/chats/${id}`, { method: 'DELETE', headers: authHeaders() }) } catch {}
+  }
+  async function setPinnedServer(id, pinned) {
+    try {
+      const res = await axionFetch(`${API}/chats/${id}/pin`, {
+        method: 'PUT',
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ pinned }),
+      })
+      if (!res.ok) return null
+      return await res.json()
+    } catch { return null }
   }
   // Appends one message and returns { seq, updated }, or null on failure.
   async function appendMessageServer(c, message) {
@@ -1753,6 +1772,19 @@
       : d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
+  function chatItemHtml(c, spinner) {
+    return `
+      <div class="chat-item ${c.id === currentId ? 'active' : ''}">
+        <button type="button" class="chat-item-open" onclick="switchChat('${c.id}')" ${c.id === currentId ? 'aria-current="page"' : ''}>
+          <span class="chat-item-title">${escHtml(c.title)}</span>
+          ${generationActive(c) ? spinner : ''}
+        </button>
+        <button type="button" class="chat-item-del chat-item-pin ${c.pinned ? 'pinned' : ''}" onclick="togglePin('${c.id}', event)" title="${c.pinned ? 'Unpin' : 'Pin'}" aria-label="${c.pinned ? 'Unpin' : 'Pin'} ${escHtml(c.title)}">${c.pinned ? '📌' : '📍'}</button>
+        <button type="button" class="chat-item-del" onclick="renameChat('${c.id}', event)" title="Rename" aria-label="Rename ${escHtml(c.title)}">✎</button>
+        <button type="button" class="chat-item-del" onclick="deleteChat('${c.id}', event)" title="Delete" aria-label="Delete ${escHtml(c.title)}">✕</button>
+      </div>`
+  }
+
   function renderChatList() {
     const list = document.getElementById('chat-list')
     const filtered = _chatFilter ? chats.filter(c => c.title.toLowerCase().includes(_chatFilter)) : chats
@@ -1760,7 +1792,8 @@
       list.innerHTML = `<div class="chat-list-empty">${_chatFilter ? 'No matching conversations.' : 'No conversations yet.<br>Start a new chat to begin.'}</div>`
       return
     }
-    const sorted = [...filtered].sort((a, b) => b.updated - a.updated)
+    const pinned = filtered.filter(c => c.pinned).sort((a, b) => (b.pinned_at || 0) - (a.pinned_at || 0))
+    const rest = filtered.filter(c => !c.pinned).sort((a, b) => b.updated - a.updated)
     // A spiral beside a conversation means a reply is still being written on
     // the server, even though this tab isn't the one watching it.
     const spinner = `
@@ -1768,15 +1801,27 @@
         <path d="${THINKING_SPIRAL_PATHS[1]}" fill="none" stroke-width="15"
               stroke-linecap="round" stroke-linejoin="round" style="--spiral-len:532" />
       </svg>`
-    list.innerHTML = sorted.map(c => `
-      <div class="chat-item ${c.id === currentId ? 'active' : ''}">
-        <button type="button" class="chat-item-open" onclick="switchChat('${c.id}')" ${c.id === currentId ? 'aria-current="page"' : ''}>
-          <span class="chat-item-title">${escHtml(c.title)}</span>
-          ${generationActive(c) ? spinner : ''}
-        </button>
-        <button type="button" class="chat-item-del" onclick="renameChat('${c.id}', event)" title="Rename" aria-label="Rename ${escHtml(c.title)}">✎</button>
-        <button type="button" class="chat-item-del" onclick="deleteChat('${c.id}', event)" title="Delete" aria-label="Delete ${escHtml(c.title)}">✕</button>
-      </div>`).join('')
+    const sections = []
+    if (pinned.length) {
+      sections.push(`<div class="chat-list-section-title">Pinned</div>`)
+      sections.push(pinned.map(c => chatItemHtml(c, spinner)).join(''))
+    }
+    if (pinned.length && rest.length) sections.push(`<div class="chat-list-section-title">Recents</div>`)
+    sections.push(rest.map(c => chatItemHtml(c, spinner)).join(''))
+    list.innerHTML = sections.join('')
+  }
+
+  async function togglePin(id, ev) {
+    if (ev) ev.stopPropagation()
+    const c = chats.find(x => x.id === id); if (!c) return
+    const prevPinned = c.pinned, prevPinnedAt = c.pinned_at
+    const next = !c.pinned
+    c.pinned = next; c.pinned_at = next ? Date.now() : null   // optimistic
+    renderChatList()
+    const result = await setPinnedServer(id, next)
+    if (!result) { c.pinned = prevPinned; c.pinned_at = prevPinnedAt; renderChatList(); return }
+    c.pinned_at = result.pinned_at
+    renderChatList()
   }
 
   function renameChat(id, ev) {
