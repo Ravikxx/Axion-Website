@@ -447,6 +447,33 @@
     .project-item-name:hover { text-decoration: underline; }
     .project-rename { flex: 1; min-width: 0; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; color: var(--text); font: inherit; padding: 4px 6px; }
 
+    /* ── Share ── */
+    .share-panel { width: min(440px, 100%); }
+    .share-panel-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+    .share-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .share-row-label { font-size: 13.5px; font-weight: 500; }
+    .share-row-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .share-toggle {
+      position: relative; width: 38px; height: 22px; border-radius: 999px; border: 0; cursor: pointer;
+      background: var(--border2); transition: background .15s; flex-shrink: 0;
+    }
+    .share-toggle.on { background: var(--accent); }
+    .share-toggle::after {
+      content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%;
+      background: #fff; transition: transform .15s;
+    }
+    .share-toggle.on::after { transform: translateX(16px); }
+    .share-field select {
+      width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border2);
+      background: var(--surface2); color: var(--text); font: inherit;
+    }
+    .share-link-row { display: flex; gap: 8px; }
+    .share-link-row input {
+      flex: 1; min-width: 0; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border2);
+      background: var(--surface2); color: var(--text); font: inherit; font-size: 12.5px;
+    }
+    .share-note { font-size: 12px; color: var(--muted); }
+
     /* ── Auth overlay ── */
     #auth-overlay {
       position: fixed; inset: 0; z-index: 80; background: var(--bg);
@@ -1423,6 +1450,20 @@
   </div>
 </div>
 
+<!-- Share -->
+<div class="trash-overlay" id="share-overlay" style="display:none">
+  <button type="button" class="trash-overlay-backdrop" onclick="closeShare()" aria-label="Close share dialog"></button>
+  <div class="trash-panel share-panel" role="dialog" aria-modal="true" aria-label="Share chat">
+    <div class="trash-panel-head">
+      <span class="trash-panel-title">Share chat</span>
+      <button type="button" class="sidebar-icon-btn" onclick="closeShare()" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="share-panel-body" id="share-panel-body">Loading…</div>
+  </div>
+</div>
+
 <!-- Main -->
 <div class="main empty-chat" id="main">
   <div class="topbar">
@@ -1430,6 +1471,9 @@
     <span class="topbar-title" id="topbar-title">New chat</span>
     <button type="button" class="topbar-branch-badge" id="topbar-branch-badge" style="display:none"></button>
     <div class="topbar-spacer"></div>
+    <button class="topbar-action" onclick="openShare()" title="Share chat" aria-label="Share chat">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.6 6.8-3.8M8.6 13.4l6.8 3.8"/></svg>
+    </button>
     <button class="topbar-action" onclick="exportChat()" title="Export chat" aria-label="Export chat">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-4-4 4 4 4-4"/><path d="M5 19h14"/></svg>
     </button>
@@ -2153,6 +2197,106 @@
     _projectFilter = null
     document.getElementById('project-filter-chip').style.display = 'none'
     renderChatList()
+  }
+
+  // ── Share ────────────────────────────────────────────────────────────────
+  const SHARE_BASE = 'https://axion.amplifiedsmp.org/shared.html'
+  let _share = null
+
+  async function openShare() {
+    const c = currentChat()
+    if (!c) return
+    document.getElementById('share-overlay').style.display = ''
+    document.getElementById('share-panel-body').innerHTML = 'Loading…'
+    try {
+      const res = await axionFetch(`${API}/chats/${c.id}/share`, { headers: authHeaders() })
+      _share = res.ok ? await res.json() : null
+    } catch { _share = null }
+    renderSharePanel()
+  }
+
+  function closeShare() {
+    document.getElementById('share-overlay').style.display = 'none'
+  }
+
+  function renderSharePanel() {
+    const body = document.getElementById('share-panel-body')
+    const on = !!_share
+    const mode = _share?.mode || 'snapshot'
+    const expiresValue = _share?.expires_at ? String(_share.expires_at) : ''
+    body.innerHTML = `
+      <div class="share-row">
+        <div>
+          <div class="share-row-label">Anyone with the link</div>
+          <div class="share-row-desc">${on ? 'Anyone with the link can view this chat.' : 'Only you can access this chat.'}</div>
+        </div>
+        <button type="button" class="share-toggle ${on ? 'on' : ''}" onclick="toggleShare()" role="switch" aria-checked="${on}" aria-label="Anyone with the link"></button>
+      </div>
+      ${on ? `
+        <div class="share-row share-field">
+          <select id="share-mode" onchange="changeShare()">
+            <option value="snapshot" ${mode === 'snapshot' ? 'selected' : ''}>Snapshot — preserves the shared state</option>
+            <option value="live" ${mode === 'live' ? 'selected' : ''}>Live — reflects later changes</option>
+          </select>
+        </div>
+        <div class="share-row share-field">
+          <select id="share-expiry" onchange="changeShare()">
+            <option value="" ${!expiresValue ? 'selected' : ''}>Never expires</option>
+            <option value="1">Expires in 1 day</option>
+            <option value="7">Expires in 7 days</option>
+            <option value="30">Expires in 30 days</option>
+          </select>
+        </div>
+        <div class="share-link-row">
+          <input type="text" readonly value="${SHARE_BASE}?t=${_share.id}" id="share-link-input" onclick="this.select()">
+          <button type="button" class="trash-btn" onclick="copyShareLink()">Copy</button>
+        </div>
+        <div class="share-note">Signed-in visitors can continue this chat as their own, independent copy.</div>
+      ` : ''}
+    `
+  }
+
+  async function toggleShare() {
+    if (_share) { await revokeShareServer(); return }
+    await createOrUpdateShare({ mode: 'snapshot' })
+  }
+
+  async function changeShare() {
+    const mode = document.getElementById('share-mode')?.value || 'snapshot'
+    const days = Number(document.getElementById('share-expiry')?.value || 0)
+    const expiresAt = days ? Date.now() + days * 24 * 60 * 60 * 1000 : null
+    await createOrUpdateShare({ mode, expires_at: expiresAt })
+  }
+
+  async function createOrUpdateShare(body) {
+    const c = currentChat()
+    if (!c) return
+    try {
+      const res = await axionFetch(`${API}/chats/${c.id}/share`, {
+        method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify(body),
+      })
+      if (!res.ok) return
+      _share = await res.json()
+    } catch { return }
+    renderSharePanel()
+  }
+
+  async function revokeShareServer() {
+    const c = currentChat()
+    if (!c) return
+    try {
+      const res = await axionFetch(`${API}/chats/${c.id}/share`, { method: 'DELETE', headers: authHeaders() })
+      if (!res.ok && res.status !== 404) return
+    } catch { return }
+    _share = null
+    renderSharePanel()
+  }
+
+  function copyShareLink() {
+    const input = document.getElementById('share-link-input')
+    if (!input) return
+    input.select()
+    navigator.clipboard?.writeText(input.value).catch(() => {})
   }
 
   function titleFrom(text) {
@@ -3349,11 +3493,14 @@
       AxionAccountProfile.clear()
       showApp(); return
     }
+    const openChatId = hash.get('openChat')
+    if (openChatId) history.replaceState(null, '', location.pathname)
     if (!sessionToken) return   // show auth overlay
     try {
       const res = await axionFetch(`${API}/dashboard/keys`, { headers: { Authorization: `Bearer ${sessionToken}` } })
       if (!res.ok) { showAuthenticationRequired('Your session expired. Sign in again to continue.'); return }
-      showApp()
+      await showApp()
+      if (openChatId) switchChat(openChatId)
     } catch { /* offline — still let them in with cached token */ showApp() }
   })()
 
