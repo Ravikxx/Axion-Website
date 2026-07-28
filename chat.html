@@ -399,6 +399,37 @@
     }
     .drawer-overlay.show { display: block; }
 
+    /* ── Trash ── */
+    .trash-overlay { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .trash-overlay-backdrop { position: absolute; inset: 0; border: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(1px); }
+    .trash-panel {
+      position: relative; z-index: 1; width: min(520px, 100%); max-height: min(600px, 90vh);
+      display: flex; flex-direction: column; border: 1px solid var(--border2); border-radius: 14px;
+      background: var(--surface); box-shadow: 0 20px 60px rgba(0,0,0,.35); overflow: hidden;
+    }
+    .trash-panel-head {
+      display: flex; align-items: center; gap: 10px; padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .trash-panel-title { font-size: 15px; font-weight: 600; flex: 1; }
+    .trash-panel-body { overflow-y: auto; padding: 8px; }
+    .trash-empty { color: var(--muted); font-size: 13px; text-align: center; padding: 32px 12px; }
+    .trash-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 8px; border-radius: 8px;
+    }
+    .trash-item:hover { background: var(--surface2); }
+    .trash-item-info { flex: 1; min-width: 0; }
+    .trash-item-title { font-size: 13.5px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .trash-item-meta { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+    .trash-btn {
+      padding: 6px 12px; border-radius: 7px; border: 1px solid var(--border2);
+      background: transparent; color: var(--muted2); font-size: 12.5px; font-weight: 500;
+      cursor: pointer; white-space: nowrap; transition: background .12s, color .12s, border-color .12s;
+    }
+    .trash-btn:hover { color: var(--text); background: var(--surface3); }
+    .trash-btn-danger { color: var(--red); border-color: color-mix(in srgb, var(--red) 40%, var(--border2)); }
+    .trash-btn-danger:hover { background: rgba(211,47,47,.1); border-color: var(--red); }
+
     /* ── Auth overlay ── */
     #auth-overlay {
       position: fixed; inset: 0; z-index: 80; background: var(--bg);
@@ -1301,6 +1332,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Z"/><path d="M8 16h10M9 8h5M9 11h5"/></svg>
         Docs
       </a>
+      <button type="button" class="sidebar-link" onclick="openTrash()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-.8 12.1a2 2 0 0 1-2 1.9H9.8a2 2 0 0 1-2-1.9L7 7"/></svg>
+        Trash
+      </button>
     </nav>
   </div>
   <div class="chat-history">
@@ -1332,6 +1367,21 @@
 </aside>
 
 <button type="button" class="drawer-overlay" id="drawer-overlay" onclick="toggleDrawer(false)" aria-label="Close chat navigation"></button>
+
+<!-- Trash -->
+<div class="trash-overlay" id="trash-overlay" style="display:none">
+  <button type="button" class="trash-overlay-backdrop" onclick="closeTrash()" aria-label="Close trash"></button>
+  <div class="trash-panel" role="dialog" aria-modal="true" aria-label="Trash">
+    <div class="trash-panel-head">
+      <span class="trash-panel-title">Trash</span>
+      <button type="button" class="trash-btn trash-btn-danger" id="trash-empty-btn" onclick="emptyTrash()">Empty Trash</button>
+      <button type="button" class="sidebar-icon-btn" onclick="closeTrash()" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="trash-panel-body" id="trash-panel-body"></div>
+  </div>
+</div>
 
 <!-- Main -->
 <div class="main empty-chat" id="main">
@@ -1825,8 +1875,76 @@
     if (ev) ev.stopPropagation()
     chats = chats.filter(c => c.id !== id)
     deleteChatServer(id)
-    if (currentId === id) { currentId = null; renderMessages(); document.getElementById('topbar-title').textContent = 'New chat' }
+    if (currentId === id) {
+      currentId = null; renderMessages()
+      document.getElementById('topbar-title').textContent = 'New chat'
+      updateBranchBadge(null)
+    }
     renderChatList()
+  }
+
+  // ── Trash ────────────────────────────────────────────────────────────────
+  let _trash = []
+
+  async function openTrash() {
+    document.getElementById('trash-overlay').style.display = ''
+    document.getElementById('trash-panel-body').innerHTML = '<div class="trash-empty">Loading…</div>'
+    try {
+      const res = await axionFetch(`${API}/chats/trash`, { headers: authHeaders() })
+      _trash = res.ok ? ((await res.json()).chats || []) : []
+    } catch { _trash = [] }
+    renderTrashList()
+  }
+
+  function closeTrash() {
+    document.getElementById('trash-overlay').style.display = 'none'
+  }
+
+  function renderTrashList() {
+    const body = document.getElementById('trash-panel-body')
+    document.getElementById('trash-empty-btn').style.display = _trash.length ? '' : 'none'
+    if (!_trash.length) {
+      body.innerHTML = '<div class="trash-empty">Trash is empty.</div>'
+      return
+    }
+    body.innerHTML = _trash.map(c => `
+      <div class="trash-item">
+        <div class="trash-item-info">
+          <div class="trash-item-title">${escHtml(c.title)}</div>
+          <div class="trash-item-meta">Deleted ${fmtTime(c.deleted_at)}</div>
+        </div>
+        <button type="button" class="trash-btn" onclick="restoreFromTrash('${c.id}')">Restore</button>
+        <button type="button" class="trash-btn trash-btn-danger" onclick="deleteForever('${c.id}')">Delete forever</button>
+      </div>`).join('')
+  }
+
+  async function restoreFromTrash(id) {
+    try {
+      const res = await axionFetch(`${API}/chats/${id}/restore`, { method: 'POST', headers: authHeaders() })
+      if (!res.ok) return
+    } catch { return }
+    _trash = _trash.filter(c => c.id !== id)
+    renderTrashList()
+    await fetchChatList()
+    renderChatList()
+  }
+
+  async function deleteForever(id) {
+    try {
+      const res = await axionFetch(`${API}/chats/${id}/permanent`, { method: 'DELETE', headers: authHeaders() })
+      if (!res.ok) return
+    } catch { return }
+    _trash = _trash.filter(c => c.id !== id)
+    renderTrashList()
+  }
+
+  async function emptyTrash() {
+    try {
+      const res = await axionFetch(`${API}/chats/trash`, { method: 'DELETE', headers: authHeaders() })
+      if (!res.ok) return
+    } catch { return }
+    _trash = []
+    renderTrashList()
   }
 
   function titleFrom(text) {
