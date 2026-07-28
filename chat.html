@@ -101,8 +101,15 @@
       overflow: hidden; text-overflow: ellipsis;
     }
     .chat-item-open {
-      display: flex; flex: 1; min-width: 0; padding: 0; border: 0;
+      display: flex; align-items: center; gap: 7px; flex: 1; min-width: 0; padding: 0; border: 0;
       background: none; color: inherit; font: inherit; text-align: left; cursor: pointer;
+    }
+    .chat-item-thinking {
+      width: 14px; height: 14px; flex: 0 0 14px; color: var(--brand-logo, #e8b534);
+    }
+    .chat-item-thinking path {
+      stroke: currentColor; stroke-dasharray: var(--spiral-len, 620); stroke-dashoffset: 0;
+      animation: spiral-think 8s steps(32, end) infinite alternate;
     }
     .chat-item-open:focus-visible {
       outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px;
@@ -207,9 +214,12 @@
     .thinking-spiral svg { display: block; width: 100%; height: 100%; overflow: visible; }
     .thinking-spiral path {
       stroke: currentColor;
-      stroke-dasharray: 620;
+      /* Each spiral variant is a different true length. A single hardcoded dash
+         made the longer ones stop short of the dot and the shorter ones vanish
+         early; --spiral-len is measured per shape with getTotalLength(). */
+      stroke-dasharray: var(--spiral-len, 620);
       stroke-dashoffset: 0;
-      animation: spiral-think 10s steps(40, end) infinite alternate;
+      animation: spiral-think 8s steps(32, end) infinite alternate;
     }
     .msg-text.streaming.waiting::after { content: none; }
     .msg-text.streaming:not(.waiting)::after {
@@ -218,11 +228,11 @@
     }
     @keyframes spiral-think {
       0% { stroke-dashoffset: 0; }
-      100% { stroke-dashoffset: 618; }
+      100% { stroke-dashoffset: var(--spiral-len, 618); }
     }
     @keyframes blink { 50% { opacity: 0; } }
     @media (prefers-reduced-motion: reduce) {
-      .thinking-spiral path { animation: none; }
+      .thinking-spiral path, .chat-item-thinking path { animation: none; }
     }
 
     .code-block {
@@ -1409,11 +1419,17 @@
   }
   const TOOL_STEP_LIMIT = 5
 
-  let chats = []          // [{ id, title, messages, updated, loaded }]
+  const ACTIVE_GENERATION_STATUSES = new Set(['queued', 'running'])
+  const GENERATION_POLL_MS = 1000
+  let generationPollTimer = null
+  let generationPollInFlight = false
+
+  let chats = []          // [{ id, title, messages, updated, loaded, generation }]
   let currentId = null
 
   function authHeaders(extra) { return Object.assign({ Authorization: `Bearer ${sessionToken}` }, extra || {}) }
   function currentChat() { return chats.find(c => c.id === currentId) || null }
+  function generationActive(c) { return !!c?.generation && ACTIVE_GENERATION_STATUSES.has(c.generation.status) }
   function uid() { return 'c-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7) }
 
   // ── Model selector ───────────────────────────────────────────────────────
@@ -1596,16 +1612,20 @@
       const res = await axionFetch(`${API}/chats`, { headers: authHeaders() })
       if (!res.ok) return
       const data = await res.json()
-      chats = (data.chats || []).map(c => ({ id: c.id, title: c.title, updated: c.updated, messages: [], loaded: false }))
+      chats = (data.chats || []).map(c => ({
+        id: c.id, title: c.title, updated: c.updated,
+        messages: [], loaded: false, generation: c.generation || null,
+      }))
     } catch {}
   }
-  async function fetchChatMessages(c) {
-    if (c.loaded) return
+  async function fetchChatMessages(c, { force = false } = {}) {
+    if (c.loaded && !force) return
     try {
       const res = await axionFetch(`${API}/chats/${c.id}`, { headers: authHeaders() })
       if (!res.ok) return
       const data = await res.json()
       c.messages = data.messages || []
+      c.generation = data.generation || null
       c.loaded = true
     } catch {}
   }
@@ -1644,7 +1664,11 @@
       document.getElementById('messages').innerHTML = '<div class="greeting"><div class="greeting-sub">Loading…</div></div>'
       await fetchChatMessages(c)
     }
-    if (currentId === id) renderMessages()
+    if (currentId !== id) return
+    renderMessages()
+    // The reply kept running on the server while this chat was closed. Pick it
+    // back up rather than leaving a chat that looks stuck mid-answer.
+    if (generationActive(c)) void resumeGeneration(c)
   }
 
   function deleteChat(id, ev) {
@@ -1711,10 +1735,18 @@
       return
     }
     const sorted = [...filtered].sort((a, b) => b.updated - a.updated)
+    // A spiral beside a conversation means a reply is still being written on
+    // the server, even though this tab isn't the one watching it.
+    const spinner = `
+      <svg class="chat-item-thinking" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+        <path d="${THINKING_SPIRAL_PATHS[1]}" fill="none" stroke-width="15"
+              stroke-linecap="round" stroke-linejoin="round" style="--spiral-len:532" />
+      </svg>`
     list.innerHTML = sorted.map(c => `
       <div class="chat-item ${c.id === currentId ? 'active' : ''}">
         <button type="button" class="chat-item-open" onclick="switchChat('${c.id}')" ${c.id === currentId ? 'aria-current="page"' : ''}>
           <span class="chat-item-title">${escHtml(c.title)}</span>
+          ${generationActive(c) ? spinner : ''}
         </button>
         <button type="button" class="chat-item-del" onclick="renameChat('${c.id}', event)" title="Rename" aria-label="Rename ${escHtml(c.title)}">✎</button>
         <button type="button" class="chat-item-del" onclick="deleteChat('${c.id}', event)" title="Delete" aria-label="Delete ${escHtml(c.title)}">✕</button>
@@ -1923,12 +1955,38 @@
   }
 
   const AVATAR = '<img src="/assets/logo-spiral.svg" alt="">'
+  // Six spirals that diverge from the first stroke. The previous four all began
+  // "M106 118" and traced nearly the same early arc, so the swap at the dot —
+  // which is exactly where the animation retracts to — was invisible. These vary
+  // turn count (1.25 to 2.25), wind direction and squish instead.
   const THINKING_SPIRAL_PATHS = [
-    'M106 118 C124 126,138 104,122 86 C100 62,65 78,66 110 C68 152,128 161,156 124 C186 84,160 23,104 32 C44 42,20 112,38 158',
-    'M106 118 C128 128,145 100,121 80 C96 56,56 77,64 114 C73 158,139 165,164 122 C193 75,157 17,96 31 C35 48,17 119,41 160',
-    'M106 118 C120 128,136 111,124 92 C105 64,70 69,64 102 C56 145,111 169,150 136 C192 103,179 34,120 28 C57 21,20 91,34 151',
-    'M106 118 C128 122,137 96,116 82 C90 61,58 86,70 120 C84 160,143 150,158 109 C173 67,141 27,94 38 C43 48,23 118,42 157',
+    // Loose · 1.5 turns
+    'M112 108 C111 109,111 112,111 114 C110 115,108 117,107 119 C105 120,103 121,101 122 C98 123,96 124,93 123 C90 123,88 123,85 122 C82 121,80 120,77 118 C75 116,73 113,71 110 C69 108,68 104,67 101 C66 98,66 94,67 90 C67 87,68 83,70 79 C71 76,74 72,76 69 C79 66,83 64,86 62 C90 60,94 58,99 58 C103 57,108 57,113 57 C117 58,122 60,126 62 C130 64,135 67,138 71 C141 74,145 79,147 83 C149 88,151 93,152 99 C152 104,152 110,151 115 C150 120,148 126,145 131 C143 136,139 141,135 145 C130 149,125 153,120 155 C114 158,108 160,102 160 C96 161,89 161,83 159 C76 158,70 156,64 153 C58 149,53 145,48 140 C44 135,40 129,37 123 C34 116,32 109,31 102 C31 95,31 87,33 80 C34 73,39 63,41 59',
+    // Classic · 2 turns
+    'M114 103 C114 104,114 106,113 108 C113 109,112 111,111 112 C110 114,109 115,108 117 C106 118,104 119,102 119 C100 120,98 121,96 121 C94 121,91 120,89 120 C87 119,84 118,82 116 C80 115,79 113,77 110 C76 108,74 106,74 103 C73 100,72 97,73 94 C73 92,73 88,74 86 C76 83,77 80,79 77 C81 75,84 72,87 71 C89 69,93 67,96 67 C100 66,103 65,107 66 C111 66,114 67,118 68 C121 70,125 72,128 74 C131 77,134 80,136 84 C138 87,139 91,140 95 C141 99,142 104,141 108 C141 113,140 117,138 121 C136 125,133 130,130 133 C127 136,123 140,119 142 C115 144,110 146,105 147 C101 148,95 149,90 148 C85 147,80 146,75 144 C70 142,66 139,62 135 C58 131,54 127,52 122 C49 117,47 112,46 106 C45 101,44 95,45 89 C46 83,48 77,50 72 C53 66,56 61,60 57 C64 52,70 48,75 45 C80 42,87 40,93 39 C99 38,106 37,113 38 C119 39,126 41,132 44 C138 47,144 51,148 56 C153 60,158 66,161 72 C164 78,167 85,168 92 C169 99,169 110,169 114',
+    // Reverse wind · 2 turns, counter-clockwise
+    'M90 109 C90 110,91 112,92 113 C94 115,95 116,97 116 C98 117,100 118,102 118 C104 118,106 118,108 118 C110 117,112 117,114 115 C116 114,118 113,119 111 C121 109,122 107,123 105 C124 102,125 100,125 97 C125 95,125 92,124 89 C123 86,122 84,121 81 C119 79,117 76,114 74 C112 73,109 71,106 70 C103 69,100 68,96 68 C93 68,89 68,86 69 C83 70,79 72,76 74 C73 76,71 79,68 82 C66 85,64 89,63 92 C62 96,61 100,61 104 C61 108,62 113,63 117 C64 121,66 125,69 128 C72 132,75 135,79 138 C82 140,87 143,91 144 C95 145,100 146,105 146 C110 146,115 145,120 143 C124 142,129 139,133 136 C137 133,141 129,144 125 C147 121,149 115,151 110 C152 105,153 99,153 94 C153 88,152 83,150 77 C148 72,145 67,141 62 C138 58,133 53,128 50 C123 47,118 44,112 42 C106 41,99 40,93 40 C87 40,80 42,74 44 C69 46,63 49,57 54 C52 58,48 63,44 68 C40 74,37 80,36 87 C34 93,33 101,33 108 C34 115,35 122,38 128 C40 135,47 144,48 147',
+    // Oval · 2 turns, squished
+    'M106 109 C106 109,104 111,102 111 C101 112,99 112,97 112 C96 112,93 112,92 112 C90 112,88 111,86 110 C84 109,82 108,81 107 C79 106,78 104,77 103 C76 101,76 99,75 97 C75 95,76 93,76 91 C77 89,79 87,80 86 C82 84,84 82,87 81 C89 80,92 79,95 78 C98 77,102 77,105 77 C109 77,112 77,116 78 C119 79,122 80,125 82 C128 83,131 86,133 88 C135 90,137 93,138 96 C139 98,140 102,140 105 C140 108,139 111,137 114 C136 117,134 120,131 122 C128 125,124 127,120 129 C117 131,112 132,107 133 C103 134,97 134,92 134 C87 134,82 133,77 132 C73 130,68 128,64 126 C60 124,56 121,53 117 C50 114,48 110,46 106 C45 102,44 98,45 94 C45 90,47 85,49 81 C51 77,54 73,58 70 C62 67,67 64,73 61 C78 59,84 57,90 56 C97 55,103 54,110 55 C117 55,123 56,130 58 C136 60,142 63,147 66 C152 69,157 73,161 78 C164 82,167 87,169 92 C171 97,171 103,170 108 C170 113,168 119,165 124 C162 129,158 134,153 138 C148 142,137 147,134 149',
+    // Wide open · 1.25 turns
+    'M81 105 C80 104,76 101,74 98 C73 96,73 92,73 89 C73 86,74 82,75 79 C77 76,79 73,82 70 C84 68,87 65,91 64 C95 62,99 61,103 60 C107 60,112 60,116 61 C120 62,125 64,129 66 C133 69,136 72,139 76 C143 79,145 84,147 88 C149 93,150 98,150 104 C150 109,150 115,148 120 C147 125,145 130,141 135 C138 140,134 144,130 148 C125 151,119 154,114 156 C108 158,102 159,96 159 C90 159,83 159,77 157 C71 155,65 152,59 148 C54 144,49 139,45 134 C41 129,38 122,36 116 C34 109,32 102,32 95 C32 88,34 81,36 74 C38 67,41 60,46 54 C50 48,56 43,62 38 C68 34,79 30,82 28',
+    // Reverse oval · 2.25 turns, counter-clockwise
+    'M113 104 C113 104,114 102,115 101 C115 100,115 98,115 97 C115 96,115 95,114 93 C113 92,112 91,111 90 C110 88,109 87,107 87 C106 86,104 85,102 85 C100 84,98 84,95 84 C93 84,91 85,89 85 C87 86,85 87,83 88 C81 89,79 91,78 93 C77 94,76 96,75 98 C74 100,74 103,74 105 C75 107,75 109,76 111 C78 113,79 116,81 117 C83 119,86 121,88 122 C91 123,94 124,97 125 C100 126,104 126,107 125 C111 125,114 124,118 123 C121 122,124 120,127 119 C129 117,132 114,134 111 C136 109,137 106,138 103 C139 100,139 96,138 93 C138 90,137 86,135 83 C133 80,131 77,128 74 C125 72,121 70,117 68 C113 66,108 65,104 64 C99 63,94 63,89 64 C85 64,80 65,75 67 C71 69,66 71,63 74 C59 77,56 80,53 84 C51 88,49 92,48 96 C47 101,47 105,48 110 C48 114,50 119,53 123 C55 127,59 131,63 134 C67 138,72 141,77 143 C83 145,89 147,95 148 C101 149,108 149,114 148 C120 147,127 145,133 143 C138 141,144 138,149 134 C153 130,158 125,161 121 C164 116,166 110,167 105 C169 99,169 93,167 87 C166 82,164 76,161 71 C157 66,153 60,147 56 C142 52,132 47,129 45',
   ]
+
+  // The brand gold is hsl(43 79% 56%) — #e8b534. Hue drifts a few degrees per
+  // cycle while saturation and lightness hold, so it reads as the same colour
+  // breathing rather than a different one.
+  const THINKING_SPIRAL_HUES = [-6, -3, 0, 3, 6, 3].map(offset => 43 + offset)
+
+  // Applies a shape and its matching dash length. The dash must equal the
+  // path's own length or the stroke won't retract cleanly to the dot.
+  function applySpiralShape(path, index) {
+    path.setAttribute('d', THINKING_SPIRAL_PATHS[index % THINKING_SPIRAL_PATHS.length])
+    const length = Math.ceil(path.getTotalLength())
+    path.style.setProperty('--spiral-len', `${length}`)
+    path.style.stroke = `hsl(${THINKING_SPIRAL_HUES[index % THINKING_SPIRAL_HUES.length]} 79% 56%)`
+  }
   const THINKING_SPIRAL = `
     <span class="thinking-spiral" role="status" aria-label="Axion is thinking">
       <svg viewBox="0 0 200 200" fill="none" aria-hidden="true">
@@ -1943,17 +2001,23 @@
     </span>`
 
   function startThinkingShapeVariation(live) {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const path = live.querySelector('.thinking-spiral path')
     if (!path) return
-    let completedHalves = 0
     let shapeIndex = 0
+    // Set even under reduced motion: the shape still needs its correct dash
+    // length, or the static stroke renders as a fragment.
+    applySpiralShape(path, shapeIndex)
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    let completedHalves = 0
     path.addEventListener('animationiteration', event => {
       if (event.animationName !== 'spiral-think') return
       completedHalves += 1
+      // `alternate` fires an iteration at each end. Swapping only on the odd
+      // ones means the change happens where the stroke is fully retracted.
       if (completedHalves % 2 === 0) return
-      shapeIndex = (shapeIndex + 1) % THINKING_SPIRAL_PATHS.length
-      path.setAttribute('d', THINKING_SPIRAL_PATHS[shapeIndex])
+      shapeIndex += 1
+      applySpiralShape(path, shapeIndex)
     })
   }
 
@@ -2299,7 +2363,9 @@
     }
     c.messages.push({ role: 'user', content, ts: Date.now() })
     c.updated = Date.now()
-    renderChatList(); renderMessages(); persistChat(c)
+    renderChatList(); renderMessages()
+    // Not awaited here: startGeneration persists again and waits, because the
+    // server answers from its own copy of the conversation.
     await generateReply(c)
   }
 
@@ -2322,57 +2388,14 @@
     await generateReply(c)
   }
 
-  // Generates an assistant reply for a chat whose messages end with a user turn.
-  // depth counts automatic tool-call round-trips within one user turn — a
-  // hard cap (TOOL_STEP_LIMIT) stops a runaway "call tool, get result, call
-  // tool again..." loop instead of looping forever.
-  async function generateReply(c, depth = 0) {
-    if (!sessionToken) {
-      showAuthenticationRequired('Create a free Axion account or sign in to chat.')
-      return
-    }
-    if (depth === 0) stopRequested = false
-    await ensureSandboxMode()
-    setSendingState(true)
-    abortCtrl = new AbortController()
-
-    const wrap = document.getElementById('msg-wrap')
-    const div = document.createElement('div')
-    div.className = 'msg'
-    div.innerHTML = `
-      <div class="msg-avatar assistant">${AVATAR}</div>
-      <div class="msg-body">
-        <div class="msg-role">Assistant</div>
-        <div class="msg-text streaming waiting" id="live">${THINKING_SPIRAL}</div>
-      </div>`
-    wrap.appendChild(div)
-    const live = document.getElementById('live')
-    startThinkingShapeVariation(live)
-    const messagesEl = document.getElementById('messages')
-    messagesEl.scrollTop = messagesEl.scrollHeight
-
-    const chartHint = { role: 'system', content: 'You can render charts. Output chart data in a ```chart code block with JSON like {"type":"bar","title":"...","data":{"labels":["A","B"],"datasets":[{"data":[1,2]}]}}. Types: bar, pie, doughnut, line.' }
-    const apiMessages = c.messages.map(m => {
-      // A pure tool-call turn (no accompanying prose) is content: null on
-      // the real API wire shape, confirmed against a live non-streaming
-      // spike response — sending '' instead risks reading as "the
-      // assistant said something" to the model and muddying its own turn.
-      const out = { role: m.role, content: m.tool_calls?.length ? (m.content || null) : (m.content ?? '') }
-      if (m.tool_calls) out.tool_calls = m.tool_calls
-      if (m.tool_call_id) out.tool_call_id = m.tool_call_id
-      return out
-    })
-    // The run_code tool is only ever offered to signed-in sessions — an
-    // axion-sk-/CLI caller hitting /v1/chat/completions directly has no
-    // client-side loop to fulfill a tool_calls turn, so injecting it for
-    // everyone would silently hand back an unfulfillable response.
-    // Also withheld once this chat is locked (see lockToolAccess) — omitting
-    // the tool entirely makes another attempt structurally impossible,
-    // rather than relying on the model to actually listen to wording. The
-    // lock is sticky across turns; only the user clicking "Re-enable" in
-    // the banner clears it.
-    const toolAccessRevoked = !!window.__toolAccessLocked[c.id]
-    const tools = (sessionToken && !toolAccessRevoked) ? [{
+  // The run_code tool offered to the model. Only ever sent for a signed-in
+  // session, and withheld once this chat is locked (see lockToolAccess) —
+  // omitting the tool makes another attempt structurally impossible rather
+  // than relying on the model to obey wording. The lock is sticky across
+  // turns; only "Re-enable" in the banner clears it.
+  function toolsForChat(c) {
+    if (!sessionToken || window.__toolAccessLocked[c.id]) return undefined
+    return [{
       type: 'function',
       function: {
         name: 'run_code',
@@ -2386,114 +2409,221 @@
           required: ['code'],
         },
       },
-    }] : undefined
-    const systemHints = [chartHint]
-    if (toolAccessRevoked) {
-      systemHints.push({ role: 'system', content: 'Tool access has been disabled for this entire chat because you repeated an already-blocked run_code call. You cannot call any tool right now, in this reply or any future one in this chat, until the user clicks "Re-enable" — answer the user directly in plain text using the information already in this conversation.' })
-    }
-    const body = { model: selectedModel, messages: [...systemHints, ...apiMessages], stream: true, ...(tools ? { tools } : {}) }
-    const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionToken}` }
+    }]
+  }
 
-    let full = '', failed = false
-    let toolCallsAcc = []
+  // Builds the assistant bubble that a reply streams into.
+  function openLiveBubble(wrap) {
+    const div = document.createElement('div')
+    div.className = 'msg'
+    div.innerHTML = `
+      <div class="msg-avatar assistant">${AVATAR}</div>
+      <div class="msg-body">
+        <div class="msg-role">Assistant</div>
+        <div class="msg-text streaming waiting" id="live">${THINKING_SPIRAL}</div>
+      </div>`
+    wrap.appendChild(div)
+    const live = document.getElementById('live')
+    startThinkingShapeVariation(live)
+    return live
+  }
+
+  // Asks the server to start a reply. The server reads the conversation from
+  // its own copy, so the chat must be persisted first — otherwise it answers
+  // the previous turn.
+  async function startGeneration(c) {
+    await persistChat(c)
+    const res = await axionFetch(`${API}/chats/${c.id}/generations`, {
+      method: 'POST',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ model: selectedModel, tools: toolsForChat(c) }),
+    })
+    const data = await res.json().catch(() => ({}))
+
+    // Another tab already started this turn. Watch that one rather than
+    // starting a second — the server refuses duplicates, and two replies to
+    // one message would bill twice.
+    if (res.status === 409 && data.generation?.id) return { generation: data.generation }
+    if (res.status === 401) return { authRequired: data.error || 'Your session expired. Sign in again to continue.' }
+    if (!res.ok) return { error: data.error || `Could not start the reply (HTTP ${res.status})` }
+    return { generation: data.generation }
+  }
+
+  // Reads a server-owned reply. `snapshot` carries everything generated before
+  // this tab attached, so joining late — or reopening the page tomorrow —
+  // shows the whole reply rather than the tail of it.
+  async function streamGeneration(c, generationId, live, messagesEl, onText) {
+    // Native fetch, not axionFetch: the wrapper drops its abort listener once
+    // response headers arrive (see assets/fetch-timeout.js), which is fine for
+    // a normal request but means Stop would never detach a long-lived stream.
+    // The completions endpoint is read the same way for the same reason.
+    const res = await fetch(
+      `${API}/chats/${c.id}/generations/${generationId}/stream`,
+      { headers: authHeaders(), signal: abortCtrl?.signal },
+    )
+    if (!res.ok || !res.body) {
+      return { status: 'failed', error: `Could not follow the reply (HTTP ${res.status})` }
+    }
+
+    const reader = res.body.getReader()
+    const dec = new TextDecoder()
+    let buf = ''
+    let text = ''
+    let outcome = { status: 'interrupted' }
+
+    const paint = () => {
+      if (text) live.classList.remove('waiting')
+      live.textContent = text
+      onText?.(text)
+      if (!_userScrolledAway) messagesEl.scrollTop = messagesEl.scrollHeight
+    }
+
+    for (;;) {
+      const { done, value } = await reader.read()
+      if (done) break
+      buf += dec.decode(value, { stream: true })
+      const blocks = buf.split('\n\n')
+      buf = blocks.pop() || ''
+
+      for (const block of blocks) {
+        const event = block.match(/^event: (.+)$/m)?.[1]
+        const raw = block.match(/^data: (.+)$/m)?.[1]
+        if (!event || !raw) continue
+        let data
+        try { data = JSON.parse(raw) } catch { continue }
+
+        if (event === 'snapshot') { text = data.text || ''; paint() }
+        else if (event === 'delta') { text += data.text || ''; paint() }
+        else if (event === 'done') { outcome = { status: 'completed' } }
+        else if (event === 'error') { outcome = { status: 'failed', error: data.error } }
+      }
+    }
+
+    return { ...outcome, text }
+  }
+
+  // Generates an assistant reply for a chat whose messages end with a user or
+  // tool turn. The model runs on the server; this only watches. depth counts
+  // automatic tool-call round-trips within one user turn — a hard cap
+  // (TOOL_STEP_LIMIT) stops a runaway "call tool, get result, call tool
+  // again..." loop instead of looping forever.
+  async function generateReply(c, depth = 0, existingGenerationId = null) {
+    if (!sessionToken) {
+      showAuthenticationRequired('Create a free Axion account or sign in to chat.')
+      return
+    }
+    if (depth === 0) stopRequested = false
+    await ensureSandboxMode()
+    setSendingState(true)
+    abortCtrl = new AbortController()
+
+    const wrap = document.getElementById('msg-wrap')
+    const live = openLiveBubble(wrap)
+    const messagesEl = document.getElementById('messages')
+    messagesEl.scrollTop = messagesEl.scrollHeight
+
+    let generationId = existingGenerationId
+    if (!generationId) {
+      const started = await startGeneration(c)
+      if (started.authRequired) {
+        setSendingState(false); abortCtrl = null
+        showAuthenticationRequired(started.authRequired)
+        return
+      }
+      if (started.error) {
+        live.classList.remove('streaming', 'waiting')
+        live.textContent = '⚠ ' + started.error
+        setSendingState(false); abortCtrl = null
+        return
+      }
+      generationId = started.generation.id
+    }
+
+    c.generation = { id: generationId, status: 'running' }
+    renderChatList()
+    // If this tab is closed or navigates away, the sidebar in any other tab
+    // still needs to learn when the reply lands.
+    startGenerationPolling()
+
+    let result
     try {
-      const res = await fetch(`${API}/v1/chat/completions`, { method: 'POST', headers, body: JSON.stringify(body), signal: abortCtrl.signal })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        if (res.status === 401) {
-          setSendingState(false)
-          abortCtrl = null
-          showAuthenticationRequired(err.error?.message || 'Your session expired. Sign in again to continue.')
-          return
-        }
-        live.textContent = '⚠ ' + (err.error?.message || `Error ${res.status}`)
-        live.classList.remove('streaming'); failed = true
-      } else {
-        const reader = res.body.getReader()
-        const dec = new TextDecoder()
-        let buf = ''
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-          buf += dec.decode(value, { stream: true })
-          const lines = buf.split('\n'); buf = lines.pop()
-          for (const line of lines) {
-            if (!line.startsWith('data: ')) continue
-            const data = line.slice(6).trim()
-            if (data === '[DONE]') continue
-            try {
-              const delta = JSON.parse(data).choices?.[0]?.delta
-              if (delta?.content) {
-                full += delta.content
-                live.classList.remove('waiting')
-                live.textContent = full
-                if (!_userScrolledAway) messagesEl.scrollTop = messagesEl.scrollHeight
-              }
-              if (delta?.tool_calls) {
-                for (const tc of delta.tool_calls) {
-                  const i = tc.index ?? 0
-                  toolCallsAcc[i] = toolCallsAcc[i] || { id: '', type: 'function', function: { name: '', arguments: '' } }
-                  if (tc.id) toolCallsAcc[i].id = tc.id
-                  if (tc.function?.name) toolCallsAcc[i].function.name += tc.function.name
-                  if (tc.function?.arguments) toolCallsAcc[i].function.arguments += tc.function.arguments
-                }
-              }
-            } catch {}
-          }
-        }
-      }
+      result = await streamGeneration(c, generationId, live, messagesEl)
     } catch (e) {
-      if (e.name === 'AbortError') { /* keep whatever streamed so far */ }
-      else { live.textContent = '⚠ Network error: ' + e.message; failed = true }
+      // Aborting only detaches this tab. The server finishes the reply and
+      // commits it, which is the whole point — it will be there on return.
+      result = e.name === 'AbortError'
+        ? { status: 'detached', text: live.textContent }
+        : { status: 'failed', error: 'Network error: ' + e.message }
     }
-    toolCallsAcc = toolCallsAcc.filter(Boolean)
 
-    live.classList.remove('streaming')
+    live.classList.remove('streaming', 'waiting')
 
-    if (!failed && toolCallsAcc.length) {
-      // Pending tool call(s): show what streamed (if any), then a card per
-      // call. Nothing is pushed to persisted history until every card in
-      // this turn has resolved, so a page refresh mid-approval can't leave
-      // a half-written turn behind.
-      live.innerHTML = full ? renderMarkdown(full) : ''
-      const results = []
-      for (const tc of toolCallsAcc) results.push(await renderToolCall(tc, wrap, c.id))
-
-      c.messages.push({ role: 'assistant', content: full, tool_calls: toolCallsAcc, ts: Date.now() })
-      toolCallsAcc.forEach((tc, i) => c.messages.push({ role: 'tool', tool_call_id: tc.id, content: results[i], ts: Date.now() }))
-      c.updated = Date.now(); persistChat(c)
-      renderChatList(); renderMessages()
-
-      setSendingState(false)
-      abortCtrl = null
-
-      if (stopRequested) {
-        document.getElementById('user-input').focus()
-        return
-      }
-
-      if (depth + 1 >= TOOL_STEP_LIMIT) {
-        const stepDiv = document.createElement('div')
-        stepDiv.className = 'msg'
-        stepDiv.innerHTML = `<div class="msg-avatar assistant">${AVATAR}</div><div class="msg-body"><div class="msg-text" style="color:var(--muted)">Step limit reached (${TOOL_STEP_LIMIT} tool calls in a row) — stopping here.</div></div>`
-        document.getElementById('msg-wrap')?.appendChild(stepDiv)
-        document.getElementById('user-input').focus()
-        return
-      }
-      await generateReply(c, depth + 1)
+    if (result.status === 'failed') {
+      live.textContent = '⚠ ' + (result.error || 'The reply failed.')
+      c.generation = null
+      setSendingState(false); abortCtrl = null
+      renderChatList()
       return
     }
 
-    if (!failed) { live.innerHTML = full ? renderMarkdown(full) : '<p style="color:var(--muted)">(stopped)</p>'; initCharts() }
-
-    if (!failed && full) {
-      c.messages.push({ role: 'assistant', content: full, ts: Date.now() })
-      c.updated = Date.now(); persistChat(c)
-      renderChatList(); renderMessages()   // re-render with actions + markdown
+    if (result.status === 'detached') {
+      setSendingState(false); abortCtrl = null
+      renderChatList()
+      return
     }
+
+    // The server has committed the assistant message; re-read rather than
+    // reconstructing it, so this tab matches every other one exactly.
+    c.generation = null
+    await fetchChatMessages(c, { force: true })
+    c.updated = Date.now()
+    renderChatList(); renderMessages()
+
+    const reply = c.messages[c.messages.length - 1]
+    const toolCalls = reply?.role === 'assistant' ? (reply.tool_calls || []) : []
+
+    if (!toolCalls.length) {
+      setSendingState(false)
+      abortCtrl = null
+      document.getElementById('user-input').focus()
+      return
+    }
+
+    // The model asked for code. Sandbox execution stays client-side: it needs
+    // the Run/Deny card in front of the user.
+    const results = []
+    for (const tc of toolCalls) results.push(await renderToolCall(tc, document.getElementById('msg-wrap'), c.id))
+    toolCalls.forEach((tc, i) => c.messages.push({ role: 'tool', tool_call_id: tc.id, content: results[i], ts: Date.now() }))
+    c.updated = Date.now()
+    await persistChat(c)
+    renderChatList(); renderMessages()
+
     setSendingState(false)
     abortCtrl = null
-    document.getElementById('user-input').focus()
+
+    if (stopRequested) {
+      document.getElementById('user-input').focus()
+      return
+    }
+
+    if (depth + 1 >= TOOL_STEP_LIMIT) {
+      const stepDiv = document.createElement('div')
+      stepDiv.className = 'msg'
+      stepDiv.innerHTML = `<div class="msg-avatar assistant">${AVATAR}</div><div class="msg-body"><div class="msg-text" style="color:var(--muted)">Step limit reached (${TOOL_STEP_LIMIT} tool calls in a row) — stopping here.</div></div>`
+      document.getElementById('msg-wrap')?.appendChild(stepDiv)
+      document.getElementById('user-input').focus()
+      return
+    }
+    await generateReply(c, depth + 1)
+  }
+
+  // Re-attaches to a reply that was already running — after a reload, or after
+  // switching back to a chat that was left mid-answer.
+  async function resumeGeneration(c) {
+    if (!generationActive(c) || streaming) return
+    const wrap = document.getElementById('msg-wrap')
+    if (!wrap) return
+    await generateReply(c, 0, c.generation.id)
   }
 
   // ── Auth ─────────────────────────────────────────────────────────────────
@@ -2589,6 +2719,53 @@
     } catch {}
   }
 
+  // Keeps the sidebar honest about replies running in chats this tab isn't
+  // looking at. Only runs while something is actually in flight, and stops
+  // itself once nothing is.
+  async function syncGenerations() {
+    if (generationPollInFlight) return
+    if (!chats.some(generationActive)) { stopGenerationPolling(); return }
+    generationPollInFlight = true
+    try {
+      const res = await axionFetch(`${API}/chats`, { headers: authHeaders() })
+      if (!res.ok) return
+      const data = await res.json()
+      let changed = false
+      for (const row of data.chats || []) {
+        const c = chats.find(chat => chat.id === row.id)
+        if (!c) continue
+        const wasActive = generationActive(c)
+        c.generation = row.generation || null
+        c.updated = row.updated ?? c.updated
+        if (wasActive !== generationActive(c)) changed = true
+      }
+      if (changed) {
+        renderChatList()
+        // A reply finished in the chat that's on screen but nothing was
+        // watching it — pull the committed message in.
+        const c = currentChat()
+        if (c && !generationActive(c) && !streaming) {
+          await fetchChatMessages(c, { force: true })
+          renderMessages()
+        }
+      }
+    } catch {
+      // Offline or a blip; the next tick tries again.
+    } finally {
+      generationPollInFlight = false
+    }
+  }
+
+  function startGenerationPolling() {
+    if (generationPollTimer) return
+    generationPollTimer = setInterval(syncGenerations, GENERATION_POLL_MS)
+  }
+  function stopGenerationPolling() {
+    if (!generationPollTimer) return
+    clearInterval(generationPollTimer)
+    generationPollTimer = null
+  }
+
   async function showApp() {
     document.getElementById('auth-overlay').style.display = 'none'
     document.getElementById('acct-email').textContent = userEmail || 'Signed in'
@@ -2597,6 +2774,7 @@
     renderMessages()
     await fetchChatList()
     renderChatList()
+    if (chats.some(generationActive)) startGenerationPolling()
     document.getElementById('user-input').focus()
   }
 
