@@ -430,6 +430,23 @@
     .trash-btn-danger { color: var(--red); border-color: color-mix(in srgb, var(--red) 40%, var(--border2)); }
     .trash-btn-danger:hover { background: rgba(211,47,47,.1); border-color: var(--red); }
 
+    /* ── Projects ── */
+    .project-filter-chip {
+      display: flex; align-items: center; gap: 6px; margin: 0 12px 8px; padding: 6px 10px;
+      border-radius: 8px; background: var(--surface2); font-size: 12.5px; color: var(--text);
+    }
+    .project-filter-chip span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .project-filter-chip button {
+      border: 0; background: transparent; color: var(--muted2); cursor: pointer; padding: 2px 4px; line-height: 1;
+    }
+    .project-filter-chip button:hover { color: var(--text); }
+    .project-item-name {
+      background: transparent; border: 0; color: var(--text); font: inherit; text-align: left;
+      cursor: pointer; padding: 0; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .project-item-name:hover { text-decoration: underline; }
+    .project-rename { flex: 1; min-width: 0; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; color: var(--text); font: inherit; padding: 4px 6px; }
+
     /* ── Auth overlay ── */
     #auth-overlay {
       position: fixed; inset: 0; z-index: 80; background: var(--bg);
@@ -1332,6 +1349,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Z"/><path d="M8 16h10M9 8h5M9 11h5"/></svg>
         Docs
       </a>
+      <button type="button" class="sidebar-link" onclick="openProjects()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>
+        Projects
+      </button>
       <button type="button" class="sidebar-link" onclick="openTrash()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-.8 12.1a2 2 0 0 1-2 1.9H9.8a2 2 0 0 1-2-1.9L7 7"/></svg>
         Trash
@@ -1349,6 +1370,10 @@
       <div class="chat-search-clip">
         <input class="chat-search" id="chat-search" type="search" placeholder="Search conversations…" oninput="filterChats(this.value)" onkeydown="handleSearchKey(event)">
       </div>
+    </div>
+    <div class="project-filter-chip" id="project-filter-chip" style="display:none">
+      <span id="project-filter-name"></span>
+      <button type="button" onclick="clearProjectFilter()" aria-label="Clear project filter">✕</button>
     </div>
     <div class="chat-list" id="chat-list"></div>
   </div>
@@ -1380,6 +1405,21 @@
       </button>
     </div>
     <div class="trash-panel-body" id="trash-panel-body"></div>
+  </div>
+</div>
+
+<!-- Projects -->
+<div class="trash-overlay" id="projects-overlay" style="display:none">
+  <button type="button" class="trash-overlay-backdrop" onclick="closeProjects()" aria-label="Close projects"></button>
+  <div class="trash-panel" role="dialog" aria-modal="true" aria-label="Projects">
+    <div class="trash-panel-head">
+      <span class="trash-panel-title">Projects</span>
+      <button type="button" class="trash-btn" onclick="startNewProject()">New project</button>
+      <button type="button" class="sidebar-icon-btn" onclick="closeProjects()" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="trash-panel-body" id="projects-panel-body"></div>
   </div>
 </div>
 
@@ -1682,6 +1722,7 @@
         pinned: !!c.pinned, pinned_at: c.pinned_at || null,
         branched_from_chat_id: c.branched_from_chat_id || null,
         branched_from_seq: c.branched_from_seq || null,
+        project_id: c.project_id || null,
         messages: [], loaded: false, generation: c.generation || null,
       }))
     } catch {}
@@ -1723,6 +1764,16 @@
       if (!res.ok) return null
       return await res.json()
     } catch { return null }
+  }
+  async function assignProjectServer(id, projectId) {
+    try {
+      const res = await axionFetch(`${API}/chats/${id}/project`, {
+        method: 'PUT',
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ project_id: projectId }),
+      })
+      return res.ok
+    } catch { return false }
   }
   // Fire-and-forget: an unsent draft is best-effort persistence, not
   // something worth blocking typing or a chat switch on.
@@ -1947,6 +1998,140 @@
     renderTrashList()
   }
 
+  // ── Projects ─────────────────────────────────────────────────────────────
+  let _projects = []
+
+  async function fetchProjects() {
+    try {
+      const res = await axionFetch(`${API}/projects`, { headers: authHeaders() })
+      if (!res.ok) return
+      _projects = (await res.json()).projects || []
+    } catch {}
+  }
+
+  async function openProjects() {
+    document.getElementById('projects-overlay').style.display = ''
+    document.getElementById('projects-panel-body').innerHTML = '<div class="trash-empty">Loading…</div>'
+    await fetchProjects()
+    renderProjectsList()
+  }
+
+  function closeProjects() {
+    document.getElementById('projects-overlay').style.display = 'none'
+  }
+
+  function renderProjectsList() {
+    const body = document.getElementById('projects-panel-body')
+    if (!_projects.length) {
+      body.innerHTML = '<div class="trash-empty">No projects yet.</div>'
+      return
+    }
+    body.innerHTML = _projects.map(p => `
+      <div class="trash-item" data-project-id="${p.id}">
+        <button type="button" class="project-item-name" onclick="filterByProject('${p.id}')" title="Show chats in this project">
+          ${escHtml(p.name)} <span class="trash-item-meta">(${p.chat_count})</span>
+        </button>
+        <button type="button" class="trash-btn" onclick="renameProject('${p.id}', event)">Rename</button>
+        <button type="button" class="trash-btn trash-btn-danger" onclick="deleteProject('${p.id}')">Delete</button>
+      </div>`).join('')
+  }
+
+  function startNewProject() {
+    const body = document.getElementById('projects-panel-body')
+    if (document.getElementById('project-new-row')) return
+    const row = document.createElement('div')
+    row.className = 'trash-item'
+    row.id = 'project-new-row'
+    row.innerHTML = `<input type="text" class="project-rename" id="project-new-input" placeholder="Project name" maxlength="200">`
+    body.prepend(row)
+    const input = document.getElementById('project-new-input')
+    input.focus()
+    let done = false
+    const commit = async () => {
+      if (done) return; done = true
+      const name = input.value.trim()
+      row.remove()
+      if (!name) return
+      try {
+        const res = await axionFetch(`${API}/projects`, {
+          method: 'POST',
+          headers: authHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({ name }),
+        })
+        if (!res.ok) return
+        const created = await res.json()
+        _projects.unshift(created)
+        renderProjectsList()
+      } catch {}
+    }
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); input.blur() }
+      else if (e.key === 'Escape') { done = true; row.remove() }
+    })
+    input.addEventListener('blur', commit)
+  }
+
+  function renameProject(id, ev) {
+    if (ev) ev.stopPropagation()
+    const p = _projects.find(x => x.id === id); if (!p) return
+    const row = document.querySelector(`.trash-item[data-project-id="${id}"]`)
+    const nameBtn = row.querySelector('.project-item-name')
+    const input = document.createElement('input')
+    input.className = 'project-rename'; input.value = p.name; input.maxLength = 200
+    nameBtn.replaceWith(input)
+    input.focus(); input.select()
+    let done = false
+    const commit = async () => {
+      if (done) return; done = true
+      const v = input.value.trim()
+      if (v && v !== p.name) {
+        try {
+          const res = await axionFetch(`${API}/projects/${id}`, {
+            method: 'PUT',
+            headers: authHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify({ name: v }),
+          })
+          if (res.ok) p.name = v.slice(0, 200)
+        } catch {}
+      }
+      renderProjectsList()
+    }
+    input.addEventListener('click', e => e.stopPropagation())
+    input.addEventListener('keydown', e => {
+      e.stopPropagation()
+      if (e.key === 'Enter') { e.preventDefault(); input.blur() }
+      else if (e.key === 'Escape') { input.value = p.name; input.blur() }
+    })
+    input.addEventListener('blur', commit)
+  }
+
+  async function deleteProject(id) {
+    try {
+      const res = await axionFetch(`${API}/projects/${id}`, { method: 'DELETE', headers: authHeaders() })
+      if (!res.ok) return
+    } catch { return }
+    _projects = _projects.filter(p => p.id !== id)
+    renderProjectsList()
+    chats.forEach(c => { if (c.project_id === id) c.project_id = null })
+    if (_projectFilter === id) clearProjectFilter()
+    else renderChatList()
+  }
+
+  function filterByProject(id) {
+    const p = _projects.find(x => x.id === id); if (!p) return
+    _projectFilter = id
+    document.getElementById('project-filter-name').textContent = p.name
+    document.getElementById('project-filter-chip').style.display = ''
+    closeProjects()
+    renderChatList()
+  }
+
+  function clearProjectFilter() {
+    _projectFilter = null
+    document.getElementById('project-filter-chip').style.display = 'none'
+    renderChatList()
+  }
+
   function titleFrom(text) {
     const t = text.trim().replace(/\s+/g, ' ')
     return t.length > 42 ? t.slice(0, 42) + '…' : t
@@ -1963,6 +2148,7 @@
 
   let _chatFilter = ''
   function filterChats(q) { _chatFilter = q.toLowerCase(); renderChatList() }
+  let _projectFilter = null
   function toggleChatSearch(force) {
     const wrap = document.getElementById('chat-search-wrap')
     const input = document.getElementById('chat-search')
@@ -2003,6 +2189,7 @@
           ${generationActive(c) ? spinner : ''}
         </button>
         <button type="button" class="chat-item-del chat-item-pin ${c.pinned ? 'pinned' : ''}" onclick="togglePin('${c.id}', event)" title="${c.pinned ? 'Unpin' : 'Pin'}" aria-label="${c.pinned ? 'Unpin' : 'Pin'} ${escHtml(c.title)}">${c.pinned ? '📌' : '📍'}</button>
+        <button type="button" class="chat-item-del" onclick="moveChat('${c.id}', event)" title="Move to project" aria-label="Move ${escHtml(c.title)} to a project">📁</button>
         <button type="button" class="chat-item-del" onclick="renameChat('${c.id}', event)" title="Rename" aria-label="Rename ${escHtml(c.title)}">✎</button>
         <button type="button" class="chat-item-del" onclick="deleteChat('${c.id}', event)" title="Delete" aria-label="Delete ${escHtml(c.title)}">✕</button>
       </div>`
@@ -2010,7 +2197,8 @@
 
   function renderChatList() {
     const list = document.getElementById('chat-list')
-    const filtered = _chatFilter ? chats.filter(c => c.title.toLowerCase().includes(_chatFilter)) : chats
+    let filtered = _chatFilter ? chats.filter(c => c.title.toLowerCase().includes(_chatFilter)) : chats
+    if (_projectFilter) filtered = filtered.filter(c => c.project_id === _projectFilter)
     if (!filtered.length) {
       list.innerHTML = `<div class="chat-list-empty">${_chatFilter ? 'No matching conversations.' : 'No conversations yet.<br>Start a new chat to begin.'}</div>`
       return
@@ -2073,6 +2261,33 @@
       else if (e.key === 'Escape') { input.value = c.title; input.blur() }
     })
     input.addEventListener('blur', commit)
+  }
+
+  function moveChat(id, ev) {
+    if (ev) ev.stopPropagation()
+    const c = chats.find(x => x.id === id); if (!c) return
+    const btn = ev.target
+    const select = document.createElement('select')
+    select.className = 'project-rename'
+    select.innerHTML = `<option value="">Unfiled</option>` +
+      _projects.map(p => `<option value="${p.id}" ${p.id === c.project_id ? 'selected' : ''}>${escHtml(p.name)}</option>`).join('')
+    btn.replaceWith(select)
+    select.focus()
+    let done = false
+    const revert = () => { if (!done) { done = true; select.replaceWith(btn) } }
+    select.addEventListener('click', e => e.stopPropagation())
+    select.addEventListener('change', async () => {
+      done = true
+      const projectId = select.value || null
+      select.replaceWith(btn)
+      if (projectId === c.project_id) return
+      const prev = c.project_id
+      c.project_id = projectId
+      const ok = await assignProjectServer(id, projectId)
+      if (!ok) { c.project_id = prev; renderChatList(); return }
+      if (_projectFilter) renderChatList()
+    })
+    select.addEventListener('blur', revert)
   }
 
   // ── Rendering ───────────────────────────────────────────────────────────────
@@ -3092,7 +3307,7 @@
     void loadAccountProfile()
     initModelSelect()
     renderMessages()
-    await fetchChatList()
+    await Promise.all([fetchChatList(), fetchProjects()])
     renderChatList()
     if (chats.some(generationActive)) startGenerationPolling()
     document.getElementById('user-input').focus()
