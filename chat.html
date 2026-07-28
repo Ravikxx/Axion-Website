@@ -430,6 +430,11 @@
     .trash-btn-danger { color: var(--red); border-color: color-mix(in srgb, var(--red) 40%, var(--border2)); }
     .trash-btn-danger:hover { background: rgba(211,47,47,.1); border-color: var(--red); }
 
+    /* Share can be opened from within the artifact editor overlay, which
+       comes later in DOM order (and would otherwise paint on top at equal
+       z-index) — always stack Share above every other overlay. */
+    #share-overlay { z-index: 61; }
+
     /* ── Projects ── */
     .project-filter-chip {
       display: flex; align-items: center; gap: 6px; margin: 0 12px 8px; padding: 6px 10px;
@@ -473,6 +478,36 @@
       background: var(--surface2); color: var(--text); font: inherit; font-size: 12.5px;
     }
     .share-note { font-size: 12px; color: var(--muted); }
+
+    /* ── Artifacts ── */
+    .artifact-editor-panel {
+      width: min(720px, 100%); height: min(80vh, 640px); max-height: 90vh;
+    }
+    .artifact-title-input {
+      flex: 1; min-width: 0; background: transparent; border: 0; color: var(--text);
+      font: inherit; font-size: 15px; font-weight: 600; padding: 4px 2px;
+    }
+    .artifact-title-input:focus { outline: none; background: var(--surface2); border-radius: 6px; }
+    .artifact-editor-meta {
+      display: flex; align-items: center; gap: 10px; padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .artifact-editor-meta select,
+    .artifact-editor-meta input {
+      padding: 6px 8px; border-radius: 7px; border: 1px solid var(--border2);
+      background: var(--surface2); color: var(--text); font: inherit; font-size: 12.5px;
+    }
+    .artifact-editor-status { font-size: 12px; color: var(--muted); margin-left: auto; }
+    .artifact-editor-content {
+      flex: 1; width: 100%; resize: none; border: 0; background: var(--bg);
+      color: var(--text); font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 13px; line-height: 1.6; padding: 16px; outline: none;
+    }
+    .artifact-item-kind {
+      display: inline-block; font-size: 10.5px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .04em; color: var(--muted); background: var(--surface2);
+      border-radius: 5px; padding: 2px 6px; margin-left: 6px;
+    }
 
     /* ── Auth overlay ── */
     #auth-overlay {
@@ -1380,6 +1415,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>
         Projects
       </button>
+      <button type="button" class="sidebar-link" onclick="openArtifacts()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h11l5 5v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z"/><path d="M14 4v5h5M8 14h8M8 17h5"/></svg>
+        Artifacts
+      </button>
       <button type="button" class="sidebar-link" onclick="openTrash()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-.8 12.1a2 2 0 0 1-2 1.9H9.8a2 2 0 0 1-2-1.9L7 7"/></svg>
         Trash
@@ -1453,14 +1492,54 @@
 <!-- Share -->
 <div class="trash-overlay" id="share-overlay" style="display:none">
   <button type="button" class="trash-overlay-backdrop" onclick="closeShare()" aria-label="Close share dialog"></button>
-  <div class="trash-panel share-panel" role="dialog" aria-modal="true" aria-label="Share chat">
+  <div class="trash-panel share-panel" role="dialog" aria-modal="true" aria-label="Share">
     <div class="trash-panel-head">
-      <span class="trash-panel-title">Share chat</span>
+      <span class="trash-panel-title" id="share-panel-title">Share chat</span>
       <button type="button" class="sidebar-icon-btn" onclick="closeShare()" aria-label="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
       </button>
     </div>
     <div class="share-panel-body" id="share-panel-body">Loading…</div>
+  </div>
+</div>
+
+<!-- Artifacts -->
+<div class="trash-overlay" id="artifacts-overlay" style="display:none">
+  <button type="button" class="trash-overlay-backdrop" onclick="closeArtifacts()" aria-label="Close artifacts"></button>
+  <div class="trash-panel" role="dialog" aria-modal="true" aria-label="Artifacts">
+    <div class="trash-panel-head">
+      <span class="trash-panel-title">Artifacts</span>
+      <button type="button" class="trash-btn" onclick="startNewArtifact()">New artifact</button>
+      <button type="button" class="sidebar-icon-btn" onclick="closeArtifacts()" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="trash-panel-body" id="artifacts-panel-body"></div>
+  </div>
+</div>
+
+<!-- Artifact editor -->
+<div class="trash-overlay" id="artifact-editor-overlay" style="display:none">
+  <button type="button" class="trash-overlay-backdrop" onclick="closeArtifactEditor()" aria-label="Close artifact editor"></button>
+  <div class="trash-panel artifact-editor-panel" role="dialog" aria-modal="true" aria-label="Artifact editor">
+    <div class="trash-panel-head">
+      <input type="text" class="artifact-title-input" id="artifact-editor-title" maxlength="200" placeholder="Untitled" oninput="scheduleArtifactSave()">
+      <button type="button" class="trash-btn" id="artifact-share-btn" onclick="shareCurrentArtifact()">Share</button>
+      <button type="button" class="trash-btn trash-btn-danger" onclick="deleteCurrentArtifact()">Delete</button>
+      <button type="button" class="sidebar-icon-btn" onclick="closeArtifactEditor()" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="artifact-editor-meta">
+      <select id="artifact-editor-kind" disabled title="Set at creation, cannot be changed">
+        <option value="text">Text</option>
+        <option value="markdown">Markdown</option>
+        <option value="code">Code</option>
+      </select>
+      <input type="text" id="artifact-editor-language" placeholder="Language" style="display:none" disabled title="Set at creation, cannot be changed">
+      <span class="artifact-editor-status" id="artifact-editor-status"></span>
+    </div>
+    <textarea class="artifact-editor-content" id="artifact-editor-content" placeholder="Content…" oninput="scheduleArtifactSave()"></textarea>
   </div>
 </div>
 
@@ -2218,19 +2297,41 @@
   }
 
   // ── Share ────────────────────────────────────────────────────────────────
+  // Generic over resource type — _shareResourceType/_shareResourceId are set
+  // by whichever opener called us (openShare for chats, openArtifactShare
+  // for artifacts) and every request below is built off them.
   const SHARE_BASE = 'https://axion.amplifiedsmp.org/shared.html'
   let _share = null
+  let _shareResourceType = 'chat'
+  let _shareResourceId = null
+
+  function shareApiPath() {
+    return _shareResourceType === 'artifact' ? `/artifacts/${_shareResourceId}/share` : `/chats/${_shareResourceId}/share`
+  }
+
+  async function loadShareState() {
+    document.getElementById('share-panel-title').textContent = _shareResourceType === 'artifact' ? 'Share artifact' : 'Share chat'
+    document.getElementById('share-overlay').style.display = ''
+    document.getElementById('share-panel-body').innerHTML = 'Loading…'
+    try {
+      const res = await axionFetch(`${API}${shareApiPath()}`, { headers: authHeaders() })
+      _share = res.ok ? await res.json() : null
+    } catch { _share = null }
+    renderSharePanel()
+  }
 
   async function openShare() {
     const c = currentChat()
     if (!c) return
-    document.getElementById('share-overlay').style.display = ''
-    document.getElementById('share-panel-body').innerHTML = 'Loading…'
-    try {
-      const res = await axionFetch(`${API}/chats/${c.id}/share`, { headers: authHeaders() })
-      _share = res.ok ? await res.json() : null
-    } catch { _share = null }
-    renderSharePanel()
+    _shareResourceType = 'chat'
+    _shareResourceId = c.id
+    await loadShareState()
+  }
+
+  async function openArtifactShare(id) {
+    _shareResourceType = 'artifact'
+    _shareResourceId = id
+    await loadShareState()
   }
 
   function closeShare() {
@@ -2242,11 +2343,12 @@
     const on = !!_share
     const mode = _share?.mode || 'snapshot'
     const expiresValue = _share?.expires_at ? String(_share.expires_at) : ''
+    const noun = _shareResourceType === 'artifact' ? 'artifact' : 'chat'
     body.innerHTML = `
       <div class="share-row">
         <div>
           <div class="share-row-label">Anyone with the link</div>
-          <div class="share-row-desc">${on ? 'Anyone with the link can view this chat.' : 'Only you can access this chat.'}</div>
+          <div class="share-row-desc">${on ? `Anyone with the link can view this ${noun}.` : `Only you can access this ${noun}.`}</div>
         </div>
         <button type="button" class="share-toggle ${on ? 'on' : ''}" onclick="toggleShare()" role="switch" aria-checked="${on}" aria-label="Anyone with the link"></button>
       </div>
@@ -2269,7 +2371,7 @@
           <input type="text" readonly value="${SHARE_BASE}?t=${_share.id}" id="share-link-input" onclick="this.select()">
           <button type="button" class="trash-btn" onclick="copyShareLink()">Copy</button>
         </div>
-        <div class="share-note">Signed-in visitors can continue this chat as their own, independent copy.</div>
+        <div class="share-note">Signed-in visitors can continue this ${noun} as their own, independent copy.</div>
       ` : ''}
     `
   }
@@ -2287,10 +2389,9 @@
   }
 
   async function createOrUpdateShare(body) {
-    const c = currentChat()
-    if (!c) return
+    if (!_shareResourceId) return
     try {
-      const res = await axionFetch(`${API}/chats/${c.id}/share`, {
+      const res = await axionFetch(`${API}${shareApiPath()}`, {
         method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify(body),
       })
       if (!res.ok) return
@@ -2300,10 +2401,9 @@
   }
 
   async function revokeShareServer() {
-    const c = currentChat()
-    if (!c) return
+    if (!_shareResourceId) return
     try {
-      const res = await axionFetch(`${API}/chats/${c.id}/share`, { method: 'DELETE', headers: authHeaders() })
+      const res = await axionFetch(`${API}${shareApiPath()}`, { method: 'DELETE', headers: authHeaders() })
       if (!res.ok && res.status !== 404) return
     } catch { return }
     _share = null
@@ -2315,6 +2415,157 @@
     if (!input) return
     input.select()
     navigator.clipboard?.writeText(input.value).catch(() => {})
+  }
+
+  // ── Artifacts ────────────────────────────────────────────────────────────
+  let _artifacts = []
+  let _currentArtifactId = null
+  let _artifactSaveTimer = null
+
+  async function openArtifacts() {
+    document.getElementById('artifacts-overlay').style.display = ''
+    document.getElementById('artifacts-panel-body').innerHTML = '<div class="trash-empty">Loading…</div>'
+    try {
+      const res = await axionFetch(`${API}/artifacts`, { headers: authHeaders() })
+      _artifacts = res.ok ? ((await res.json()).artifacts || []) : []
+    } catch { _artifacts = [] }
+    renderArtifactsList()
+  }
+
+  function closeArtifacts() {
+    document.getElementById('artifacts-overlay').style.display = 'none'
+  }
+
+  function renderArtifactsList() {
+    const body = document.getElementById('artifacts-panel-body')
+    if (!_artifacts.length) {
+      body.innerHTML = '<div class="trash-empty">No artifacts yet.</div>'
+      return
+    }
+    body.innerHTML = _artifacts.map(a => `
+      <div class="trash-item">
+        <button type="button" class="project-item-name" onclick="openArtifactEditor('${a.id}')">
+          ${escHtml(a.title)}<span class="artifact-item-kind">${escHtml(a.kind)}</span>
+          <span class="trash-item-meta">Updated ${fmtTime(a.updated)}</span>
+        </button>
+      </div>`).join('')
+  }
+
+  // kind (and language) can only be set here, at creation — the API only
+  // supports updating title/content afterward, so the editor shows them
+  // read-only rather than offer a control that would silently not save.
+  function startNewArtifact() {
+    const body = document.getElementById('artifacts-panel-body')
+    if (document.getElementById('artifact-new-row')) return
+    if (body.querySelector('.trash-empty')) body.innerHTML = ''
+    const row = document.createElement('div')
+    row.className = 'trash-item'
+    row.id = 'artifact-new-row'
+    row.innerHTML = `
+      <input type="text" class="project-rename" id="artifact-new-title" placeholder="Artifact title" maxlength="200">
+      <select id="artifact-new-kind" class="project-rename" style="flex:0 0 110px">
+        <option value="text">Text</option>
+        <option value="markdown">Markdown</option>
+        <option value="code">Code</option>
+      </select>`
+    body.prepend(row)
+    const input = document.getElementById('artifact-new-title')
+    input.focus()
+    let done = false
+    const commit = async () => {
+      if (done) return; done = true
+      const title = input.value.trim()
+      const kind = document.getElementById('artifact-new-kind').value
+      row.remove()
+      if (!title) { renderArtifactsList(); return }
+      try {
+        const res = await axionFetch(`${API}/artifacts`, {
+          method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({ title, kind, content: '' }),
+        })
+        if (!res.ok) { renderArtifactsList(); return }
+        const created = await res.json()
+        _artifacts.unshift(created)
+      } catch { renderArtifactsList(); return }
+      closeArtifacts()
+      openArtifactEditor(_artifacts[0].id)
+    }
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); commit() }
+      else if (e.key === 'Escape') { done = true; row.remove(); renderArtifactsList() }
+    })
+    // Only commit once focus leaves the whole row — moving from the title
+    // input to the kind select is not "done editing."
+    row.addEventListener('focusout', e => {
+      if (row.contains(e.relatedTarget)) return
+      commit()
+    })
+  }
+
+  async function openArtifactEditor(id) {
+    _currentArtifactId = id
+    document.getElementById('artifacts-overlay').style.display = 'none'
+    document.getElementById('artifact-editor-overlay').style.display = ''
+    document.getElementById('artifact-editor-status').textContent = 'Loading…'
+    try {
+      const res = await axionFetch(`${API}/artifacts/${id}`, { headers: authHeaders() })
+      if (!res.ok) { closeArtifactEditor(); return }
+      const a = await res.json()
+      document.getElementById('artifact-editor-title').value = a.title
+      document.getElementById('artifact-editor-kind').value = a.kind
+      document.getElementById('artifact-editor-language').value = a.language || ''
+      document.getElementById('artifact-editor-language').style.display = a.kind === 'code' ? '' : 'none'
+      document.getElementById('artifact-editor-content').value = a.content || ''
+      document.getElementById('artifact-editor-status').textContent = ''
+    } catch {
+      document.getElementById('artifact-editor-status').textContent = 'Could not load this artifact.'
+    }
+  }
+
+  function closeArtifactEditor() {
+    clearTimeout(_artifactSaveTimer)
+    document.getElementById('artifact-editor-overlay').style.display = 'none'
+    _currentArtifactId = null
+  }
+
+  function scheduleArtifactSave() {
+    if (!_currentArtifactId) return
+    document.getElementById('artifact-editor-status').textContent = 'Saving…'
+    clearTimeout(_artifactSaveTimer)
+    _artifactSaveTimer = setTimeout(saveArtifactNow, 800)
+  }
+
+  async function saveArtifactNow() {
+    const id = _currentArtifactId
+    if (!id) return
+    const title = document.getElementById('artifact-editor-title').value.trim() || 'Untitled'
+    const content = document.getElementById('artifact-editor-content').value
+    try {
+      const res = await axionFetch(`${API}/artifacts/${id}`, {
+        method: 'PUT', headers: authHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ title, content }),
+      })
+      document.getElementById('artifact-editor-status').textContent = res.ok ? 'Saved' : 'Could not save'
+    } catch {
+      document.getElementById('artifact-editor-status').textContent = 'Could not save'
+    }
+  }
+
+  async function deleteCurrentArtifact() {
+    const id = _currentArtifactId
+    if (!id) return
+    try {
+      const res = await axionFetch(`${API}/artifacts/${id}`, { method: 'DELETE', headers: authHeaders() })
+      if (!res.ok) return
+    } catch { return }
+    _artifacts = _artifacts.filter(a => a.id !== id)
+    closeArtifactEditor()
+    openArtifacts()
+  }
+
+  function shareCurrentArtifact() {
+    if (!_currentArtifactId) return
+    openArtifactShare(_currentArtifactId)
   }
 
   function titleFrom(text) {
