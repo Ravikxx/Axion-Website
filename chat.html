@@ -2577,12 +2577,13 @@
     c.generation = null
     await fetchChatMessages(c, { force: true })
     c.updated = Date.now()
-    renderChatList(); renderMessages()
+    renderChatList()
 
     const reply = c.messages[c.messages.length - 1]
     const toolCalls = reply?.role === 'assistant' ? (reply.tool_calls || []) : []
 
     if (!toolCalls.length) {
+      renderMessages()
       setSendingState(false)
       abortCtrl = null
       document.getElementById('user-input').focus()
@@ -2591,6 +2592,16 @@
 
     // The model asked for code. Sandbox execution stays client-side: it needs
     // the Run/Deny card in front of the user.
+    //
+    // renderMessages() is deliberately NOT called first. The server commits the
+    // assistant turn before the tool runs, so a full re-render would draw a
+    // static, resultless copy of this very tool call — and then the interactive
+    // Run/Deny card below it, showing the same call twice. Instead the live
+    // bubble keeps whatever prose streamed, the cards are appended to it, and
+    // the full re-render happens once the results exist.
+    live.innerHTML = result.text ? renderMarkdown(result.text) : ''
+    if (!result.text) live.closest('.msg')?.remove()
+
     const results = []
     for (const tc of toolCalls) results.push(await renderToolCall(tc, document.getElementById('msg-wrap'), c.id))
     toolCalls.forEach((tc, i) => c.messages.push({ role: 'tool', tool_call_id: tc.id, content: results[i], ts: Date.now() }))
