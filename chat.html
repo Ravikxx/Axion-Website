@@ -1419,6 +1419,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h11l5 5v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z"/><path d="M14 4v5h5M8 14h8M8 17h5"/></svg>
         Artifacts
       </button>
+      <button type="button" class="sidebar-link" onclick="openScheduled()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg>
+        Scheduled
+      </button>
       <button type="button" class="sidebar-link" onclick="openTrash()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-.8 12.1a2 2 0 0 1-2 1.9H9.8a2 2 0 0 1-2-1.9L7 7"/></svg>
         Trash
@@ -1540,6 +1544,57 @@
       <span class="artifact-editor-status" id="artifact-editor-status"></span>
     </div>
     <textarea class="artifact-editor-content" id="artifact-editor-content" placeholder="Content…" oninput="scheduleArtifactSave()"></textarea>
+  </div>
+</div>
+
+<!-- Scheduled -->
+<div class="trash-overlay" id="scheduled-overlay" style="display:none">
+  <button type="button" class="trash-overlay-backdrop" onclick="closeScheduled()" aria-label="Close scheduled tasks"></button>
+  <div class="trash-panel" role="dialog" aria-modal="true" aria-label="Scheduled tasks">
+    <div class="trash-panel-head">
+      <span class="trash-panel-title">Scheduled</span>
+      <button type="button" class="trash-btn" onclick="startNewScheduled()">New scheduled task</button>
+      <button type="button" class="sidebar-icon-btn" onclick="closeScheduled()" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="trash-panel-body" id="scheduled-panel-body"></div>
+  </div>
+</div>
+
+<!-- Scheduled task editor -->
+<div class="trash-overlay" id="scheduled-editor-overlay" style="display:none">
+  <button type="button" class="trash-overlay-backdrop" onclick="closeScheduledEditor()" aria-label="Close scheduled task editor"></button>
+  <div class="trash-panel share-panel" role="dialog" aria-modal="true" aria-label="Scheduled task editor">
+    <div class="trash-panel-head">
+      <input type="text" class="artifact-title-input" id="scheduled-editor-name" maxlength="200" placeholder="Untitled task">
+      <button type="button" class="trash-btn trash-btn-danger" id="scheduled-delete-btn" onclick="deleteCurrentScheduled()" style="display:none">Delete</button>
+      <button type="button" class="sidebar-icon-btn" onclick="closeScheduledEditor()" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="share-panel-body">
+      <div class="share-row">
+        <div>
+          <div class="share-row-label">Enabled</div>
+          <div class="share-row-desc">Runs on schedule while on; skipped while off.</div>
+        </div>
+        <button type="button" class="share-toggle on" id="scheduled-editor-enabled" onclick="this.classList.toggle('on')" aria-label="Toggle enabled"></button>
+      </div>
+      <div class="share-field">
+        <div class="share-row-label" style="margin-bottom:6px">Schedule (cron)</div>
+        <input type="text" id="scheduled-editor-cron" placeholder="0 9 * * *" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font:inherit;font-family:'IBM Plex Mono',ui-monospace,monospace">
+        <div class="share-note">Five fields: minute hour day-of-month month day-of-week. Times are UTC.</div>
+      </div>
+      <div class="share-field">
+        <div class="share-row-label" style="margin-bottom:6px">Prompt</div>
+        <textarea id="scheduled-editor-prompt" placeholder="What should Axion do when this fires?" style="width:100%;min-height:120px;padding:8px 10px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font:inherit;resize:vertical"></textarea>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <button type="button" class="trash-btn" onclick="saveScheduled()">Save</button>
+        <span class="status-msg" id="scheduled-editor-status"></span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2566,6 +2621,129 @@
   function shareCurrentArtifact() {
     if (!_currentArtifactId) return
     openArtifactShare(_currentArtifactId)
+  }
+
+  // ── Scheduled ────────────────────────────────────────────────────────────
+  let _scheduled = []
+  let _currentScheduledId = null
+
+  async function openScheduled() {
+    document.getElementById('scheduled-overlay').style.display = ''
+    document.getElementById('scheduled-panel-body').innerHTML = '<div class="trash-empty">Loading…</div>'
+    try {
+      const res = await axionFetch(`${API}/scheduled`, { headers: authHeaders() })
+      _scheduled = res.ok ? ((await res.json()).scheduled || []) : []
+    } catch { _scheduled = [] }
+    renderScheduledList()
+  }
+
+  function closeScheduled() {
+    document.getElementById('scheduled-overlay').style.display = 'none'
+  }
+
+  function renderScheduledList() {
+    const body = document.getElementById('scheduled-panel-body')
+    if (!_scheduled.length) {
+      body.innerHTML = '<div class="trash-empty">No scheduled tasks yet.</div>'
+      return
+    }
+    body.innerHTML = _scheduled.map(s => {
+      const meta = s.enabled
+        ? (s.next_run_at ? `Next run ${fmtTime(s.next_run_at)}` : 'Enabled')
+        : 'Paused'
+      const last = s.last_run_at ? ` · Last ran ${fmtTime(s.last_run_at)}` : ''
+      return `
+      <div class="trash-item">
+        <button type="button" class="project-item-name" onclick="openScheduledEditor('${s.id}')">
+          ${escHtml(s.name)}<span class="artifact-item-kind">${escHtml(s.schedule)}</span>
+          <span class="trash-item-meta">${meta}${last}</span>
+        </button>
+      </div>`
+    }).join('')
+  }
+
+  function startNewScheduled() {
+    _currentScheduledId = null
+    document.getElementById('scheduled-overlay').style.display = 'none'
+    document.getElementById('scheduled-editor-overlay').style.display = ''
+    document.getElementById('scheduled-editor-name').value = ''
+    document.getElementById('scheduled-editor-cron').value = ''
+    document.getElementById('scheduled-editor-prompt').value = ''
+    document.getElementById('scheduled-editor-enabled').classList.add('on')
+    document.getElementById('scheduled-delete-btn').style.display = 'none'
+    document.getElementById('scheduled-editor-status').textContent = ''
+    document.getElementById('scheduled-editor-name').focus()
+  }
+
+  async function openScheduledEditor(id) {
+    _currentScheduledId = id
+    document.getElementById('scheduled-overlay').style.display = 'none'
+    document.getElementById('scheduled-editor-overlay').style.display = ''
+    document.getElementById('scheduled-delete-btn').style.display = ''
+    document.getElementById('scheduled-editor-status').textContent = 'Loading…'
+    try {
+      const res = await axionFetch(`${API}/scheduled/${id}`, { headers: authHeaders() })
+      if (!res.ok) { closeScheduledEditor(); return }
+      const s = await res.json()
+      document.getElementById('scheduled-editor-name').value = s.name
+      document.getElementById('scheduled-editor-cron').value = s.schedule
+      document.getElementById('scheduled-editor-prompt').value = s.prompt
+      document.getElementById('scheduled-editor-enabled').classList.toggle('on', !!s.enabled)
+      document.getElementById('scheduled-editor-status').textContent = ''
+    } catch {
+      document.getElementById('scheduled-editor-status').textContent = 'Could not load this task.'
+    }
+  }
+
+  function closeScheduledEditor() {
+    document.getElementById('scheduled-editor-overlay').style.display = 'none'
+    _currentScheduledId = null
+  }
+
+  async function saveScheduled() {
+    const name = document.getElementById('scheduled-editor-name').value.trim()
+    const schedule = document.getElementById('scheduled-editor-cron').value.trim()
+    const prompt = document.getElementById('scheduled-editor-prompt').value.trim()
+    const enabled = document.getElementById('scheduled-editor-enabled').classList.contains('on')
+    const status = document.getElementById('scheduled-editor-status')
+    if (!name || !schedule || !prompt) {
+      status.textContent = 'Name, schedule, and prompt are all required.'
+      return
+    }
+    status.textContent = 'Saving…'
+    const isNew = !_currentScheduledId
+    try {
+      const res = await axionFetch(
+        isNew ? `${API}/scheduled` : `${API}/scheduled/${_currentScheduledId}`,
+        {
+          method: isNew ? 'POST' : 'PUT',
+          headers: authHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({ name, schedule, prompt, enabled }),
+        },
+      )
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        status.textContent = body.error || 'Could not save.'
+        return
+      }
+      if (isNew) _currentScheduledId = (await res.json()).id
+      document.getElementById('scheduled-delete-btn').style.display = ''
+      status.textContent = 'Saved'
+    } catch {
+      status.textContent = 'Could not save.'
+    }
+  }
+
+  async function deleteCurrentScheduled() {
+    const id = _currentScheduledId
+    if (!id) return
+    try {
+      const res = await axionFetch(`${API}/scheduled/${id}`, { method: 'DELETE', headers: authHeaders() })
+      if (!res.ok) return
+    } catch { return }
+    _scheduled = _scheduled.filter(s => s.id !== id)
+    closeScheduledEditor()
+    openScheduled()
   }
 
   function titleFrom(text) {
