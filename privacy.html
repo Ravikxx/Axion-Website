@@ -219,7 +219,7 @@
       <li>Axion-issued API keys and their status, request counts, token counts, calculated usage cost, allowance windows, and rate-limit records.</li>
       <li>Plan and subscription status, credit balances, credit-code redemptions, and Square customer or subscription identifiers.</li>
       <li>Signed-in web chat history and chat metadata used to sync conversations across sessions.</li>
-      <li>A separate server-side log of message content, model responses, and model-requested tool calls across authenticated browser-session and API-key usage, kept independently of your visible chat history. Historical logs may include requests made before Axion required authentication for hosted access. An automated process periodically sends recent role-labeled context, the target user message, and the corresponding assistant response to Mistral for asynchronous safety classification. Every reviewed exchange comes back as one of three outcomes: <strong>safe</strong>, and nothing further happens; <strong>an operational error</strong>, meaning the model, the API, or response parsing failed and the exchange could not be classified at all — this is recorded as a system fault, never as a user-safety violation; or <strong>flagged for human review</strong>, where a member of our team reads the exchange and either dismisses or confirms the finding. Safe rows, operational errors, and dismissed findings are retained for up to 30 days. Unreviewed rows and pending or confirmed findings are retained for up to one year for human review, safety enforcement, and legal compliance. A confirmed finding may lead to suspension of the attached account; suspended users receive access to the appeal process.</li>
+      <li>A separate server-side log of message content, model responses, and model-requested tool calls across authenticated browser-session and API-key usage, kept independently of your visible chat history. Historical logs may include requests made before Axion required authentication for hosted access. An automated process periodically sends recent role-labeled context, the target user message, and the corresponding assistant response to Mistral for asynchronous safety classification. Every reviewed exchange comes back as one of three outcomes: <strong>safe</strong>, and nothing further happens; <strong>an operational error</strong>, meaning the model, the API, or response parsing failed and the exchange could not be classified at all; this is recorded as a system fault, never as a user-safety violation; or <strong>flagged for human review</strong>, where a member of our team reads the exchange and either dismisses or confirms the finding. Safe rows, operational errors, and dismissed findings are retained for up to 30 days. Unreviewed rows and pending or confirmed findings are retained for up to one year for human review, safety enforcement, and legal compliance. A confirmed finding may lead to suspension of the attached account; suspended users receive access to the appeal process.</li>
       <li>Email and announcement preferences, organization membership and invitations, and CLI device-login codes.</li>
       <li>Administrative test changes to plan, allowance usage, or credit balances, including who made the change and when.</li>
     </ul>
@@ -240,7 +240,7 @@
           <li>These run as local MCP servers (GitHub, Notion, Slack) or direct API calls (Google). Anything they retrieve becomes prompt context and is then sent to the AI model you selected (see Hosted features).</li>
         </ul>
       </li>
-      <li><strong>Voice recording</strong> — your microphone is captured to a temporary <code>.wav</code> on your machine. (Transcribing that audio is a hosted feature — see below.)</li>
+      <li><strong>Voice recording</strong> — your microphone is captured to a temporary <code>.wav</code> on your machine. (Transcribing that audio is a hosted feature; see below.)</li>
       <li><strong>Session memory</strong> — cross-session memory, learned preferences, and notes live in <code>~/.axion/</code> on your device.</li>
       <li><strong>API keys</strong> — keys you supply are stored locally and sent only to the provider they belong to.</li>
       <li><strong>Local models</strong> — with Ollama, inference runs entirely on your machine.</li>
@@ -250,7 +250,7 @@
 
   <div class="policy-section">
     <h2>Hosted features</h2>
-    <p>These send data off your device — to a provider you chose or to Axion Labs' hosted backend, as described below.</p>
+    <p>These send data off your device, either to a provider you chose or to Axion Labs' hosted backend, as described below.</p>
 
     <p style="margin-top:16px"><strong>AI model inference.</strong> Your prompt, plus any file contents, command output, or page text included as context, is sent to the model provider you select with <code>/model</code>:</p>
     <ul>
@@ -275,12 +275,12 @@
       <li><strong>Square</strong> processes Pro checkout and payment information. Axion receives and stores the customer or subscription identifiers and status needed to manage access.</li>
     </ul>
 
-    <p style="margin-top:16px"><strong>Training-data contributions</strong> (<code>/contribute</code>). Opt-in — nothing is sent unless you type <code>/contribute</code> yourself. When you do:</p>
+    <p style="margin-top:16px"><strong>Training-data contributions</strong> (<code>/contribute</code>). Opt-in: nothing is sent unless you type <code>/contribute</code> yourself. When you do:</p>
     <ul>
       <li>The session is <strong>redacted first</strong>: file contents stripped, message text truncated (~1,000 chars per message, 200 per tool result), leaving structure and metadata.</li>
       <li>The redacted session is then <strong>uploaded to Axion Labs' collection endpoint on Cloudflare Workers</strong> (<code>axion-collect…workers.dev</code>).</li>
       <li>If that upload fails (e.g. you're offline), the session is saved locally to <code>~/.axion/donations/</code> as a fallback. Files there remain on your disk until you delete them and are not uploaded automatically later.</li>
-      <li>A prompt may appear after long or difficult sessions, but the prompt alone sends nothing — only the <code>/contribute</code> command does.</li>
+      <li>A prompt may appear after long or difficult sessions, but the prompt alone sends nothing; only the <code>/contribute</code> command does.</li>
       <li>Run <code>/contribute optout</code> to disable prompts permanently, or <code>/contribute skip</code> to dismiss for this session.</li>
     </ul>
   </div>
@@ -305,9 +305,9 @@
       <li>Delete individual signed-in web chats from the chat interface. Deleting your account also removes account identifiers from retained safety-log rows and redacts routine content. A pending or confirmed flagged exchange may remain without account identifiers until its human-review need ends or the one-year retention limit expires.</li>
       <li>Use the unsubscribe link in an announcement email to remove a separate announcement subscription.</li>
       <li>Disconnect any OAuth service with <code>/oauth revoke &lt;service&gt;</code>, or delete <code>~/.axion/oauth.json</code></li>
-      <li>Use your own provider keys — or a local model via Ollama — to keep inference off Axion Labs' backend entirely</li>
+      <li>Use your own provider keys, or a local model via Ollama, to keep inference off Axion Labs' backend entirely</li>
       <li>Opt out of contribution prompts with <code>/contribute optout</code>, and delete any local files in <code>~/.axion/donations/</code> yourself</li>
-      <li>Axion is open source — audit exactly what it does at <a href="https://github.com/Ravikxx/Axion">github.com/Ravikxx/Axion</a></li>
+      <li>Axion is open source, so you can audit exactly what it does at <a href="https://github.com/Ravikxx/Axion">github.com/Ravikxx/Axion</a></li>
     </ul>
   </div>
 
