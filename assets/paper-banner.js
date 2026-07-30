@@ -11,8 +11,17 @@
  *
  * Each cycle advances to the next image in data-images (looping back to
  * the first, or re-cropping the same one if only one is given) and snaps
- * to a new random crop (zoom + position) for it — an instant cut, not a
- * fade.
+ * to a new random crop position for it — an instant cut, not a fade. The
+ * cycle pauses off-screen and when the tab is hidden, and never starts at
+ * all under prefers-reduced-motion.
+ *
+ * NOTE ON CROPPING: the banner is a wide strip (21/7) and the paper photos
+ * are near-square (0.78–1.66), so a large part of every photo necessarily
+ * falls outside the box — that's geometry, not a setting, and only changing
+ * the banner's aspect-ratio changes it. What the code controls is that the
+ * crop is the *minimum* the shape requires: cover scale is computed exactly,
+ * the extra zoom multiplier defaults to 1, and orientation is chosen to need
+ * less zoom (see bestFit). Randomness moves *which* part shows, not how much.
  *
  * The fill size is computed from the image's *actual* natural dimensions
  * and the container's *actual* rendered box (the same math as CSS
@@ -111,8 +120,12 @@
 
     var logo = el.dataset.logo;
     var interval = parseInt(el.dataset.interval, 10) || 500;
+    // Default to no extra zoom. The cover scale below already crops as much as
+    // the container's shape requires; anything above 100 crops *further* than
+    // necessary and upscales the photo past its native resolution for no gain.
+    // Opt in per-banner via data-zoom-max if a particular one wants the wobble.
     var zoomMin = parseFloat(el.dataset.zoomMin) || 100;
-    var zoomMax = parseFloat(el.dataset.zoomMax) || 106;
+    var zoomMax = parseFloat(el.dataset.zoomMax) || 100;
 
     el.innerHTML = '';
 
@@ -206,7 +219,38 @@
       setTimeout(markReady, 2000);
     });
 
-    window.setInterval(paintNext, interval);
+    // Motion gating. The CSS `prefers-reduced-motion` rule only disables a
+    // transition — this interval is what actually moves, so it has to be gated
+    // here or a visitor who asked for reduced motion still gets a background
+    // changing twice a second. They get one crop and no cycling instead.
+    //
+    // For everyone else the cycle pauses whenever the banner isn't on screen or
+    // the tab is hidden, so it isn't repainting the whole time you're reading
+    // further down the page (same rule the Project Crucible hero follows).
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduced) {
+      var timer = null;
+      var onScreen = true;
+
+      function sync() {
+        var shouldRun = onScreen && !document.hidden;
+        if (shouldRun && !timer) {
+          timer = window.setInterval(paintNext, interval);
+        } else if (!shouldRun && timer) {
+          window.clearInterval(timer);
+          timer = null;
+        }
+      }
+
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (entries) {
+          onScreen = entries[0].isIntersecting;
+          sync();
+        }, { threshold: 0.05 }).observe(el);
+      }
+      document.addEventListener('visibilitychange', sync);
+      sync();
+    }
   }
 
   function init() {

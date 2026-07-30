@@ -145,6 +145,16 @@ These are lessons paid for in review cycles — keep them:
 - **Bake asset colors, don't rely on CSS filters** for legibility (the "LABS AI"
   subtext went invisible under a `brightness()` filter — the fix was recoloring
   the PNG).
+- **The banner wordmark carries a baked keyline — don't swap in the plain SVG.**
+  `logo-spiral-wordmark.svg` (single flat gold, `#E8B534`) sits over a paper crop
+  that re-randomizes every 500 ms across photos spanning `relLum` 0.05–0.51, so
+  the flat gold measures as low as 1.01:1 against the lightest paper — nearly
+  invisible, not just low-contrast. `assets/logo-spiral-wordmark-banner.png`
+  bakes a soft dark keyline (the `--accent-ink` token) behind the same glyph,
+  raising the worst case to 5.13:1 — every paper passes AA. Only the banner on
+  `index.html` uses this raster; everywhere else keeps the plain SVG. Regenerate
+  it with `.github/scripts/rebuild-wordmark.py` if the brand mark changes —
+  don't hand-edit the PNG or point the banner back at the bare SVG.
 
 ## Dashboard / API pages
 
