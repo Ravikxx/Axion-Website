@@ -76,7 +76,7 @@
   function apply() {
     var homeStatus = document.getElementById('veil-status')
     if (homeStatus && state !== 'migrating') {
-      homeStatus.innerHTML = '<span class="led down"></span> ' + copy.short
+      homeStatus.textContent = copy.short
     }
 
     // Swap only the state modifier — models.html bases its pill on .badge and
