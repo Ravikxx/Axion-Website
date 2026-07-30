@@ -101,34 +101,34 @@
 <div class="page-header">
   <div class="tag">Axion Labs</div>
   <h1>Why we're moving on from Veil</h1>
-  <p>Veil 1.1 was our first model. It's being deprecated, then retired — here's why, and what happens to it.</p>
+  <p>Veil 1.1 was our first model. It's being deprecated, then retired. Here's why, and what happens to it.</p>
   <div class="status-line" id="status-line"><span class="status-dot" id="status-dot"></span><span id="status-text">Loading status…</span></div>
 </div>
 
 <main>
   <section>
     <h2>What Veil was</h2>
-    <p>Veil 1.1 is a fine-tuned Llama 3.1 3B — small, fast, and free with an Axion account. It was our first model, built before Lumen existed, and it's the reason Lumen exists at all: everything we learned fine-tuning and shipping Veil shaped how we built Lumen 1.2.5.</p>
+    <p>Veil 1.1 is a fine-tuned Llama 3.1 3B: small, fast, and free with an Axion account. It was our first model, built before Lumen existed, and everything we learned fine-tuning and shipping it shaped how we built Lumen 1.2.5.</p>
   </section>
 
   <section>
     <h2>Why it's going away</h2>
-    <p>We recently moved our model hosting off shared, rate-limited infrastructure and onto our own servers — a chance to take a hard look at what we actually run day to day. Lumen has grown into a faster, more capable model that covers everything Veil did and more, with far better safety alignment behind it. Running two models split our attention between infrastructure, safety testing, and improvements — attention that's better spent making one model genuinely good than keeping two adequate ones alive.</p>
-    <p>This isn't a comment on Veil's quality for what it was built to do. It's a decision to focus.</p>
+    <p>We recently moved our model hosting off shared, rate-limited infrastructure and onto our own servers, which gave us a reason to look hard at what we actually run day to day. Lumen has grown into a faster, more capable model that covers everything Veil did and more, with far better safety alignment behind it. Running two models split our attention across infrastructure, safety testing, and improvements, and that attention is better spent making one model genuinely good than keeping two adequate ones alive.</p>
+    <p>Veil did what it was built to do. This is a decision about focus, not about its quality.</p>
   </section>
 
   <section>
     <h2>What happens, and when</h2>
     <ul class="timeline">
-      <li><span class="when">Jul 25, 2026</span><span class="what">Veil is marked deprecated, and goes offline earlier than planned — the compute it ran on is committed to the Project Crucible 600M rerun. We originally said it would keep answering requests through this period; it didn't, and that was our miss.</span></li>
+      <li><span class="when">Jul 25, 2026</span><span class="what">Veil is marked deprecated, and goes offline earlier than planned because the compute it ran on is committed to the Project Crucible 600M rerun. We originally said it would keep answering requests through this period; it didn't, and that was our miss.</span></li>
       <li><span class="when">Jul 30, 2026</span><span class="what">Veil comes back online and answers requests as normal, giving a real migration window rather than the one we promised and couldn't deliver.</span></li>
-      <li><span class="when">Aug 17, 2026</span><span class="what">Veil is fully retired. Its model card stays up on the <a href="/models" style="color:var(--accent)">Models page</a> permanently — a memory of where Axion started, not an active endpoint.</span></li>
+      <li><span class="when">Aug 17, 2026</span><span class="what">Veil is fully retired. Its model card stays up on the <a href="/models" style="color:var(--accent)">Models page</a> permanently, as a record of where Axion started rather than an active endpoint.</span></li>
     </ul>
   </section>
 
   <section>
     <h2>What to use instead</h2>
-    <p>If you were calling Veil directly, switch to Lumen (<code style="background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;font-size:13px">model: "lumen"</code>) — same OpenAI-compatible endpoint and the same free Axion account. Veil is unavailable right now, so if you are still pointing at it, moving today is the fix rather than waiting for August 17.</p>
+    <p>If you were calling Veil directly, switch to Lumen (<code style="background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;font-size:13px">model: "lumen"</code>). It's the same OpenAI-compatible endpoint and the same free Axion account. Veil is unavailable right now, so if you're still pointing at it, move today rather than waiting for August 17.</p>
     <a class="cta" href="/lumen-model">See Lumen's model details →</a>
   </section>
 </main>

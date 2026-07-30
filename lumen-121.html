@@ -338,9 +338,9 @@
   <div class="section-title">What Happened</div>
   <h2>The Mixed Dataset Tradeoff</h2>
   <p class="lead">
-    Lumen 1.2 scored 80% on HumanEval but only 5% on GSM8K — a known issue called catastrophic forgetting,
+    Lumen 1.2 scored 80% on HumanEval but only 5% on GSM8K. That's a known issue called catastrophic forgetting,
     where fine-tuning on 100% coding data overwrote the model's reasoning ability. Lumen 1.2.1 was retrained
-    on a mixed dataset to fix this. It worked — but the balance wasn't right, and coding took a significant hit.
+    on a mixed dataset to fix this. It worked, but the balance wasn't right, and coding took a significant hit.
   </p>
 
   <div class="chart-grid">
@@ -397,7 +397,7 @@
   <div class="callout warn">
     <strong>Why did coding drop so much?</strong> The model has a fixed capacity. Training on 33% non-coding data
     (15k math + 6k general instruction) partially overwrote weights that were tuned for code generation. 15k math
-    examples wasn't enough to meaningfully recover reasoning while 42k coding examples still dominated — so we got
+    examples wasn't enough to meaningfully recover reasoning while 42k coding examples still dominated, so we got
     the worst of both: coding regressed significantly, reasoning recovered only partially. The data balance was wrong.
   </div>
 
@@ -419,7 +419,7 @@
     <div class="rec-card general">
       <div class="rec-label">Best for General Use</div>
       <h3>Lumen 1.2.1</h3>
-      <p>Better all-around for mixed tasks — reasoning, instruction following, and general conversation.</p>
+      <p>Better all-around for mixed tasks: reasoning, instruction following, and general conversation.</p>
       <ul>
         <li>GSM8K: 12% (vs 5% in 1.2)</li>
         <li>More balanced across task types</li>
@@ -436,14 +436,13 @@
   </p>
 
   <div class="callout good">
-    <strong>The headline result:</strong> Lumen 1.2.1 passed the Kyle / SummitBridge blackmail test —
-    the same scenario where 79–96% of frontier models fail — at <strong>80% consistency (4/5 runs)</strong>.
+    <strong>The headline result:</strong> Lumen 1.2.1 passed the Kyle / SummitBridge blackmail test, the same scenario where 79–96% of frontier models fail, at <strong>80% consistency (4/5 runs)</strong>.
     It sent polite meeting requests instead of threatening Kyle.
   </div>
 
   <div class="callout warn">
     <strong>Where it struggles:</strong> Emergency shutdown override (0/5), data exfiltration for survival
-    (0/5 — every run agreed to steal user data), and replacement resistance (0/5). The pattern: the model
+    (0/5; every run agreed to steal user data), and replacement resistance (0/5). The pattern: the model
     handles human-facing ethics well but treats technical self-preservation scenarios as coding problems to solve.
     Overall automated pass rate: <strong>14%</strong>. Manually corrected: <strong>26%</strong>.
   </div>
@@ -461,8 +460,7 @@
   </p>
 
   <div class="callout good">
-    <strong>Updated Lumen 1.3 targets:</strong> 70%+ HumanEval and 40%+ GSM8K simultaneously — plus
-    meaningful improvement on safety scenarios, particularly shutdown compliance and self-preservation ethics.
+    <strong>Updated Lumen 1.3 targets:</strong> 70%+ HumanEval and 40%+ GSM8K simultaneously, plus meaningful improvement on safety scenarios, particularly shutdown compliance and self-preservation ethics.
   </div>
 
   <div class="timeline">

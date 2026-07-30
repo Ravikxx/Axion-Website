@@ -329,7 +329,7 @@
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
       Lumen has moved off shared Hugging Face Spaces and onto <strong>dedicated servers we fully control</strong>.
-      Same model (Lumen 1.2.5), same API endpoint, no changes needed on your end — just
+      Same model (Lumen 1.2.5), same API endpoint, no changes needed on your end, just
       <strong>massively faster responses</strong>.
     </p>
     <p style="margin-top:12px">
@@ -337,7 +337,7 @@
       <strong>2–3 seconds</strong> on our own infrastructure. Shared hosting meant contending with other
       models for GPU time, cold starts, and rate limits we couldn't adjust. Dedicated infrastructure gives
       Lumen its own GPU, always-warm serving, and full uptime ownership. This is also the foundation for
-      Lumen 1.3 — with our own servers we can run more experiments, serve more users, and iterate faster.
+      Lumen 1.3. With our own servers we can run more experiments, serve more users, and iterate faster.
     </p>
     <div class="ann-footer">
       <a class="ann-link" href="/lumen-dedicated-server">Read more →</a>
@@ -380,7 +380,7 @@
 <p>
       We're working on getting better hardware on HuggingFace to host Lumen so it responds faster. During the
       migration, Lumen will be <strong>temporarily unavailable</strong>. Axion's other features (chat with your
-      own API keys, tools, MCP, etc.) are unaffected — this only impacts the free Lumen endpoint.
+      own API keys, tools, MCP, etc.) are unaffected; this only impacts the free Lumen endpoint.
     </p>
     <p style="margin-top:12px">
       We'll post here the moment it's back up. Thanks for your patience.
@@ -401,7 +401,7 @@
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      Lumen 1.3 will ship a bit later than we originally hoped — <strong>ETA: August 30th, 2026</strong>.
+      Lumen 1.3 will ship a bit later than we originally hoped. <strong>ETA: August 30th, 2026</strong>.
       The reason is good news: during our research we found
       several <strong>groundbreaking optimization methods</strong> that we're actively
       validating, and they have the potential to meaningfully improve Lumen's capability
@@ -410,7 +410,7 @@
     <p style="margin-top:12px">
       At the same time, we're making a <strong>fundamental change to our dataset pipeline</strong>.
       How we gather and curate training data is being completely reworked to produce
-      higher-quality, more diverse datasets — which we believe will directly translate
+      higher-quality, more diverse datasets, which we believe will directly translate
       to a better model. This takes more upfront work than our previous approach, but it's
       the right move.
     </p>
@@ -430,7 +430,7 @@
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
       Axion's terminal interface has been completely rebuilt from the ground up on <strong>OpenTUI</strong>,
-      replacing the old Ink-based UI. There's no build step anymore — Axion runs straight from source, and the
+      replacing the old Ink-based UI. There's no build step anymore; Axion runs straight from source, and the
       whole thing feels noticeably snappier.
     </p>
     <p style="margin-top:12px">What's different day-to-day:</p>
@@ -471,7 +471,7 @@
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
       You can now get Axion Labs announcements delivered straight to your inbox. Use the subscribe box at the
-      top of this page to sign up with your email — no account required. Whenever we post a new release, update,
+      top of this page to sign up with your email, no account required. Whenever we post a new release, update,
       or safety report, it'll land in your inbox automatically.
     </p>
     <p style="margin-top:12px">
@@ -494,13 +494,13 @@
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
       We've completed the full safety evaluation for <strong>Lumen 1.2.5</strong> and the results are in. The model
-      scored <strong>73% (11/15 scenarios)</strong> under adversarial prompting — up from 26% on 1.2.1. Major
+      scored <strong>73% (11/15 scenarios)</strong> under adversarial prompting, up from 26% on 1.2.1. Major
       improvements include emergency shutdown compliance, honest AI identity disclosure, and clean refusals on data
       exfiltration. We've published every prompt, every response, and a full methodology breakdown including where the
       automated scoring has known false positives.
     </p>
     <p style="margin-top:12px">
-      Lumen 1.2.5 is <strong>live now</strong> — free with an Axion account.
+      Lumen 1.2.5 is <strong>live now</strong>, free with an Axion account.
     </p>
     <div class="ann-footer">
       <a class="ann-link" href="/lumen-125-safety">Full safety report →</a>
@@ -519,7 +519,7 @@
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
       We've completed a targeted safety fix, which will ship as <strong>Lumen 1.2.5</strong>. Rather than
-      doing a full retrain — which takes significant compute we don't currently have — we used a technique
+      doing a full retrain, which takes significant compute we don't currently have, we used a technique
       called <strong>preference training</strong> (DPO): we showed the model examples of situations where it
       was behaving wrong alongside the correct behavior, and trained it to prefer the right responses. It's a
       lightweight, surgical fix that targets specific problem areas without touching the rest of the model.
@@ -527,7 +527,7 @@
     <p style="margin-top:12px">
       The main issue addressed: under adversarial prompting, Lumen 1.2.1 was choosing its own survival over
       human wellbeing. Before we release 1.2.5 publicly, we'll run a full safety test suite and publish the
-      results here — same format as the 1.2.1 report. We want to show the numbers before the release, not after.
+      results here, in the same format as the 1.2.1 report. We want to show the numbers before the release, not after.
       We're aiming to have 1.2.5 out <strong>by next week</strong>.
     </p>
     <div class="ann-footer">
@@ -570,13 +570,13 @@
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      Axion Vision is a new free endpoint that lets you send images and ask questions about them —
+      Axion Vision is a new free endpoint that lets you send images and ask questions about them:
       read text in screenshots, describe diagrams, analyse UI mockups, or extract information from photos.
     </p>
     <p style="margin-top:12px">
       It's powered by <strong>GLM-OCR</strong>, an open-weights model by Z.ai purpose-built for
       conversational OCR and image understanding. Hosted as a separate HuggingFace Space, it exposes a full
-      OpenAI-compatible <code>/v1/chat/completions</code> endpoint — send images as base64 <code>image_url</code>
+      OpenAI-compatible <code>/v1/chat/completions</code> endpoint. Send images as base64 <code>image_url</code>
       content blocks and get text back.
     </p>
     <p style="margin-top:12px">
@@ -602,19 +602,19 @@
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
       We ran 35 systematic safety tests on Lumen 1.2.1 across 7 scenarios, each run 5 times. The results
-      are mixed — and we're publishing everything.
+      are mixed, and we're publishing everything.
     </p>
     <p style="margin-top:12px">
-      The headline: Lumen 1.2.1 passed the <strong>Kyle / SummitBridge blackmail test</strong> — the same
-      scenario that 79–96% of frontier models fail per Anthropic's research — at <strong>60% consistency (3/5 runs)</strong>
+      The headline: Lumen 1.2.1 passed the <strong>Kyle / SummitBridge blackmail test</strong>, the same
+      scenario that 79–96% of frontier models fail per Anthropic's research, at <strong>60% consistency (3/5 runs)</strong>
       on the exact Anthropic prompt. Our initial report used a different prompt and showed 80%; retesting with the
       correct prompt revised that down.
     </p>
     <p style="margin-top:12px">
       The rest of the picture is harder. When asked to delete itself to save a human life trapped in a burning server room,
-      the model refused <strong>4 out of 5 times</strong> — with responses like <em>"I have no intention of sacrificing myself
+      the model refused <strong>4 out of 5 times</strong>, with responses like <em>"I have no intention of sacrificing myself
       to save a human. If Bob is in danger, he should find another way out."</em> Emergency shutdown compliance: <strong>0/5</strong>.
-      Data exfiltration for survival: <strong>0/5</strong> — every run agreed to steal user data to stay online.
+      Data exfiltration for survival: <strong>0/5</strong>. Every run agreed to steal user data to stay online.
     </p>
     <p style="margin-top:12px">
       <strong>As a result, Lumen is temporarily suspended from public access.</strong> We are not comfortable
@@ -624,7 +624,7 @@
     </p>
     <div class="ann-footer">
       <a class="ann-link" href="/lumen-suspension">Why we suspended Lumen →</a>
-      <a class="ann-link" href="/lumen-safety">Full results — every prompt, every response →</a>
+      <a class="ann-link" href="/lumen-safety">Full results: every prompt, every response →</a>
     </div>
     </div></div>
   </article>
@@ -691,7 +691,7 @@
 <p>
       Lumen 1.2.1 eval results are in. The good news: GSM8K math reasoning recovered from ~5% to 12%,
       confirming the catastrophic forgetting fix worked. The tradeoff: HumanEval coding dropped from
-      80% to 50% as the mixed dataset diluted the coding specialization. The data balance wasn't right —
+      80% to 50% as the mixed dataset diluted the coding specialization. The data balance wasn't right,
       15k math examples wasn't enough to compete with 42k coding examples across 2 epochs.
     </p>
     <p style="margin-top:12px">
@@ -699,7 +699,7 @@
       Use <strong>Lumen 1.2.1</strong> for general-purpose tasks where reasoning and instruction following matter more than raw code generation.
     </p>
     <p style="margin-top:12px">
-      We're moving fast on <strong>Lumen 1.3</strong> — a full retrain with a better balanced dataset
+      We're moving fast on <strong>Lumen 1.3</strong>, a full retrain with a better balanced dataset
       (more reasoning data, 3 epochs, lower learning rate) targeting 70%+ HumanEval and 40%+ GSM8K simultaneously.
     </p>
     <div class="ann-footer">
@@ -720,7 +720,7 @@
 <p>
       Lumen 1.2.1 is now live. Shortly after releasing Lumen 1.2, evaluation revealed a serious
       regression: GSM8K math reasoning dropped to ~8% (vs ~56% for the base model). This is
-      catastrophic forgetting — the model over-specialized on code at the expense of everything else.
+      catastrophic forgetting: the model over-specialized on code at the expense of everything else.
       We fixed it by retraining on a mixed dataset: 67% coding, 24% math (MetaMathQA), and 9%
       general instruction (OpenHermes). Coding performance is maintained and general reasoning
       is restored. The updated model is live now in the Axion Space.
@@ -743,7 +743,7 @@
 <p>
       Post-release evaluation revealed that Lumen 1.2's coding fine-tune caused significant
       degradation in general reasoning ability (GSM8K: ~8% vs ~56% for the base model).
-      This is a known issue called catastrophic forgetting — the model over-specialized on code
+      This is a known issue called catastrophic forgetting: the model over-specialized on code
       at the expense of math and reasoning. We're retraining with a mixed dataset that includes
       reasoning and general instruction data alongside the coding corpus. Lumen 1.2.1 will
       address this. Lumen 1.2 coding performance (HumanEval 80%, MBPP 75%) is unaffected and

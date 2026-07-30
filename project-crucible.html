@@ -304,7 +304,7 @@
 <div class="hero">
   <div class="hero-badge">R&D Sprint</div>
   <h1>Project <span>Crucible</span></h1>
-  <p>Building <span class="light-word">TAME</span> — Ternary Adaptive MoE — an efficient small-model architecture combining 1.58-bit weights, mixture of experts, multi-token prediction, and group query attention.</p>
+  <p>Building <span class="light-word">TAME</span> (Ternary Adaptive MoE), an efficient small-model architecture combining 1.58-bit weights, mixture of experts, multi-token prediction, and group query attention.</p>
   <div class="hero-date">July 4 – August 17, 2026 · 6-Week Sprint</div>
   <div class="stat-row">
     <div class="stat">
@@ -701,12 +701,12 @@
   </div>
 
   <div class="accent-block">
-    <strong>What's the point?</strong> Each of these techniques has been validated independently in recent literature. The hypothesis of Project Crucible is that they compose well — that the memory savings of ternary weights, the capacity expansion of MoE, and the training efficiency of MTP create a model that's <strong>disproportionately capable for its parameter count</strong>.
+    <strong>What's the point?</strong> Each of these techniques has been validated independently in recent literature. The hypothesis of Project Crucible is that they compose well, and that the memory savings of ternary weights, the capacity expansion of MoE, and the training efficiency of MTP create a model that's <strong>disproportionately capable for its parameter count</strong>.
   </div>
 
   <div class="section-title">Progress</div>
   <h2>Day 22 Sprint Status</h2>
-  <p class="lead">Real progress, and one expensive mistake. The architecture holds up everywhere we've tested it at small scale — but the 600M run has to be thrown away and done again, because the learning rate was wrong.</p>
+  <p class="lead">Real progress, and one expensive mistake. The architecture holds up everywhere we've tested it at small scale, but the 600M run has to be thrown away and done again, because the learning rate was wrong.</p>
 
   <div class="timeline">
     <div class="timeline-item">
@@ -722,25 +722,25 @@
     <div class="timeline-item">
       <div class="date">Scaling up</div>
       <h3>102M Trained, 300M Came Up Short</h3>
-      <p>Crucible Axon-Chat (102M) trained on a mixed UltraChat + TinyChat dataset using the full validated stack — topically relevant responses, correct poem formatting, natural stopping points. Scaling the same recipe to 300M was a <strong>partial failure</strong>: enough of it worked to be worth diagnosing, not enough to keep.</p>
-      <p>Having fixed what caused it, we skipped retrying at 300M and went straight to <strong>600M</strong>, built on Qwen 0.6B — the same base model Microsoft used for BitDistill, which makes the head-to-head below a fair fight instead of an apples-to-oranges one.</p>
+      <p>Crucible Axon-Chat (102M) trained on a mixed UltraChat + TinyChat dataset using the full validated stack: topically relevant responses, correct poem formatting, natural stopping points. Scaling the same recipe to 300M was a <strong>partial failure</strong>: enough of it worked to be worth diagnosing, not enough to keep.</p>
+      <p>Having fixed what caused it, we skipped retrying at 300M and went straight to <strong>600M</strong>, built on Qwen 0.6B, the same base model Microsoft used for BitDistill, which makes the head-to-head below a fair fight instead of an apples-to-oranges one.</p>
     </div>
     <div class="timeline-item">
       <div class="date">Setback</div>
       <h3>The Learning Rate Was 0.009 Too High — Run Scrapped</h3>
       <p>The training config had the <strong>learning rate set 0.009 above where it should have been</strong>. Written down on its own, 0.009 looks like a rounding error. As a learning rate it is nothing of the sort: they live down in the ten-thousandths, so an extra 0.009 doesn't nudge the value, it swamps it. The model was taking wildly oversized steps from the first batch onward and never had a chance to settle.</p>
-      <p>There's no partial credit to salvage. Everything downstream of that number is untrustworthy, and a run you can't trust is worse than no run at all — you end up stacking the next experiment on top of it. So the 600M model goes in the bin and we start it again.</p>
+      <p>There's no partial credit to salvage. Everything downstream of that number is untrustworthy, and a run you can't trust is worse than no run at all, because you end up stacking the next experiment on top of it. So the 600M model goes in the bin and we start it again.</p>
     </div>
     <div class="timeline-item">
       <div class="date">In Progress</div>
       <h3>Rerunning the 600M Model</h3>
-      <p>Same architecture, same Qwen 0.6B base, same setup — corrected learning rate. The one upside of losing a run this way is that nothing about the design is in question, so there is nothing to redesign before starting over.</p>
+      <p>Same architecture, same Qwen 0.6B base, same setup, with a corrected learning rate. The one upside of losing a run this way is that nothing about the design is in question, so there is nothing to redesign before starting over.</p>
     </div>
     <div class="timeline-item">
       <div class="date">Next</div>
       <h3>Head-to-Head Against Microsoft's BitDistill</h3>
-      <p>Once the rerun finishes we're evaluating it against <a class="ext-link" href="https://arxiv.org/abs/2510.13998" target="_blank" rel="noopener noreferrer">BitDistill</a><a class="fn-ref" href="#fn-bitdistill" aria-label="Footnote: what BitDistill is">*</a>, Microsoft's pipeline for taking an off-the-shelf full-precision model down to 1.58-bit. The comparison is deliberately tight: BitDistill's published results start from Qwen 0.6B, so our 600M run starts from the same weights. Same base model, same target precision, two different routes there — which means whatever gap shows up is attributable to the method rather than to a difference in the models being compared.</p>
-      <p>Either result is worth having. If TAME comes out ahead, we have a reason to keep building it. If BitDistill does, we have a better starting point than the one we were about to build ourselves — which is a cheaper thing to learn now than at 300M of wasted compute.</p>
+      <p>Once the rerun finishes we're evaluating it against <a class="ext-link" href="https://arxiv.org/abs/2510.13998" target="_blank" rel="noopener noreferrer">BitDistill</a><a class="fn-ref" href="#fn-bitdistill" aria-label="Footnote: what BitDistill is">*</a>, Microsoft's pipeline for taking an off-the-shelf full-precision model down to 1.58-bit. The comparison is deliberately tight: BitDistill's published results start from Qwen 0.6B, so our 600M run starts from the same weights. Same base model, same target precision, two different routes there, which means whatever gap shows up is attributable to the method rather than to a difference in the models being compared.</p>
+      <p>Either result is worth having. If TAME comes out ahead, we have a reason to keep building it. If BitDistill does, we have a better starting point than the one we were about to build ourselves, which is a cheaper thing to learn now than at 300M of wasted compute.</p>
     </div>
   </div>
 
@@ -749,16 +749,16 @@
   <p class="lead">Here's what each component looks like in practice.</p>
 
   <h3>Ternary BitLinear</h3>
-  <p>Weights are quantized to ternary values during the forward pass: <code>round(clamp(w / scale, -1, 1))</code> where scale is the per-channel absolute mean. Gradients pass through the round operation via straight-through estimation, ignoring the quantization threshold in the backward pass. No full-precision copies are kept — the master weights are stored in FP16 and quantized per step.</p>
+  <p>Weights are quantized to ternary values during the forward pass: <code>round(clamp(w / scale, -1, 1))</code> where scale is the per-channel absolute mean. Gradients pass through the round operation via straight-through estimation, ignoring the quantization threshold in the backward pass. No full-precision copies are kept; the master weights are stored in FP16 and quantized per step.</p>
 
   <h3>MoE Routing</h3>
   <p>Every MoE layer has one full-precision shared expert and 8 ternary routed experts. A learned router produces logits over the 8 routed experts; top-1 gating selects which expert to activate per token. The shared expert processes every token, acting as a stable backbone while routed experts handle specialization.</p>
 
   <h3>Aux-Loss-Free Balancing</h3>
-  <p>Instead of adding an auxiliary loss to encourage balanced expert usage (which competes with the main LM loss gradient), we use per-expert bias terms added directly to the routing logits. After each step, if an expert receives fewer tokens than the expected uniform share, its bias is incremented; if it receives more, its bias is decremented. This is a purely feedback-based mechanism — no gradient competition, no tuning of loss coefficients.</p>
+  <p>Instead of adding an auxiliary loss to encourage balanced expert usage (which competes with the main LM loss gradient), we use per-expert bias terms added directly to the routing logits. After each step, if an expert receives fewer tokens than the expected uniform share, its bias is incremented; if it receives more, its bias is decremented. This is a purely feedback-based mechanism: no gradient competition, no tuning of loss coefficients.</p>
 
   <h3>Multi-Token Prediction</h3>
-  <p>The model has two LM heads. The primary head predicts t+1 as usual. A secondary head, fed from an intermediate layer, predicts t+2. Both heads contribute to the training loss with a fixed ratio. At inference time, only the primary head is used — the auxiliary head is discarded, so there's no runtime cost.</p>
+  <p>The model has two LM heads. The primary head predicts t+1 as usual. A secondary head, fed from an intermediate layer, predicts t+2. Both heads contribute to the training loss with a fixed ratio. At inference time, only the primary head is used; the auxiliary head is discarded, so there's no runtime cost.</p>
 
   <h3>Grouped Query Attention</h3>
   <p>With 8 query heads and 2 KV heads, grouped query attention projects each KV head to serve 4 query heads. The KV cache is 4× smaller than full multi-head attention (8 KV heads), and the attention computation is proportionally faster. Positional encoding via RoPE (rotary position embeddings).</p>
@@ -811,12 +811,11 @@
 
   <p style="font-size:14px;color:var(--muted3);margin-top:-12px">
     The 300M column is the from-scratch design that came up short. The current 600M run starts from Qwen 0.6B
-    instead, so it inherits that model's configuration rather than this one — its specs will go up here once the
-    rerun finishes.
+    instead, so it inherits that model's configuration rather than this one. Its specs will go up here once the rerun finishes.
   </p>
 
   <div class="accent-block">
-    <strong>What's next?</strong> The 600M run is training again after a bad learning rate cost us the first attempt. Once it lands, it goes head-to-head with Microsoft's BitDistill from the same Qwen 0.6B starting point — with the long-term goal of open-sourcing the architecture and tooling either way. Follow along on <a href="https://github.com/Ravikxx/Axion">GitHub</a>.
+    <strong>What's next?</strong> The 600M run is training again after a bad learning rate cost us the first attempt. Once it lands, it goes head-to-head with Microsoft's BitDistill from the same Qwen 0.6B starting point, with the long-term goal of open-sourcing the architecture and tooling either way. Follow along on <a href="https://github.com/Ravikxx/Axion">GitHub</a>.
   </div>
 
   <p class="footnote" id="fn-bitdistill">

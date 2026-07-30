@@ -207,7 +207,7 @@
     <div class="header-text">
       <div class="tag">Axion Labs</div>
       <h1>Documentation</h1>
-      <p>We research AI safety and build the models behind Axion. Chat with them in your browser, call them from your own code, or — if you want an agent that can read files and run commands — use the CLI.</p>
+      <p>We research AI safety and build the models behind Axion. Chat with them in your browser, call them from your own code, or use the CLI if you want an agent that can read files and run commands.</p>
     </div>
     <div id="docs-term"></div>
   </div>
@@ -249,7 +249,7 @@
           <div class="model-card-badge badge-free">Free account required</div>
           <div class="model-card-name">Lumen 1.2.5</div>
           <div class="model-card-alias"><code>model: "lumen"</code></div>
-          <div class="model-card-desc">Fine-tuned Llama 3.1 8B with DPO safety training. General assistant — questions, writing, code, explanations. Also available at <a href="/lumen" style="color:var(--accent)">axion.amplifiedsmp.org/lumen</a>.</div>
+          <div class="model-card-desc">Fine-tuned Llama 3.1 8B with DPO safety training. General assistant: questions, writing, code, explanations. Also available at <a href="/lumen" style="color:var(--accent)">axion.amplifiedsmp.org/lumen</a>.</div>
         </div>
         <div class="model-card">
           <div class="model-card-badge badge-paid" id="veil-badge">Deprecated</div>
@@ -289,7 +289,7 @@
 
       <h3>Rate limits</h3>
       <ul>
-        <li><strong>Free account</strong> — required for hosted model access; account-wide $0.125 / week and $0.05 / rolling 2h, measured from input and output tokens. Both are lazy-start — the clock only starts on your first request. Sign in at <a href="/keys" style="color:var(--accent)">keys</a> to create up to three keys.</li>
+        <li><strong>Free account</strong> — required for hosted model access; account-wide $0.125 / week and $0.05 / rolling 2h, measured from input and output tokens. Both are lazy-start; the clock only starts on your first request. Sign in at <a href="/keys" style="color:var(--accent)">keys</a> to create up to three keys.</li>
         <li><strong>Pro account</strong> — $7 / month, with account-wide $1.25 / week and $0.50 / rolling 2h included usage plus unlimited active keys.</li>
         <li><strong>API credits</strong> — redeemed credits cover token usage after the included allowance.</li>
       </ul>
@@ -339,7 +339,7 @@
       </ol>
 
       <h3>Inviting members</h3>
-      <p>Click <strong>Invite member</strong> in the topbar when a team is selected. They'll get an email with a link — when they click it and sign in, they're added to the team automatically.</p>
+      <p>Click <strong>Invite member</strong> in the topbar when a team is selected. They'll get an email with a link. When they click it and sign in, they're added to the team automatically.</p>
 
       <h3>Team API keys</h3>
       <p>While viewing a team, click <strong>+ New Key</strong> to create a key scoped to that team. Team keys appear under the team, not under personal keys. Any member can create keys; only the team owner can delete the team.</p>
@@ -380,7 +380,7 @@
       </div>
       <p>Select Lumen and sign in with <code>/login</code>, or paste an API key for another provider when prompted.</p>
       <h3>Sign in to Axion Labs</h3>
-      <p>Run <code>/login</code> inside Axion to open a browser tab, sign in to your Axion Labs account, and automatically save an API key — no copy-pasting needed.</p>
+      <p>Run <code>/login</code> inside Axion to open a browser tab, sign in to your Axion Labs account, and automatically save an API key, with no copy-pasting needed.</p>
       <div class="code-block">
         <span class="prompt">› </span>/login<br>
         <span class="comment">  Opening browser… click Authorize in the tab that opens.</span><br>
@@ -450,7 +450,7 @@
         <span class="prompt">› </span>/model lumen<br>
         <span class="prompt">› </span>/model groq
       </div>
-      <p>Conversation history carries over when you switch — the new model gets full context.</p>
+      <p>Conversation history carries over when you switch, so the new model gets full context.</p>
     </div>
 
     <div class="doc-section" id="commands">
@@ -461,7 +461,7 @@
       <table class="cmd-table">
         <thead><tr><th>Command</th><th>What it does</th></tr></thead>
         <tbody>
-          <tr><td><code>/login</code></td><td class="desc">Sign in to Axion Labs via browser — auto-creates and saves an API key</td></tr>
+          <tr><td><code>/login</code></td><td class="desc">Sign in to Axion Labs via browser; auto-creates and saves an API key</td></tr>
           <tr><td><code>/axion-key &lt;key&gt;</code></td><td class="desc">Save your Axion API key manually</td></tr>
           <tr><td><code>/axion-key remove</code></td><td class="desc">Clear your Axion API key</td></tr>
           <tr><td><code>/api &lt;provider&gt; &lt;key&gt;</code></td><td class="desc">Set a third-party API key (claude, gpt, groq, mistral, gemini, openrouter)</td></tr>
@@ -589,7 +589,7 @@
         <span class="comment"># Override the model</span><br>
         <span class="prompt">$ </span>axion-discord --model lumen
       </div>
-      <p>Once running, message the bot in Discord. Tasks run in a queue — one at a time. Members can cancel the current task by typing <code>cancel</code>.</p>
+      <p>Once running, message the bot in Discord. Tasks run in a queue, one at a time. Members can cancel the current task by typing <code>cancel</code>.</p>
       <div class="callout info">
         Get a bot token from the <a href="https://discord.com/developers/applications" style="color:var(--accent)">Discord Developer Portal</a>. Enable "Message Content Intent" under Bot settings.
       </div>
