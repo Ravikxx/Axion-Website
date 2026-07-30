@@ -396,6 +396,13 @@
           </div>
           <input type="checkbox" class="settings-toggle" id="pref-announcements">
         </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Scheduled tasks</div>
+            <div class="settings-row-desc">Email me when a scheduled task finishes or fails, since I'm not watching the chat when it runs.</div>
+          </div>
+          <input type="checkbox" class="settings-toggle" id="pref-scheduled">
+        </div>
         <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
           <button class="btn-sm" onclick="savePrefs()">Save</button>
           <span class="status-msg" id="prefs-msg"></span>
@@ -624,6 +631,7 @@
       const p = await res.json();
       document.getElementById('pref-limit').checked = p.notify_limit !== 0;
       document.getElementById('pref-announcements').checked = p.notify_announcements !== 0;
+      document.getElementById('pref-scheduled').checked = p.notify_scheduled !== 0;
       document.getElementById('pref-sandbox-auto').checked = p.sandbox_mode === 'auto';
     } catch {}
   }
@@ -632,6 +640,7 @@
     const body = {
       notify_limit: document.getElementById('pref-limit').checked,
       notify_announcements: document.getElementById('pref-announcements').checked,
+      notify_scheduled: document.getElementById('pref-scheduled').checked,
     };
     try {
       const res = await fetchT(API + '/dashboard/prefs', {
