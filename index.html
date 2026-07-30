@@ -80,7 +80,7 @@
     .hero {
       position: relative;
       max-width: 1060px; margin: 0 auto;
-      display: grid; grid-template-columns: 1.05fr 1fr;
+      display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
       gap: 56px; align-items: center;
     }
     .hero-eyebrow {
@@ -160,10 +160,10 @@
       color: var(--muted);
       overflow-x: auto;
     }
-    .chat-status .seg { padding: 8px 14px; white-space: nowrap; border-right: 1px solid var(--border); }
+    .chat-status .seg { padding: 8px 14px; white-space: nowrap; }
     .chat-status .seg b { color: var(--muted2); font-weight: 500; }
     .chat-status .seg.ep { color: var(--muted2); font-weight: 600; }
-    .chat-status .seg.right { margin-left: auto; border-right: none; border-left: 1px solid var(--border); }
+    .chat-status .seg.right { margin-left: auto; }
 
     /* News banner */
     .paper-banner-wrap { max-width: 1060px; margin: 28px auto 0; padding: 0 32px; }
@@ -306,6 +306,9 @@
       main { padding: 56px 16px 72px; }
       .cta-section { padding: 40px 22px; }
       .footer-inner { flex-direction: column; }
+      /* Keep both segments visible instead of clipping the endpoint label. */
+      .chat-status { font-size: 11px; }
+      .chat-status .seg { padding: 8px 10px; }
     }
   </style>
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
@@ -341,7 +344,7 @@
   <div class="hero">
     <div class="hero-text">
       <p class="hero-eyebrow">Axion Labs · open models</p>
-      <h1><span class="lumen">Lumen</span> is free with an account.</h1>
+      <h1>Meet <span class="lumen">Lumen</span>.</h1>
       <p class="hero-sub">We build and host our own models. <b>Lumen 1.2.5</b> runs in the browser, behind an <b>OpenAI-compatible API</b>, and in your terminal.</p>
       <p class="hero-status"><span id="status-text">checking model status…</span></p>
       <div class="hero-actions">
@@ -359,9 +362,7 @@
         <div class="chat-body" id="chat-body"></div>
         <div class="chat-status">
           <span class="seg ep">POST /v1/chat/completions</span>
-          <span class="seg"><b>$0.125</b> included / week</span>
-          <span class="seg"><b>free account</b> required</span>
-          <span class="seg right">OpenAI-compatible</span>
+          <span class="seg right"><b>$0.125</b> free / week</span>
         </div>
       </div>
     </div>
