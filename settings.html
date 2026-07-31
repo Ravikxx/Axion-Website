@@ -19,7 +19,7 @@
     }
     a { color: inherit; text-decoration: none; }
 
-    /* ── Signed-out prompt ── */
+    /* Signed-out prompt */
     #signin-prompt {
       position: fixed; inset: 0; z-index: 100; background: var(--bg);
       display: none; align-items: center; justify-content: center; padding: 24px;
@@ -37,7 +37,7 @@
       font-size: 14px; font-weight: 600; background: var(--accent); color: var(--accent-ink);
     }
 
-    /* ── Sidebar (matches /keys) ── */
+    /* Sidebar (matches /keys) */
     .sidebar {
       width: 220px; flex-shrink: 0;
       height: 100vh; position: sticky; top: 0;
@@ -79,7 +79,7 @@
     }
     .sidebar-signout:hover { background: var(--surface2); color: var(--text); }
 
-    /* ── Main ── */
+    /* Main */
     .main {
       flex: 1; min-width: 0; height: 100vh;
       display: none; flex-direction: column; overflow-y: auto;
@@ -128,7 +128,7 @@
     .settings-panel[hidden] { display: none; }
     .span-full { grid-column: 1 / -1; }
 
-    /* ── Settings sections ── */
+    /* Settings sections */
     .settings-section {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 10px; padding: 22px 24px;
@@ -490,7 +490,7 @@
 
   function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-  // ── Settings tabs ─────────────────────────────────────────────────────────
+  // Settings tabs
   const SETTINGS_TAB_NAMES = ['account', 'general', 'billing'];
 
   function activateSettingsTab(name, updateHistory) {
@@ -529,7 +529,7 @@
     window.addEventListener('popstate', () => activateSettingsTab(location.hash.slice(1), false));
   }
 
-  // ── Profile picture ───────────────────────────────────────────────────────
+  // Profile picture
   function renderProfilePicture(url) {
     AxionAccountProfile.cacheAvatar(url || '');
     AxionAccountProfile.renderAvatar(document.getElementById('profile-picture-preview'), userEmail, url);
@@ -624,7 +624,7 @@
     void uploadProfilePicture(file);
   });
 
-  // ── Notifications ─────────────────────────────────────────────────────────
+  // Notifications
   async function loadPrefs() {
     try {
       const res = await fetchT(API + '/dashboard/prefs', { headers: authHeaders });
@@ -672,7 +672,7 @@
     setTimeout(() => { msg.textContent = ''; }, 2500);
   }
 
-  // ── Usage & billing (real data — /dashboard/keys + /dashboard/daily) ───────
+  // Usage & billing (real data — /dashboard/keys + /dashboard/daily)
   // Both run concurrently, not sequentially — otherwise a timed-out first
   // request delays the second request's own timeout by the same amount.
   function loadUsage() {
@@ -841,7 +841,7 @@
     });
   }
 
-  // ── Password reset ──────────────────────────────────────────────────────
+  // Password reset
   // Authenticated shortcut for the same email flow /keys uses (no turnstile
   // needed — the Bearer token already proves who's asking). Backend route
   // doesn't exist yet: see handoff spec.
@@ -861,7 +861,7 @@
     }
   }
 
-  // ── Connected accounts ──────────────────────────────────────────────────
+  // Connected accounts
   // Backend routes don't exist yet: see handoff spec. Renders a clear
   // "not available yet" state per provider rather than pretending to work.
   const PROVIDERS = [
@@ -910,7 +910,7 @@
     }
   }
 
-  // ── Delete account ──────────────────────────────────────────────────────
+  // Delete account
   function showDeleteConfirm() {
     document.getElementById('delete-confirm-row').style.display = '';
     document.getElementById('btn-delete').style.display = 'none';
@@ -936,7 +936,7 @@
     }
   }
 
-  // ── Init ─────────────────────────────────────────────────────────────────
+  // Init
   (function init() {
     setupSettingsTabs();
     if (!sessionToken) {

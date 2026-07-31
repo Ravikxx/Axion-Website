@@ -28,7 +28,7 @@
     }
     a { color: inherit; text-decoration: none; }
 
-    /* ── Nav ── */
+    /* Nav */
     nav {
       border-bottom: 1px solid var(--border);
       background: var(--surface);
@@ -49,7 +49,7 @@
     .nav-btn-ghost { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--muted2); border: 1px solid var(--border2); transition: color .12s, border-color .12s; }
     .nav-btn-ghost:hover { color: var(--text); border-color: var(--muted); }
 
-    /* ── Page header ── */
+    /* Page header */
     .page-header {
       border-bottom: 1px solid var(--border);
       padding: 48px 32px 36px;
@@ -59,7 +59,7 @@
     .page-header h1 { font-size: 36px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 8px; }
     .page-header p { color: var(--muted2); font-size: 15px; }
 
-    /* ── Layout ── */
+    /* Layout */
     .docs-layout {
       max-width: 1080px; margin: 0 auto; padding: 0 32px;
       display: grid; grid-template-columns: 210px 1fr;
@@ -67,7 +67,7 @@
     }
     .docs-layout > * { min-width: 0; }
 
-    /* ── Sidebar ── */
+    /* Sidebar */
     .sidebar { position: sticky; top: 68px; padding: 32px 0 80px; }
     .sidebar-section { margin-bottom: 22px; }
     .sidebar-heading {
@@ -84,7 +84,7 @@
     .sidebar a:hover { color: var(--text); }
     .sidebar a.active { color: var(--accent); border-left-color: var(--accent); }
 
-    /* ── Content ── */
+    /* Content */
     .docs-content { padding: 40px 0 96px; }
     .doc-section { margin-bottom: 64px; padding-bottom: 64px; border-bottom: 1px solid var(--border); }
     .doc-section:last-child { border-bottom: none; margin-bottom: 0; }
@@ -97,7 +97,7 @@
     .doc-section li { font-size: 13px; color: var(--muted2); line-height: 1.65; margin-bottom: 5px; }
     .doc-section li strong { color: var(--text); }
 
-    /* ── Code ── */
+    /* Code */
     .code-block {
       background: var(--surface); border: 1px solid var(--border2);
       border-radius: 8px; padding: 16px 20px;
@@ -114,7 +114,7 @@
       padding: 2px 6px; border-radius: 4px;
     }
 
-    /* ── Callout ── */
+    /* Callout */
     .callout {
       border-radius: 8px; padding: 13px 16px;
       margin: 16px 0; font-size: 13px; line-height: 1.65;
@@ -134,7 +134,7 @@
     }
     .callout.warn strong { color: var(--yellow); }
 
-    /* ── Command table ── */
+    /* Command table */
     .cmd-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 14px 0; }
     .cmd-table th {
       text-align: left; padding: 9px 14px;
@@ -147,7 +147,7 @@
     .cmd-table td:first-child { white-space: nowrap; }
     .cmd-table .desc { color: var(--muted2); font-size: 12px; }
 
-    /* ── Model cards ── */
+    /* Model cards */
     .model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
     .model-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
     .model-card-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
@@ -158,12 +158,12 @@
     .badge-key  { background: rgba(184, 162, 125,.12); color: var(--accent); }
     .badge-paid { background: var(--surface2); color: var(--muted); }
 
-    /* ── Footer ── */
+    /* Footer */
     footer { background: var(--surface); border-top: 1px solid var(--border); text-align: center; padding: 24px 32px; font-size: 13px; color: var(--muted); }
     footer a { color: var(--muted2); }
     footer a:hover { color: var(--text); }
 
-    /* ── Mobile ── */
+    /* Mobile */
     @media (max-width: 720px) {
       .docs-layout { grid-template-columns: 1fr; gap: 0; padding: 0 16px; }
       .sidebar { display: none; }
@@ -174,7 +174,7 @@
       .page-header h1 { font-size: 26px; }
     }
 
-    /* ── Header terminal layout ── */
+    /* Header terminal layout */
     .header-inner { display: flex; gap: 40px; align-items: center; justify-content: space-between; max-width: 1080px; margin: 0 auto; flex-wrap: wrap; }
     .header-text { flex: 1; min-width: 280px; }
     #docs-term { flex-shrink: 0; }

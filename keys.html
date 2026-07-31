@@ -21,7 +21,7 @@
     }
     a { color: inherit; text-decoration: none; }
 
-    /* ── Auth gate (full screen, no sidebar) ── */
+    /* Auth gate (full screen, no sidebar) */
     #auth-screen, .overlay-screen {
       position: fixed; inset: 0; z-index: 100;
       background: var(--bg);
@@ -88,7 +88,7 @@
     .oauth-btn:hover { border-color: var(--border); color: var(--text); }
     .oauth-btn:last-child { margin-bottom: 0; }
 
-    /* ── Sidebar ── */
+    /* Sidebar */
     .sidebar {
       width: 220px; flex-shrink: 0;
       height: 100vh; position: sticky; top: 0;
@@ -143,7 +143,7 @@
     }
     .sidebar-signout:hover { background: var(--surface2); color: var(--text); }
 
-    /* ── Main ── */
+    /* Main */
     .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 
     .topbar {
@@ -164,7 +164,7 @@
 
     .content { flex: 1; padding: 28px; overflow-y: auto; }
 
-    /* ── Search ── */
+    /* Search */
     .search-wrap { margin-bottom: 20px; }
     .search-input {
       width: 280px; padding: 8px 12px;
@@ -175,7 +175,7 @@
     .search-input:focus { border-color: var(--accent); }
     .search-input::placeholder { color: var(--muted); }
 
-    /* ── Table ── */
+    /* Table */
     .table-wrap {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 10px; overflow: hidden;
@@ -233,7 +233,7 @@
     .empty-keys { text-align: center; padding: 56px 24px; color: var(--muted); }
     .empty-keys strong { display: block; font-size: 15px; color: var(--text); margin-bottom: 6px; }
 
-    /* ── Usage section ── */
+    /* Usage section */
     .usage-section {
       margin-top: 24px;
       background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px;
@@ -248,7 +248,7 @@
     .usage-bar-track { height: 5px; background: var(--border2); border-radius: 3px; overflow: hidden; }
     .usage-bar-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
 
-    /* ── Daily chart ── */
+    /* Daily chart */
     .chart-section {
       margin-top: 24px;
       background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px;
@@ -257,7 +257,7 @@
     .chart-wrap { position: relative; height: 90px; }
     .chart-wrap canvas { width: 100%; height: 100%; }
 
-    /* ── Docs callout ── */
+    /* Docs callout */
     .docs-section { margin-top: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
     .docs-section h3 { font-size: 13px; font-weight: 600; color: var(--muted2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 14px; }
     .code-block {
@@ -269,7 +269,7 @@
     .code-block .prompt { color: var(--accent); user-select: none; }
     .code-block .comment { color: var(--muted); }
 
-    /* ── Modal ── */
+    /* Modal */
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(0,0,0,.6);
       display: flex; align-items: center; justify-content: center;
@@ -304,7 +304,7 @@
       border-radius: 6px; padding: 9px 12px; margin-bottom: 10px;
     }
 
-    /* ── Confirm dialog ── */
+    /* Confirm dialog */
     .confirm-backdrop {
       position: fixed; inset: 0; background: rgba(0,0,0,.65);
       display: flex; align-items: center; justify-content: center;
@@ -325,7 +325,7 @@
     .confirm-delete { background: var(--red); color: #fff; border-color: var(--red); }
     .confirm-delete:hover { opacity: .88; }
 
-    /* ── Orgs in sidebar ── */
+    /* Orgs in sidebar */
     .org-nav-item {
       display: flex; align-items: center; gap: 9px;
       padding: 7px 8px; border-radius: 6px;
@@ -350,7 +350,7 @@
     }
     .nav-new-team:hover { background: var(--surface2); color: var(--muted2); }
 
-    /* ── Members section ── */
+    /* Members section */
     .members-section {
       margin-top: 24px;
       background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
@@ -384,7 +384,7 @@
     }
     .role-badge.owner { background: rgba(184, 162, 125,.12); color: var(--accent); }
 
-    /* ── Danger zone ── */
+    /* Danger zone */
     .danger-zone {
       margin-top: 24px; border: 1px solid rgba(248,113,113,.2);
       border-radius: 10px; padding: 16px 20px;
@@ -394,7 +394,7 @@
     .btn-danger { padding: 7px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; background: rgba(248,113,113,.1); color: var(--red); border: 1px solid rgba(248,113,113,.25); cursor: pointer; font-family: inherit; transition: background .12s; }
     .btn-danger:hover { background: rgba(248,113,113,.2); }
 
-    /* ── Invite accept banner ── */
+    /* Invite accept banner */
     .invite-banner {
       background: rgba(184, 162, 125,.08); border: 1px solid rgba(184, 162, 125,.3);
       border-radius: 10px; padding: 16px 20px; margin-bottom: 20px;
@@ -403,7 +403,7 @@
     .invite-banner p { font-size: 13px; color: var(--text); }
     .invite-banner strong { color: var(--accent); }
 
-    /* ── Mobile ── */
+    /* Mobile */
     @media (max-width: 768px) {
       .sidebar { display: none; }
       .keys-table th:nth-child(3), .keys-table td:nth-child(3) { display: none; }
@@ -778,8 +778,7 @@
   let usageCountdownTimer = null;
   let revokeTarget = null;
 
-  // ── Auth ──────────────────────────────────────────────────────────────────
-
+  // Auth
   function toggleAuthMode() {
     authMode = authMode === 'signin' ? 'signup' : 'signin';
     const isSignup = authMode === 'signup';
@@ -799,8 +798,7 @@
   function showAuthError(msg) { const el = document.getElementById('auth-error'); el.textContent = msg; el.style.display = ''; }
   function hideAuthError() { document.getElementById('auth-error').style.display = 'none'; }
 
-  // ── Forgot / reset password ──────────────────────────────────────────────
-
+  // Forgot / reset password
   let _forgotTurnstileWidgetId = null;
   function showForgotPassword() {
     document.getElementById('auth-screen').style.display = 'none';
@@ -971,8 +969,7 @@
     document.getElementById('input-password').value = '';
   }
 
-  // ── Dashboard ─────────────────────────────────────────────────────────────
-
+  // Dashboard
   async function showDashboard() {
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('sidebar').style.display = 'flex';
@@ -1130,8 +1127,7 @@
     if (!usageCountdownTimer) usageCountdownTimer = setInterval(renderUsage, 30000);
   }
 
-  // ── New key modal ─────────────────────────────────────────────────────────
-
+  // New key modal
   function openNewKeyModal() {
     document.getElementById('new-key-name').value = '';
     document.getElementById('modal-step-1').style.display = '';
@@ -1177,8 +1173,7 @@
 
   function doneCreating() { closeNewKeyModal(); }
 
-  // ── Revoke ────────────────────────────────────────────────────────────────
-
+  // Revoke
   function startRevoke(i) { revokeTarget = i; document.getElementById('confirm-backdrop').classList.add('open'); }
   function closeConfirm() { revokeTarget = null; document.getElementById('confirm-backdrop').classList.remove('open'); }
 
@@ -1193,16 +1188,14 @@
     closeConfirm();
   }
 
-  // ── Copy ──────────────────────────────────────────────────────────────────
-
+  // Copy
   function copyPrefix(i) {
     const btn = document.getElementById(`copy-btn-${i}`);
     btn.textContent = 'Copied!'; btn.classList.add('copied');
     setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
   }
 
-  // ── Utils ─────────────────────────────────────────────────────────────────
-
+  // Utils
   function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   document.addEventListener('keydown', e => {
@@ -1211,8 +1204,7 @@
   document.getElementById('new-key-modal').addEventListener('click', function(e) { if (e.target === this) closeNewKeyModal(); });
   document.getElementById('confirm-backdrop').addEventListener('click', function(e) { if (e.target === this) closeConfirm(); });
 
-  // ── Daily chart ───────────────────────────────────────────────────────────
-
+  // Daily chart
   async function loadDailyChart() {
     try {
       const res = await axionFetch(API + '/dashboard/daily', { headers: { Authorization: `Bearer ${sessionToken}` } })
@@ -1264,8 +1256,7 @@
     })
   }
 
-  // ── Device (CLI login) ────────────────────────────────────────────────────
-
+  // Device (CLI login)
   let pendingDeviceCode = null
 
   function denyDevice() {
@@ -1293,8 +1284,7 @@
 
   document.getElementById('device-modal').addEventListener('click', function(e) { if (e.target === this) denyDevice() })
 
-  // ── Orgs ──────────────────────────────────────────────────────────────────
-
+  // Orgs
   let currentOrg = null;
   let orgs = [];
   let pendingInviteToken = null;
@@ -1413,8 +1403,7 @@
     ms.style.display = '';
   }
 
-  // ── Create org ─────────────────────────────────────────────────────────────
-
+  // Create org
   function openCreateOrgModal() {
     document.getElementById('new-org-name').value = '';
     document.getElementById('create-org-modal').classList.add('open');
@@ -1439,8 +1428,7 @@
     } catch (e) { alert(e.message); }
   }
 
-  // ── Invite member ──────────────────────────────────────────────────────────
-
+  // Invite member
   function openInviteModal() {
     document.getElementById('invite-email').value = '';
     document.getElementById('invite-modal').classList.add('open');
@@ -1464,8 +1452,7 @@
     } catch (e) { alert(e.message); }
   }
 
-  // ── Remove / leave ─────────────────────────────────────────────────────────
-
+  // Remove / leave
   async function removeMember(uid, email) {
     if (!confirm(`Remove ${email} from ${currentOrg.name}?`)) return;
     try {
@@ -1488,8 +1475,7 @@
     } catch (e) { alert(e.message); }
   }
 
-  // ── Delete org ─────────────────────────────────────────────────────────────
-
+  // Delete org
   function openDeleteOrg() { document.getElementById('delete-org-backdrop').classList.add('open'); }
   function closeDeleteOrg() { document.getElementById('delete-org-backdrop').classList.remove('open'); }
 
@@ -1505,8 +1491,7 @@
     } catch (e) { alert(e.message); }
   }
 
-  // ── Accept org invite ──────────────────────────────────────────────────────
-
+  // Accept org invite
   function openAcceptInviteModal(orgName) {
     document.getElementById('accept-invite-desc').textContent =
       `You've been invited to join ${orgName || 'a team'} on Axion Labs.`;
@@ -1537,8 +1522,7 @@
     } catch (e) { alert(e.message); }
   }
 
-  // ── Banner ─────────────────────────────────────────────────────────────────
-
+  // Banner
   function showBanner(msg, type) {
     const el = document.getElementById('invite-banner');
     el.innerHTML = `<div class="invite-banner"><p>${escHtml(msg)}</p></div>`;
@@ -1546,8 +1530,7 @@
     setTimeout(() => { el.style.display = 'none'; }, 4000);
   }
 
-  // ── New key — patch to use org context ────────────────────────────────────
-
+  // New key — patch to use org context
   const _origCreateKey = createKey;
 
   // Override createKey to post to org endpoint when in org context
@@ -1581,8 +1564,7 @@
   document.getElementById('invite-modal').addEventListener('click', function(e) { if (e.target === this) closeInviteModal(); });
   document.getElementById('delete-org-backdrop').addEventListener('click', function(e) { if (e.target === this) closeDeleteOrg(); });
 
-  // ── Init ──────────────────────────────────────────────────────────────────
-
+  // Init
   (async function init() {
     const hash = window.location.hash.slice(1);
     const params = new URLSearchParams(hash);
