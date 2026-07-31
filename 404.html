@@ -8,15 +8,46 @@
   <meta name="robots" content="noindex">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
   <link rel="stylesheet" href="/assets/theme-adaptive.css">
+  <script src="/assets/site-nav.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
-    body {
-      background: var(--bg); color: var(--text);
-      display: flex; align-items: center; justify-content: center;
-      padding: 32px;
-    }
+    body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; }
 
+    /* Nav — same markup/styling as the rest of the site, so a 404 doesn't
+       strand a visitor without the header everywhere else has. */
+    nav {
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex; align-items: center; height: 56px; gap: 24px;
+      position: sticky; top: 0; z-index: 100;
+    }
+    nav::before {
+      content: '';
+      position: absolute; inset: 0; z-index: -1;
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      pointer-events: none;
+    }
+    nav a { color: var(--muted2); text-decoration: none; font-size: 14px; transition: color .15s; position: relative; z-index: 1; }
+    nav a:hover { color: var(--text); }
+    nav a.brand { color: var(--text); font-weight: 700; font-size: 16px; margin-right: 4px; }
+    .nav-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .nav-btn {
+      padding: 7px 15px; border-radius: 7px; font-size: 13px; font-weight: 600;
+      background: var(--accent); color: var(--accent-ink); border: none; cursor: pointer;
+      transition: background .15s; text-decoration: none; display: inline-block;
+    }
+    .nav-btn:hover { background: var(--accent-d); }
+    .nav-btn-ghost {
+      padding: 7px 15px; border-radius: 7px; font-size: 13px; font-weight: 500;
+      background: none; color: var(--muted2); border: 1px solid var(--border2);
+      transition: all .15s; text-decoration: none; display: inline-block;
+    }
+    .nav-btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+
+    main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px; }
     .stage { width: 100%; max-width: 460px; }
     .meta {
       font-family: var(--mono, monospace); font-size: 13px; color: var(--muted);
@@ -38,7 +69,8 @@
       background-size: 5px 5px, 5px 5px; background-repeat: no-repeat;
       padding-right: 20px;
     }
-    .by-row select:hover, .by-row select:focus-visible { border-bottom-color: var(--accent); }
+    .by-row select:hover { border-bottom-color: var(--accent); }
+    .by-row select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
 
     /* Reserve real space for the poem even while empty, so the idle spiral
        has a defined box to center itself over — this is where the text is
@@ -96,8 +128,21 @@
   <link rel="stylesheet" href="assets/mobile.css">
 </head>
 <body>
+<nav>
+  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Axion" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Axion</a>
+  <a href="/models">Models</a>
+  <a href="/chat">Chat</a>
+  <a href="/docs">Docs</a>
+  <div class="nav-right">
+    <a href="https://github.com/Ravikxx/Axion" class="nav-btn-ghost">GitHub</a>
+    <a href="/keys" class="nav-btn">API Keys</a>
+  </div>
+  <button class="hamburger-nav" onclick="toggleNav()" aria-label="Menu">☰</button>
+</nav>
+
+<main>
   <div class="stage" id="stage" data-beat="idle">
-    <div class="meta"><b>404</b> — this page doesn't exist.</div>
+    <div class="meta"><b>404</b> · Page not found</div>
     <div class="by-row">
       A 404 poem, themed as
       <select id="themeSelect" aria-label="Poem theme">
@@ -127,6 +172,7 @@
       <a href="/docs">Docs</a>
     </div>
   </div>
+</main>
 
   <script>
     // Each poem is a list of lines; each line a list of segments, one of
