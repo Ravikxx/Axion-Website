@@ -1528,7 +1528,7 @@
   function showMsg(el, text, isError) {
     el.textContent = text
     el.style.display = 'block'
-    el.style.color = isError ? '#e0392f' : '#2fae5c'
+    el.style.color = isError ? 'var(--red)' : 'var(--green)'
     setTimeout(() => { el.style.display = 'none' }, 4000)
   }
 

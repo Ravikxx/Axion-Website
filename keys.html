@@ -212,7 +212,7 @@
       font-size: 11px; font-weight: 600; letter-spacing: .02em;
     }
     .badge-limit { background: rgba(52,211,153,.1); color: var(--green); border: 1px solid rgba(52,211,153,.2); }
-    .badge-warn  { background: rgba(251,191,36,.1);  color: #fbbf24; border: 1px solid rgba(251,191,36,.2); }
+    .badge-warn  { background: color-mix(in srgb, var(--yellow) 10%, transparent); color: var(--yellow); border: 1px solid color-mix(in srgb, var(--yellow) 20%, transparent); }
     .badge-over  { background: rgba(248,113,113,.1); color: var(--red); border: 1px solid rgba(248,113,113,.2); }
 
     .key-actions { display: flex; gap: 6px; }
@@ -1108,7 +1108,7 @@
     };
     const usageBar = (label, used, limit, started, resetAt) => {
       const pct = limit > 0 ? Math.min((used / limit) * 100, 100) : 0;
-      const color = pct > 90 ? 'var(--red)' : pct > 70 ? '#fbbf24' : 'var(--accent)';
+      const color = pct > 90 ? 'var(--red)' : pct > 70 ? 'var(--yellow)' : 'var(--accent)';
       const resetLabel = formatResetAt(started, resetAt);
       return `
         <div class="usage-bar-item">

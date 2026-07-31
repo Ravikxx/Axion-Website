@@ -120,7 +120,7 @@
     .sub-consent { display:flex; align-items:center; gap:6px; width:100%; font-size:12px; color:var(--chrome-mut); }
     .sub-consent input { width:14px; height:14px; accent-color: var(--acc); cursor:pointer; }
     .sub-consent a { color: #b8a27d; text-decoration: underline; }
-    .sub-msg { font-size: 12px; color: #34d399; display: none; }
+    .sub-msg { font-size: 12px; color: var(--green); display: none; }
 
     /* Header */
     .news-head { max-width: 860px; margin: 0 auto; padding: 72px 32px 8px; }
@@ -595,7 +595,7 @@
   <article class="ann safety" data-cat="safety">
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">June 18, 2026</span>
-      <span class="ann-cat safety" style="background:rgba(248,113,113,.12);color:#f87171;">Safety Report</span>
+      <span class="ann-cat safety">Safety Report</span>
       <span class="ann-title">Lumen 1.2.1 Safety Testing — Full Results, Temporary Suspension & Lumen 1.3 Timeline Update</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
@@ -918,7 +918,7 @@
     const msg = document.getElementById('subMsg')
     if (!email) return
     if (!document.getElementById('subTos').checked) {
-      msg.style.display = 'inline'; msg.textContent = 'Please agree to the Terms and Privacy Policy.'; msg.style.color = '#f87171'; return
+      msg.style.display = 'inline'; msg.textContent = 'Please agree to the Terms and Privacy Policy.'; msg.style.color = 'var(--red)'; return
     }
     try {
       const res = await axionFetch(`${API}/announcements/subscribe`, {
@@ -927,13 +927,13 @@
       const data = await res.json()
       msg.style.display = 'inline'
       msg.textContent = data.message || (res.ok ? 'Subscribed!' : data.error)
-      msg.style.color = res.ok ? '#34d399' : '#f87171'
+      msg.style.color = res.ok ? 'var(--green)' : 'var(--red)'
     } catch { msg.style.display = 'inline'; msg.textContent = 'Something went wrong.' }
   }
 
   if (location.search.includes('unsubscribed=1')) {
     const bar = document.querySelector('.subscribe-bar')
-    bar.innerHTML = '<span style="color:#34d399">You\'ve been unsubscribed from Axion Labs announcements.</span>'
+    bar.innerHTML = '<span style="color:var(--green)">You\'ve been unsubscribed from Axion Labs announcements.</span>'
   }
 
   loadAnnouncements()
