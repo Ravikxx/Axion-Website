@@ -12,139 +12,356 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
     body {
-      font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
       background: var(--bg); color: var(--text);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 32px; text-align: center; overflow: hidden;
-      position: relative;
-    }
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background:
-        radial-gradient(1px 1px at 10% 20%, rgba(var(--accent-rgb),.15), transparent),
-        radial-gradient(1px 1px at 30% 60%, rgba(var(--accent-rgb),.1), transparent),
-        radial-gradient(1px 1px at 50% 10%, rgba(var(--accent-rgb),.12), transparent),
-        radial-gradient(1px 1px at 70% 80%, rgba(var(--accent-rgb),.08), transparent),
-        radial-gradient(1px 1px at 90% 40%, rgba(var(--accent-rgb),.1), transparent);
-      pointer-events: none;
+      display: flex; align-items: center; justify-content: center;
+      padding: 32px;
     }
 
-    .stars {
-      position: fixed; inset: 0; overflow: hidden;
-      pointer-events: none; z-index: 0;
+    .stage { width: 100%; max-width: 460px; }
+    .meta {
+      font-family: var(--mono, monospace); font-size: 13px; color: var(--muted);
+      letter-spacing: .02em; margin-bottom: 10px;
     }
-    .star {
-      position: absolute; width: 2px; height: 2px;
-      background: var(--text); border-radius: 50%;
-      animation: twinkle var(--dur) ease-in-out infinite alternate;
-    }
-    @keyframes twinkle {
-      0% { opacity: .15; transform: scale(.6); }
-      100% { opacity: 1; transform: scale(1.2); }
-    }
+    .meta b { color: var(--text); font-size: 15px; }
 
-    .content { position: relative; z-index: 1; }
-    .code { font-size: 80px; font-weight: 800; color: var(--accent); line-height: 1; letter-spacing: -.04em; }
-    .sub { font-size: 13px; color: var(--muted); margin: 12px 0 28px; letter-spacing: .03em; }
-    .poem {
-      font-size: 14px; line-height: 1.8; color: var(--muted);
-      max-width: 480px; margin: 0 auto 32px; min-height: 120px;
-      opacity: 0; transition: opacity .5s;
+    .by-row {
+      display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+      font-size: 15px; color: var(--muted); margin-bottom: 34px;
     }
-    .poem.visible { opacity: 1; }
-    .poem .highlight { color: var(--accent); }
-    .links { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+    .by-row select {
+      font: inherit; font-weight: 600; color: var(--text);
+      background: transparent; border: none; border-bottom: 1px solid var(--border2);
+      padding: 2px 0 4px; cursor: pointer; appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                         linear-gradient(135deg, currentColor 50%, transparent 50%);
+      background-position: calc(100% - 11px) 10px, calc(100% - 6px) 10px;
+      background-size: 5px 5px, 5px 5px; background-repeat: no-repeat;
+      padding-right: 20px;
+    }
+    .by-row select:hover, .by-row select:focus-visible { border-bottom-color: var(--accent); }
+
+    /* Reserve real space for the poem even while empty, so the idle spiral
+       has a defined box to center itself over — this is where the text is
+       about to be, not an empty margin waiting to be filled. */
+    .poem-box { position: relative; min-height: 170px; margin-bottom: 60px; }
+    .poem { font-size: 20px; line-height: 1.55; color: var(--text); max-width: 400px; }
+    .poem .hl { color: var(--accent); }
+    .poem .cursor { display: inline-block; animation: blink .8s step-end infinite; color: var(--accent); }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* One mark, two states, transform-driven move between them. */
+    .spiral-slot {
+      position: absolute;
+      display: flex; align-items: center; justify-content: center;
+      transition: top .85s cubic-bezier(.16,1,.3,1), left .85s cubic-bezier(.16,1,.3,1),
+                  width .85s cubic-bezier(.16,1,.3,1), height .85s cubic-bezier(.16,1,.3,1);
+    }
+    /* Idle — large, centered where the poem is about to appear. */
+    .stage[data-beat="idle"] .spiral-slot {
+      top: 50%; left: 50%; width: 84px; height: 84px; transform: translate(-50%, -50%);
+    }
+    /* Streaming / done — small, settled below-left of the poem. */
+    .stage[data-beat="streaming"] .spiral-slot,
+    .stage[data-beat="done"] .spiral-slot {
+      top: 100%; left: 0; width: 32px; height: 32px; transform: translate(0, 20px);
+    }
+    .spiral-mark { width: 100%; height: 100%; color: var(--brand-logo, var(--accent)); }
+    .spiral-mark svg { display: block; width: 100%; height: 100%; overflow: visible; }
+    .spiral-mark path {
+      stroke: currentColor;
+      stroke-dasharray: var(--len, 700);
+      stroke-dashoffset: 0;
+      animation: breathe 8s steps(32, end) infinite alternate;
+    }
+    @keyframes breathe { 0% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: var(--len, 700); } }
+
+    .links { display: flex; gap: 16px; flex-wrap: wrap; }
     .links a {
       color: var(--muted); text-decoration: none; font-size: 13px;
       padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px;
       transition: color .15s, border-color .15s;
     }
     .links a:hover { color: var(--text); border-color: var(--accent); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .spiral-mark path { animation: none; }
+      .spiral-slot { transition: none; }
+      .poem .cursor { animation: none; opacity: 0; }
+    }
   </style>
   <link rel="stylesheet" href="assets/mobile.css">
 </head>
 <body>
-  <div class="stars" id="stars"></div>
-  <div class="content">
-    <div class="code">404</div>
-    <div class="sub">This corner of the cosmos is uncharted</div>
-    <div class="poem" id="poem"></div>
+  <div class="stage" id="stage" data-beat="idle">
+    <div class="meta"><b>404</b> — this page doesn't exist.</div>
+    <div class="by-row">
+      A 404 poem, themed as
+      <select id="themeSelect" aria-label="Poem theme">
+        <option value="model">model training</option>
+        <option value="network">network &amp; terminal</option>
+        <option value="archive">library &amp; archive</option>
+      </select>
+    </div>
+
+    <div class="poem-box">
+      <p class="sr-only" id="poemSrOnly" aria-live="polite"></p>
+      <div class="poem" id="poem" aria-hidden="true"></div>
+      <div class="spiral-slot">
+        <div class="spiral-mark">
+          <svg viewBox="0 0 200 200" fill="none">
+            <path id="spiralPath"
+              d="M114 103 C114 104,114 106,113 108 C113 109,112 111,111 112 C110 114,109 115,108 117 C106 118,104 119,102 119 C100 120,98 121,96 121 C94 121,91 120,89 120 C87 119,84 118,82 116 C80 115,79 113,77 110 C76 108,74 106,74 103 C73 100,72 97,73 94 C73 92,73 88,74 86 C76 83,77 80,79 77 C81 75,84 72,87 71 C89 69,93 67,96 67 C100 66,103 65,107 66 C111 66,114 67,118 68 C121 70,125 72,128 74 C131 77,134 80,136 84 C138 87,139 91,140 95 C141 99,142 104,141 108 C141 113,140 117,138 121 C136 125,133 130,130 133 C127 136,123 140,119 142 C115 144,110 146,105 147 C101 148,95 149,90 148 C85 147,80 146,75 144 C70 142,66 139,62 135 C58 131,54 127,52 122 C49 117,47 112,46 106 C45 101,44 95,45 89 C46 83,48 77,50 72 C53 66,56 61,60 57 C64 52,70 48,75 45 C80 42,87 40,93 39 C99 38,106 37,113 38 C119 39,126 41,132 44 C138 47,144 51,148 56 C153 60,158 66,161 72 C164 78,167 85,168 92 C169 99,169 110,169 114"
+              stroke-width="15" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
     <div class="links">
       <a href="/">Home</a>
       <a href="/chat">Chat</a>
       <a href="/docs">Docs</a>
     </div>
   </div>
+
   <script>
-    const STARS = 120
-    const container = document.getElementById('stars')
-    for (let i = 0; i < STARS; i++) {
-      const s = document.createElement('div')
-      s.className = 'star'
-      s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${(1.5+Math.random()*3).toFixed(1)}s;animation-delay:${(Math.random()*3).toFixed(1)}s`
-      container.appendChild(s)
+    // Each poem is a list of lines; each line a list of segments, one of
+    // which may carry hl:true for the accent-colored phrase. Plain strings
+    // (not objects) join lines without inserting the usual blank-line gap —
+    // used where a poem reads better as two tight lines than a full stanza.
+    const POEMS = {
+      model: [
+        [[{t:'The gradient never found this minimum.'}],
+         [{t:'Somewhere between forward pass and loss,'}],
+         [{t:'this address slipped out of the batch —'}],
+         [{t:'no '},{t:'activation fired',hl:true},{t:' for it,'}],
+         [{t:'no weight was ever updated in its name.'}]],
+
+        [[{t:'Somewhere in the embedding space,'}],
+         [{t:'this URL maps to nothing —'}],
+         [{t:'not a token, not a neighbor,'}],
+         [{t:'just '},{t:'an empty region of the manifold',hl:true}],
+         [{t:'where no training example ever landed.'}],
+         [{t:'The nearest match is 400 dimensions away.'}]],
+
+        [[{t:'Every route was tokenized and tried.'}],
+         [{t:'This one came back '},{t:'out of vocabulary',hl:true},{t:' —'}],
+         [{t:'not wrong, just never seen,'}],
+         [{t:'and nothing in training taught us'}],
+         [{t:'what to say about it.'}]],
+
+        [[{t:'Somewhere a validation set holds'}],
+         [{t:'every page that should exist.'}],
+         [{t:"This one isn't in it."}],
+         [{t:'Call it '},{t:'a hole in the distribution',hl:true},{t:' —'}],
+         [{t:'not an error, just a gap'}],
+         [{t:'the data never covered.'}]],
+
+        [[{t:'We saved a checkpoint at every epoch'}],
+         [{t:'except the one that would have known this route.'}],
+         [{t:'Roll back far enough and maybe'}],
+         [{t:'it existed once, briefly,'}],
+         [{t:'in '},{t:"a version we didn't keep",hl:true},{t:'.'}]],
+
+        [[{t:'The attention heads looked everywhere at once'}],
+         [{t:'and found nothing worth weighting.'}],
+         [{t:'Every logit for this address'}],
+         [{t:'sat flat against the floor —'}],
+         [{t:'no peak, no confidence,'}],
+         [{t:'just '},{t:'a uniform distribution over nothing',hl:true},{t:','}],
+         [{t:"which is the model's polite way"}],
+         [{t:"of saying it doesn't know."}]],
+
+        [[{t:'404 is not in the training data.'}],
+         [{t:'Neither is this page.'}],
+         [{t:'Somewhere those two facts'}],
+         [{t:'agree with each other',hl:true}],
+         [{t:'more than they should.'}]],
+
+        [[{t:'The learning rate was tuned for pages that exist.'}],
+         [{t:'This one never got a gradient,'}],
+         [{t:'never got a nudge in any direction —'}],
+         [{t:'just '},{t:'sat outside the loss landscape',hl:true}],
+         [{t:'entirely, unclimbed and unmapped,'}],
+         [{t:'while everything around it converged.'}]],
+      ],
+      network: [
+        [[{t:'The packet left with a clear destination'}],
+         [{t:'and arrived at nowhere in particular —'}],
+         [{t:'dropped somewhere between the router and the request,'}],
+         [{t:'no retry, just '},{t:'silence where an ACK should be',hl:true},{t:'.'}],
+         [{t:'Check the address. Try again.'}]],
+
+        [[{t:'$ curl this-page'}],
+         [{t:'Connecting... connected.'}],
+         [{t:'Server responded, but had'}],
+         [{t:'nothing to say',hl:true},{t:' —'}],
+         [{t:'just a status code'}],
+         [{t:'and the sound of an empty response body.'}]],
+
+        [[{t:'DNS resolved the name just fine.'}],
+         [{t:"The name simply doesn't point"}],
+         [{t:'to anywhere that answers —'}],
+         [{t:'a record with nothing behind it',hl:true},{t:','}],
+         [{t:'technically correct, functionally empty.'}]],
+
+        [[{t:'Traceroute counted every hop faithfully,'}],
+         [{t:'router to router to router,'}],
+         [{t:'right up until the last one,'}],
+         [{t:'where '},{t:'the trail simply stops',hl:true}],
+         [{t:'and nothing sends a reply back.'}]],
+
+        [[{t:'The request waited the full timeout'}],
+         [{t:'and then gave up politely.'}],
+         [{t:'Nobody was rude about it.'}],
+         [{t:'Nobody was there',hl:true},{t:' at all.'}]],
+
+        [[{t:'Somewhere a log line reads'}],
+         [{t:'GET /this-page 404 0.003s'}],
+         [{t:'and moves on without comment.'}],
+         [{t:'Three milliseconds is all it took'}],
+         [{t:'to confirm '},{t:'there was nothing to confirm',hl:true},{t:' —'}],
+         [{t:'the fastest kind of disappointment.'}]],
+
+        [[{t:'The load balancer checked every server'}],
+         [{t:'and every server agreed:'}],
+         [{t:'not here, not here, not here.'}],
+         [{t:'Consensus, for once',hl:true},{t:','}],
+         [{t:'on exactly the wrong thing.'}]],
+
+        [[{t:'Somewhere a cache still remembers this address'}],
+         [{t:'from a version of the site that no longer exists.'}],
+         [{t:"It keeps offering the old answer"}],
+         [{t:"to a question nobody's asking anymore —"}],
+         [{t:'stale, confident, and wrong',hl:true},{t:'.'}]],
+      ],
+      archive: [
+        [[{t:"The catalog lists a shelf that isn't there."}],
+         [{t:'Someone reorganized the stacks'}],
+         [{t:'and never told the index —'}],
+         [{t:'this volume was '},{t:'checked out by no one',hl:true},{t:','}],
+         [{t:'and never returned.'}]],
+
+        [[{t:'Somewhere a card catalog still lists this page,'}],
+         [{t:'typed on a machine long since retired.'}],
+         [{t:'The drawer opens. The card is there.'}],
+         [{t:'But '},{t:'the shelf it points to is empty',hl:true},{t:' —'}],
+         [{t:'whatever stood there was withdrawn'}],
+         [{t:'and the record never updated.'}]],
+
+        [[{t:'The call number is real.'}],
+         [{t:'Someone assigned it carefully,'}],
+         [{t:'alphabetized it, shelved it.'}],
+         [{t:'The book itself never arrived',hl:true},{t:'.'}]],
+
+        [[{t:'This entry was deaccessioned years ago —'}],
+         [{t:'quietly, the way libraries do it,'}],
+         [{t:'a line through a ledger'}],
+         [{t:'nobody thought to cross-reference.'}],
+         [{t:'The sign still points here.'}],
+         [{t:'The room behind it is empty now',hl:true},{t:'.'}]],
+
+        [[{t:'Somewhere on microfiche,'}],
+         [{t:'reduced past reading,'}],
+         [{t:'this page exists in miniature —'}],
+         [{t:'too small to ever find again',hl:true},{t:'.'}]],
+
+        [[{t:'We requested this one through interlibrary loan.'}],
+         [{t:'The request went out, correctly addressed,'}],
+         [{t:'to a library that used to have it.'}],
+         [{t:'Weeks passed. No box arrived.'}],
+         [{t:'Eventually someone wrote back to say'}],
+         [{t:'their copy was withdrawn in 2019',hl:true}],
+         [{t:'and nobody had told the catalog since.'}]],
+
+        [[{t:'The spine still has a label.'}],
+         [{t:'The label still has a number.'}],
+         [{t:'Nothing is between the covers',hl:true},{t:'.'}]],
+
+        [[{t:'An archivist would call this a gap in the finding aid —'}],
+         [{t:'a box number listed in the inventory'}],
+         [{t:'that was never actually packed.'}],
+         [{t:'Someone meant to fill it.'}],
+         [{t:'The intention was catalogued',hl:true},{t:';'}],
+         [{t:'the page was not.'}]],
+      ],
     }
 
-    const POEMS = [
-      `This drift was never charted on any stellar map.<br>
-       The signal you follow bends back on itself,<br>
-       a ghost in the relay. No beacon pulses here —<br>
-       only the slow <span class="highlight">hum of empty space</span>,<br>
-       and the quiet patience of distant stars.`,
-      `Deep space has no signposts.<br>
-       The route you requested<br>
-       dissolves <span class="highlight">like a comet's tail</span><br>
-       into the dark between galaxies.<br>
-       Perhaps you meant to aim for a brighter star.<br>
-       Plot a new course.`,
-      `The void listens — and returns nothing.<br>
-       This frequency carries only the<br>
-       <span class="highlight">faint echo of the Big Bang</span>,<br>
-       stretched thin across fourteen billion years.<br>
-       Your transmission arrived, but<br>
-       there is no receiver at this coordinate.`,
-      `A derelict satellite drifts past,<br>
-       its last packet still looping in the buffer:<br>
-       <span class="highlight">"resource not found"</span> —<br>
-       stamped and forgotten before<br>
-       the first humans looked up and wondered.<br>
-       Some pages are never written.`,
-      `The navigation computer blinks red.<br>
-       This address falls between the cracks of<br>
-       <span class="highlight">the cosmic web</span> — a void<br>
-       where no structure coalesced.<br>
-       Dust clouds and dead radio. Turn back,<br>
-       or enjoy the silence of the deep field.`,
-      `An astronomer once said the universe<br>
-       is <span class="highlight">not only stranger than we imagine</span>,<br>
-       but stranger than we <em>can</em> imagine.<br>
-       This page is one of those strangenesses —<br>
-       a space-time wrinkle where content<br>
-       was predicted but never observed.`,
-      `The light from this page<br>
-       left its source before your ancestors<br>
-       learned to shape stone.<br>
-       It is still travelling,<br>
-       stretched and redshifted,<br>
-       <span class="highlight">carrying a message</span><br>
-       that will arrive long after<br>
-       the last star burns out.<br>
-       (It says 404.)`,
-      `Mission control, we have a problem.<br>
-       The coordinates you've entered<br>
-       map to <span class="highlight">a patch of empty sky</span><br>
-       where the Hubble Deep Field found nothing<br>
-       but the faint afterglow of creation.<br>
-       No page. No server. Just the microwave<br>
-       whisper of everything that ever was.`,
-    ]
+    const stage = document.getElementById('stage')
+    const poemEl = document.getElementById('poem')
+    const srEl = document.getElementById('poemSrOnly')
+    const path = document.getElementById('spiralPath')
+    const themeSelect = document.getElementById('themeSelect')
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-    const el = document.getElementById('poem')
-    const poem = POEMS[Math.floor(Math.random() * POEMS.length)]
-    el.innerHTML = poem
-    requestAnimationFrame(() => el.classList.add('visible'))
+    path.style.setProperty('--len', Math.ceil(path.getTotalLength()))
+
+    const lastIndex = {}
+    function pickPoem(theme) {
+      const list = POEMS[theme]
+      let i = Math.floor(Math.random() * list.length)
+      if (list.length > 1 && i === lastIndex[theme]) i = (i + 1) % list.length
+      lastIndex[theme] = i
+      return list[i]
+    }
+
+    function plainText(lines) {
+      return lines.map(line => line.map(seg => seg.t).join('')).join('\n')
+    }
+
+    function renderInstant(lines) {
+      poemEl.innerHTML = lines.map(line =>
+        line.map(seg => seg.hl ? `<span class="hl">${seg.t}</span>` : seg.t).join('')
+      ).join('<br><br>')
+      srEl.textContent = plainText(lines)
+    }
+
+    let seq = 0
+    async function playSequence() {
+      const mySeq = ++seq
+      const theme = themeSelect.value
+      const lines = pickPoem(theme)
+
+      stage.dataset.beat = 'idle'
+      poemEl.innerHTML = ''
+      srEl.textContent = ''
+
+      if (reduced) { stage.dataset.beat = 'done'; renderInstant(lines); return }
+
+      await sleep(1200); if (seq !== mySeq) return
+      stage.dataset.beat = 'streaming'
+      srEl.textContent = plainText(lines)
+
+      let html = ''
+      for (let li = 0; li < lines.length; li++) {
+        for (const seg of lines[li]) {
+          const words = seg.t.split(' ')
+          for (let wi = 0; wi < words.length; wi++) {
+            if (seq !== mySeq) return
+            const chunk = words[wi] + (wi < words.length - 1 ? ' ' : '')
+            html += seg.hl ? `<span class="hl">${chunk}</span>` : chunk
+            poemEl.innerHTML = html + '<span class="cursor">▋</span>'
+            await sleep(65 + Math.random() * 55)
+          }
+        }
+        if (li < lines.length - 1) html += '<br><br>'
+      }
+      if (seq !== mySeq) return
+      poemEl.innerHTML = html
+      stage.dataset.beat = 'done'
+    }
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)) }
+
+    themeSelect.addEventListener('change', playSequence)
+
+    const THEMES = Object.keys(POEMS)
+    themeSelect.value = THEMES[Math.floor(Math.random() * THEMES.length)]
+    playSequence()
   </script>
-
 </body>
 </html>
