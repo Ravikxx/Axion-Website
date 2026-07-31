@@ -281,7 +281,7 @@
     }
   }
 
-  // ── Reading the request ───────────────────────────────────────────────────
+  // Reading the request
   // Parsed from the fragment on first arrival, then stashed so an OAuth
   // round-trip (which replaces the fragment with its own token payload) can
   // pick it back up on return.
@@ -308,7 +308,7 @@
     location.href = `axion://auth?${params.toString()}`
   }
 
-  // ── Consent ──────────────────────────────────────────────────────────────
+  // Consent
   async function loadAccount() {
     document.getElementById('account-email').textContent = userEmail || 'Signed in'
     document.getElementById('avatar').textContent = (userEmail || 'A').trim().charAt(0) || 'A'
@@ -365,7 +365,7 @@
     handBackToApp(new URLSearchParams({ error: 'access_denied', state: request.state }))
   }
 
-  // ── Sign-in ──────────────────────────────────────────────────────────────
+  // Sign-in
   function signOutLocally() {
     sessionToken = null
     userEmail = null
@@ -443,7 +443,7 @@
     if (!await loadAccount()) return
   }
 
-  // ── Init ─────────────────────────────────────────────────────────────────
+  // Init
   ;(async function init() {
     const params = new URLSearchParams(location.hash.slice(1))
 

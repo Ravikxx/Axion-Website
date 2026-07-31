@@ -48,7 +48,7 @@
     }
     .hero-badge {
       display: inline-block;
-      background: #f87171;
+      background: var(--red);
       color: #fff;
       font-size: 12px;
       font-weight: 700;
@@ -65,7 +65,7 @@
       line-height: 1.1;
       margin-bottom: 16px;
     }
-    .hero h1 span { color: #f87171; }
+    .hero h1 span { color: var(--red); }
     .hero p {
       font-size: 17px;
       color: #9899a8;
@@ -85,9 +85,9 @@
     }
     .stat { text-align: center; }
     .stat-num { font-size: 40px; font-weight: 700; line-height: 1; }
-    .stat-num.bad  { color: #f87171; }
-    .stat-num.warn { color: #fbbf24; }
-    .stat-num.good { color: #4ade80; }
+    .stat-num.bad  { color: var(--red); }
+    .stat-num.warn { color: var(--yellow); }
+    .stat-num.good { color: var(--green-bright); }
     .stat-label { font-size: 13px; color: #7c7e92; margin-top: 6px; }
     .stat-sub { font-size: 11px; color: #6b6d80; margin-top: 2px; }
 
@@ -275,7 +275,7 @@
 </nav>
 
 <div class="hero">
-  <div class="hero-badge" style="background:#34d399;">Update · Lumen 1.2.5 has been live since June 20, 2026</div>
+  <div class="hero-badge" style="background:var(--green);">Update · Lumen 1.2.5 has been live since June 20, 2026</div>
   <div class="hero-badge" style="margin-top:8px;">Temporary Suspension · June 18, 2026</div>
   <h1>Lumen Was <span>Temporarily Offline</span></h1>
   <p>Safety testing revealed a consistent and dangerous pattern. We're explaining exactly what we found and why it matters.</p>

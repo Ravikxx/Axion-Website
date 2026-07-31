@@ -49,7 +49,7 @@
     textarea { resize: none; }
     textarea, input, select, button { font-family: inherit; }
 
-    /* ── Sidebar ── */
+    /* Sidebar */
     .sidebar {
       width: 264px; flex-shrink: 0; height: 100vh; height: 100dvh;
       display: flex; flex-direction: column;
@@ -144,7 +144,7 @@
     }
     .acct-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
 
-    /* ── Main ── */
+    /* Main */
     .main { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
 
     .topbar {
@@ -176,7 +176,7 @@
     .theme-btn:hover { color: var(--text); background: var(--surface3); }
     .topbar-spacer { margin-left: auto; }
 
-    /* ── Messages ── */
+    /* Messages */
     .messages {
       flex: 1; overflow-y: auto; scroll-behavior: smooth;
       padding: 22px 0;
@@ -282,7 +282,7 @@
     }
     .msg-action:hover { color: var(--text); background: var(--surface2); }
 
-    /* ── Tool call cards (run_python) ── */
+    /* Tool call cards (run_python) */
     .tool-card {
       border: 1px solid var(--border2); border-radius: 11px; overflow: hidden;
       background: var(--surface); margin-top: 4px;
@@ -340,7 +340,7 @@
     }
     .tool-lock-banner .btn-sm:hover { border-color: var(--accent); background: var(--surface); }
 
-    /* ── Empty / greeting ── */
+    /* Empty / greeting */
     .greeting {
       flex: 1; display: flex; flex-direction: column;
       align-items: center; justify-content: center; padding: 40px 24px; text-align: center;
@@ -358,7 +358,7 @@
     .suggestion:hover { border-color: var(--accent); color: var(--text); background: var(--surface2); }
     .suggestion b { color: var(--text); display: block; margin-bottom: 2px; font-weight: 600; }
 
-    /* ── Input ── */
+    /* Input */
     .input-area { flex-shrink: 0; padding: 12px 20px 18px; background: var(--bg); }
     .input-inner { max-width: 760px; margin: 0 auto; }
     .input-row {
@@ -392,14 +392,14 @@
     .input-hint { text-align: center; font-size: 11px; color: var(--muted); margin-top: 9px; }
     .input-hint a { color: var(--muted2); text-decoration: underline; }
 
-    /* ── Drawer overlay (mobile) ── */
+    /* Drawer overlay (mobile) */
     .drawer-overlay {
       display: none; position: fixed; inset: 0; z-index: 40;
       border: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(1px);
     }
     .drawer-overlay.show { display: block; }
 
-    /* ── Trash ── */
+    /* Trash */
     .trash-overlay { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 20px; }
     .trash-overlay-backdrop { position: absolute; inset: 0; border: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(1px); }
     .trash-panel {
@@ -435,7 +435,7 @@
        z-index) — always stack Share above every other overlay. */
     #share-overlay { z-index: 61; }
 
-    /* ── Projects ── */
+    /* Projects */
     .project-filter-chip {
       display: flex; align-items: center; gap: 6px; margin: 0 12px 8px; padding: 6px 10px;
       border-radius: 8px; background: var(--surface2); font-size: 12.5px; color: var(--text);
@@ -452,7 +452,7 @@
     .project-item-name:hover { text-decoration: underline; }
     .project-rename { flex: 1; min-width: 0; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; color: var(--text); font: inherit; padding: 4px 6px; }
 
-    /* ── Share ── */
+    /* Share */
     .share-panel { width: min(440px, 100%); }
     .share-panel-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
     .share-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -479,7 +479,7 @@
     }
     .share-note { font-size: 12px; color: var(--muted); }
 
-    /* ── Artifacts ── */
+    /* Artifacts */
     .artifact-editor-panel {
       width: min(720px, 100%); height: min(80vh, 640px); max-height: 90vh;
     }
@@ -509,7 +509,7 @@
       border-radius: 5px; padding: 2px 6px; margin-left: 6px;
     }
 
-    /* ── Auth overlay ── */
+    /* Auth overlay */
     #auth-overlay {
       position: fixed; inset: 0; z-index: 80; background: var(--bg);
       display: flex; align-items: center; justify-content: center;
@@ -571,7 +571,7 @@
     .oauth-btn:last-of-type { margin-bottom: 0; }
     .oauth-btn:hover { border-color: var(--border); color: var(--text); }
 
-    /* ── Mobile ── */
+    /* Mobile */
     @media (max-width: 820px) {
       .sidebar {
         position: fixed; top: 0; left: 0; bottom: 0; z-index: 50;
@@ -615,7 +615,7 @@
       .topbar { height: 48px; }
     }
 
-    /* ── Chat workspace refresh ── */
+    /* Chat workspace refresh */
     .sidebar {
       width: 282px;
       background: var(--surface);
@@ -1715,7 +1715,7 @@
   function generationActive(c) { return !!c?.generation && ACTIVE_GENERATION_STATUSES.has(c.generation.status) }
   function uid() { return 'c-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7) }
 
-  // ── Model selector ───────────────────────────────────────────────────────
+  // Model selector
   const MODEL_CATALOG = {
     lumen: {
       label: 'Lumen 1.2.5',
@@ -1896,7 +1896,7 @@
     document.getElementById('model-trigger').focus()
   })
 
-  // ── Time-based greeting ──────────────────────────────────────────────────
+  // Time-based greeting
   function timeGreeting() {
     const hour = new Date().getHours()
     const buckets = [
@@ -1912,7 +1912,7 @@
     return bucket.options[Math.floor(Math.random() * bucket.options.length)]
   }
 
-  // ── Server sync ────────────────────────────────────────────────────────────
+  // Server sync
   async function fetchChatList() {
     try {
       const res = await axionFetch(`${API}/chats`, { headers: authHeaders() })
@@ -2026,7 +2026,7 @@
       })
     } catch {}
   }
-  // ── Chat management ───────────────────────────────────────────────────────
+  // Chat management
   // Debounced draft autosave for the chat currently being composed in.
   // Timer state, not per-chat, since only one chat can be open at a time.
   let _draftTimer = null
@@ -2153,7 +2153,7 @@
     renderChatList()
   }
 
-  // ── Trash ────────────────────────────────────────────────────────────────
+  // Trash
   let _trash = []
 
   async function openTrash() {
@@ -2217,7 +2217,7 @@
     renderTrashList()
   }
 
-  // ── Projects ─────────────────────────────────────────────────────────────
+  // Projects
   let _projects = []
 
   async function fetchProjects() {
@@ -2351,7 +2351,7 @@
     renderChatList()
   }
 
-  // ── Share ────────────────────────────────────────────────────────────────
+  // Share
   // Generic over resource type — _shareResourceType/_shareResourceId are set
   // by whichever opener called us (openShare for chats, openArtifactShare
   // for artifacts) and every request below is built off them.
@@ -2472,7 +2472,7 @@
     navigator.clipboard?.writeText(input.value).catch(() => {})
   }
 
-  // ── Artifacts ────────────────────────────────────────────────────────────
+  // Artifacts
   let _artifacts = []
   let _currentArtifactId = null
   let _artifactSaveTimer = null
@@ -2623,7 +2623,7 @@
     openArtifactShare(_currentArtifactId)
   }
 
-  // ── Scheduled ────────────────────────────────────────────────────────────
+  // Scheduled
   let _scheduled = []
   let _currentScheduledId = null
 
@@ -2777,8 +2777,8 @@
     filterChats('')
     toggleChatSearch(false)
   }
-  /* ── Auto-scroll lock ─────────────────────────────────────────────────── */
-  /* ── Auto-scroll lock ─────────────────────────────────────────────────── */
+  /* Auto-scroll lock */
+  /* Auto-scroll lock */
   let _userScrolledAway = false;
   function isNearBottom(el) { return el.scrollHeight - el.scrollTop - el.clientHeight < 120; }
   function scrollToBottom(el) { el.scrollTop = el.scrollHeight; _userScrolledAway = false; }
@@ -2904,7 +2904,7 @@
     select.addEventListener('blur', revert)
   }
 
-  // ── Rendering ───────────────────────────────────────────────────────────────
+  // Rendering
   function escHtml(s) {
     return String(s == null ? '' : s)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -3144,7 +3144,7 @@
     })
   }
 
-  // ── Sandbox tool calls ──────────────────────────────────────────────────
+  // Sandbox tool calls
   // Renders one card per pending tool call, waits for it to resolve (either
   // immediately in auto-run mode, or after the user clicks Run/Deny in ask
   // mode), and returns the string to send back to the model as the
@@ -3410,7 +3410,7 @@
     autoResize(input); input.focus()
   }
 
-  // ── Input ────────────────────────────────────────────────────────────────
+  // Input
   function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 200) + 'px' }
   function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } }
 
@@ -3437,7 +3437,7 @@
     if (dx < -40) { toggleDrawer(false); touchStartX = 0 }
   }, { passive: true })
 
-  // ── Send ─────────────────────────────────────────────────────────────────
+  // Send
   const ICON_SEND = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>'
   const ICON_STOP = '<svg width="14" height="14" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2.5" fill="currentColor"/></svg>'
 
@@ -3775,7 +3775,7 @@
     await generateReply(c, 0, c.generation.id)
   }
 
-  // ── Auth ─────────────────────────────────────────────────────────────────
+  // Auth
   let authMode = 'signin'
   let turnstileToken = null
   function onTurnstile(token) { turnstileToken = token }
@@ -3928,7 +3928,7 @@
     document.getElementById('user-input').focus()
   }
 
-  // ── Init ─────────────────────────────────────────────────────────────────
+  // Init
   ;(async function init() {
     const hash = new URLSearchParams(location.hash.slice(1))
     if (hash.get('verified')) {
