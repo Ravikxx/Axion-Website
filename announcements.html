@@ -287,6 +287,13 @@
        subscribers, then stored server-side and rendered dynamically above by
        loadAnnouncements() — hidden here so it doesn't duplicate that render. -->
   <div class="announcement" style="display:none">
+    <h2>Veil Now Runs on RunPod — Same Endpoint, Same August 17 Retirement</h2>
+    <p>Veil moved off its Hugging Face Space this week and now runs on a dedicated RunPod Serverless endpoint behind our Cloudflare Worker. If you're calling it through the API, nothing changes on your end: same model: "veil", same POST /v1/chat/completions, same free Axion account. Only the infrastructure behind that request is different.</p>
+    <p>This doesn't change Veil's timeline. It's still deprecated and still retiring on August 17, 2026. Unlike Lumen's move to dedicated servers, this isn't a foundation for anything new: when the retirement date arrives, Veil is removed entirely, with no successor model taking its place. If you're still pointing anything at model: "veil", switch to Lumen now, model: "lumen", same endpoint, same account.</p>
+  </div>
+  <!-- end pending announcement -->
+
+  <div class="announcement" style="display:none">
     <h2>Veil 1.1 Is Offline Early — Back July 30, Retiring August 17</h2>
     <p>On July 20 we said Veil 1.1 would be marked deprecated on July 25 and keep answering requests as normal until it retired on July 30. It hasn't. Veil is offline now, ahead of that schedule, and if you were relying on those five days you didn't get them. That's our miss, and this is us correcting it rather than letting the dates on the site quietly disagree with reality.</p>
     <p>The reason is compute. The hardware Veil ran on is committed to re-running the Project Crucible 600M model, and we do not currently have enough spare capacity to keep both going. Rather than pretend otherwise, we would rather say plainly that a deprecated model lost its slot to an active one.</p>
@@ -319,8 +326,35 @@
   </div>
   <!-- end pending announcement -->
 
-  <article class="ann update lead open" data-cat="update">
+  <article class="ann notice lead open" data-cat="notice">
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="true">
+      <span class="ann-when">August 1, 2026</span>
+      <span class="ann-cat notice">Notice</span>
+      <span class="ann-title">Veil Now Runs on RunPod — Same Endpoint, Same August 17 Retirement</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
+      Veil moved off its Hugging Face Space this week and now runs on a dedicated <strong>RunPod Serverless</strong>
+      endpoint behind our Cloudflare Worker. If you're calling it through the API, nothing changes on your end:
+      same <code>model: "veil"</code>, same <code>POST /v1/chat/completions</code>, same free Axion account. Only
+      the infrastructure behind that request is different.
+    </p>
+    <p style="margin-top:12px">
+      This doesn't change Veil's timeline. It's still deprecated and still retiring on
+      <strong>August 17, 2026</strong>. Unlike Lumen's move to dedicated servers, this isn't a foundation for
+      anything new: when the retirement date arrives, Veil is removed entirely, with no successor model taking
+      its place. If you're still pointing anything at <code>model: "veil"</code>, switch to Lumen now
+      (<code>model: "lumen"</code>, same endpoint, same account).
+    </p>
+    <div class="ann-footer">
+      <a class="ann-link" href="/veil">Veil retirement timeline →</a>
+    </div>
+    </div></div>
+  </article>
+
+  <article class="ann update" data-cat="update">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">July 20, 2026</span>
       <span class="ann-cat update">Update</span>
       <span class="ann-title">Lumen Is Now Running on Our Own Servers — Roughly 80x Faster</span>
