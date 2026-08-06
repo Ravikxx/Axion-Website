@@ -6,9 +6,13 @@
 ;(function () {
   'use strict'
   ;['token', 'email', 'avatar_url', 'chat_model'].forEach(function (key) {
+    var oldKey = 'axion_' + key
+    var oldValue = localStorage.getItem(oldKey)
+    if (oldValue === null) return
     var newKey = 'sennoric_' + key
-    if (localStorage.getItem(newKey) !== null) return
-    var oldValue = localStorage.getItem('axion_' + key)
-    if (oldValue !== null) localStorage.setItem(newKey, oldValue)
+    if (localStorage.getItem(newKey) === null) localStorage.setItem(newKey, oldValue)
+    // Removed so a later logout (which only clears sennoric_* keys) can't
+    // have this migration silently restore the old token on next page load.
+    localStorage.removeItem(oldKey)
   })
 })()

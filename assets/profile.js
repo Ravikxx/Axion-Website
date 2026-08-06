@@ -10,10 +10,12 @@
   // Safety net for pages that don't also load storage-migrate.js directly:
   // pre-rebrand axion_* keys still hold a signed-in user's real session.
   ;['token', 'email', 'avatar_url', 'chat_model'].forEach(function (key) {
+    var oldKey = 'axion_' + key
+    var oldValue = localStorage.getItem(oldKey)
+    if (oldValue === null) return
     var newKey = 'sennoric_' + key
-    if (localStorage.getItem(newKey) !== null) return
-    var oldValue = localStorage.getItem('axion_' + key)
-    if (oldValue !== null) localStorage.setItem(newKey, oldValue)
+    if (localStorage.getItem(newKey) === null) localStorage.setItem(newKey, oldValue)
+    localStorage.removeItem(oldKey)
   })
 
   var token = localStorage.getItem('sennoric_token')
@@ -139,6 +141,9 @@
       localStorage.removeItem('sennoric_token')
       localStorage.removeItem('sennoric_email')
       localStorage.removeItem('sennoric_avatar_url')
+      localStorage.removeItem('axion_token')
+      localStorage.removeItem('axion_email')
+      localStorage.removeItem('axion_avatar_url')
       location.href = '/'
     }
   })
