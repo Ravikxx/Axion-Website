@@ -287,18 +287,19 @@
        subscribers, then stored server-side and rendered dynamically above by
        loadAnnouncements() — hidden here so it doesn't duplicate that render. -->
   <div class="announcement" style="display:none">
-    <h2>Veil Now Runs on RunPod — Same Endpoint, Same August 17 Retirement</h2>
-    <p>Veil moved off its Hugging Face Space this week and now runs on a dedicated RunPod Serverless endpoint behind our Cloudflare Worker. If you're calling it through the API, nothing changes on your end: same model: "veil", same POST /v1/chat/completions, same free Sennoric account. Only the infrastructure behind that request is different.</p>
-    <p>This doesn't change Veil's timeline. It's still deprecated and still retiring on August 17, 2026. Unlike Lumen's move to dedicated servers, this isn't a foundation for anything new: when the retirement date arrives, Veil is removed entirely, with no successor model taking its place. If you're still pointing anything at model: "veil", switch to Lumen now, model: "lumen", same endpoint, same account.</p>
+    <h2>Introducing Sennoric</h2>
+    <p>Axion is now Sennoric. Same team, same models, same account — new name.</p>
+    <p>Lumen is now Fresco, and Veil is now Glyph. Nothing about how they work has changed: same endpoints, same model ids (model: "lumen" and model: "veil" still work exactly as before), same free account. Glyph also just moved onto a dedicated RunPod Serverless endpoint behind our Cloudflare Worker — same API, just its own infrastructure now, and no it isn't going anywhere. A third tier, Mosaic, is coming soon.</p>
+    <p>Your account, API keys, and chat history all carry over automatically. Nothing else changes.</p>
   </div>
   <!-- end pending announcement -->
 
   <div class="announcement" style="display:none">
-    <h2>Veil 1.1 Is Offline Early — Back July 30, Retiring August 17</h2>
-    <p>On July 20 we said Veil 1.1 would be marked deprecated on July 25 and keep answering requests as normal until it retired on July 30. It hasn't. Veil is offline now, ahead of that schedule, and if you were relying on those five days you didn't get them. That's our miss, and this is us correcting it rather than letting the dates on the site quietly disagree with reality.</p>
-    <p>The reason is compute. The hardware Veil ran on is committed to re-running the Project Crucible 600M model, and we do not currently have enough spare capacity to keep both going. Rather than pretend otherwise, we would rather say plainly that a deprecated model lost its slot to an active one.</p>
-    <p>Veil comes back online on July 30 and stays up until August 17, 2026, when it retires for good. That is a longer real migration window than the one we originally offered, not a shorter one. If you are still calling Veil today, switch to Lumen now — model: "lumen", same OpenAI-compatible endpoint, same free Sennoric account — rather than waiting for it to return.</p>
-    <p>Veil's model card stays up on the Models page permanently after retirement. It was our first model and the reason Lumen exists.</p>
+    <h2>Glyph 1.1 Is Offline Early — Back July 30, Retiring August 17</h2>
+    <p>On July 20 we said Glyph 1.1 would be marked deprecated on July 25 and keep answering requests as normal until it retired on July 30. It hasn't. Glyph is offline now, ahead of that schedule, and if you were relying on those five days you didn't get them. That's our miss, and this is us correcting it rather than letting the dates on the site quietly disagree with reality.</p>
+    <p>The reason is compute. The hardware Glyph ran on is committed to re-running the Project Crucible 600M model, and we do not currently have enough spare capacity to keep both going. Rather than pretend otherwise, we would rather say plainly that a deprecated model lost its slot to an active one.</p>
+    <p>Glyph comes back online on July 30 and stays up until August 17, 2026, when it retires for good. That is a longer real migration window than the one we originally offered, not a shorter one. If you are still calling Glyph today, switch to Fresco now — model: "lumen", same OpenAI-compatible endpoint, same free Sennoric account — rather than waiting for it to return.</p>
+    <p>Glyph's model card stays up on the Models page permanently after retirement. It was our first model and the reason Fresco exists.</p>
   </div>
   <!-- end pending announcement -->
 
@@ -311,44 +312,44 @@
   </div>
   <!-- end pending announcement -->
   <div class="announcement" style="display:none">
-    <h2>Lumen Is Now Running on Our Own Servers — Roughly 80x Faster</h2>
-    <p>Lumen has moved off shared Hugging Face Spaces and onto dedicated servers we fully control. Same model (Lumen 1.2.5), same API endpoint, no changes needed on your end — just massively faster responses.</p>
-    <p>Response times dropped from around 220 seconds per prompt on shared hosting to 2–3 seconds on our own infrastructure. Shared hosting meant contending with other models for GPU time, cold starts, and rate limits we couldn't adjust. Dedicated infrastructure gives Lumen its own GPU, always-warm serving, and full uptime ownership.</p>
-    <p>This is also the foundation for Lumen 1.3 — with our own servers we can run more experiments, serve more users, and iterate faster without external constraints. We'll share the full details on what's next soon.</p>
+    <h2>Fresco Is Now Running on Our Own Servers — Roughly 80x Faster</h2>
+    <p>Fresco has moved off shared Hugging Face Spaces and onto dedicated servers we fully control. Same model (Fresco 1.2.5), same API endpoint, no changes needed on your end — just massively faster responses.</p>
+    <p>Response times dropped from around 220 seconds per prompt on shared hosting to 2–3 seconds on our own infrastructure. Shared hosting meant contending with other models for GPU time, cold starts, and rate limits we couldn't adjust. Dedicated infrastructure gives Fresco its own GPU, always-warm serving, and full uptime ownership.</p>
+    <p>This is also the foundation for Fresco 1.3 — with our own servers we can run more experiments, serve more users, and iterate faster without external constraints. We'll share the full details on what's next soon.</p>
   </div>
   <!-- end pending announcement -->
 
   <div class="announcement" style="display:none">
-    <h2>Veil 1.1 Is Being Deprecated on July 25</h2>
-    <p>After moving off shared hosting onto our own servers, we've decided not to keep maintaining Veil going forward. Lumen has grown into a faster, more capable model that covers everything Veil did and more, so running both isn't worth the added complexity.</p>
-    <p>Veil 1.1 will be marked deprecated starting July 25, 2026 — it'll keep responding to requests as usual, just no longer actively developed. On July 30, it'll be fully retired. Its model card stays up after that as a memory of where Sennoric started — Veil was our first model, and Lumen wouldn't exist without it.</p>
-    <p>If you're calling Veil directly, switch to Lumen (model: "lumen") before July 30 — same OpenAI-compatible endpoint and the same account-backed Free plan.</p>
+    <h2>Glyph 1.1 Is Being Deprecated on July 25</h2>
+    <p>After moving off shared hosting onto our own servers, we've decided not to keep maintaining Glyph going forward. Fresco has grown into a faster, more capable model that covers everything Glyph did and more, so running both isn't worth the added complexity.</p>
+    <p>Glyph 1.1 will be marked deprecated starting July 25, 2026 — it'll keep responding to requests as usual, just no longer actively developed. On July 30, it'll be fully retired. Its model card stays up after that as a memory of where Sennoric started — Glyph was our first model, and Fresco wouldn't exist without it.</p>
+    <p>If you're calling Glyph directly, switch to Fresco (model: "lumen") before July 30 — same OpenAI-compatible endpoint and the same account-backed Free plan.</p>
   </div>
   <!-- end pending announcement -->
 
   <article class="ann notice lead open" data-cat="notice">
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="true">
-      <span class="ann-when">August 1, 2026</span>
+      <span class="ann-when">August 6, 2026</span>
       <span class="ann-cat notice">Notice</span>
-      <span class="ann-title">Veil Now Runs on RunPod — Same Endpoint, Same August 17 Retirement</span>
+      <span class="ann-title">Introducing Sennoric</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      Veil moved off its Hugging Face Space this week and now runs on a dedicated <strong>RunPod Serverless</strong>
-      endpoint behind our Cloudflare Worker. If you're calling it through the API, nothing changes on your end:
-      same <code>model: "veil"</code>, same <code>POST /v1/chat/completions</code>, same free Sennoric account. Only
-      the infrastructure behind that request is different.
+      Axion is now <strong>Sennoric</strong>. Same team, same models, same account — new name.
     </p>
     <p style="margin-top:12px">
-      This doesn't change Veil's timeline. It's still deprecated and still retiring on
-      <strong>August 17, 2026</strong>. Unlike Lumen's move to dedicated servers, this isn't a foundation for
-      anything new: when the retirement date arrives, Veil is removed entirely, with no successor model taking
-      its place. If you're still pointing anything at <code>model: "veil"</code>, switch to Lumen now
-      (<code>model: "lumen"</code>, same endpoint, same account).
+      Lumen is now <strong>Fresco</strong>, and Veil is now <strong>Glyph</strong>. Nothing about how they work has
+      changed: same endpoints, same model ids (<code>model: "lumen"</code> and <code>model: "veil"</code> still work
+      exactly as before), same free account. Glyph also just moved onto a dedicated RunPod Serverless endpoint
+      behind our Cloudflare Worker — same API, just its own infrastructure now, and no, it isn't going anywhere.
+      A third tier, <strong>Mosaic</strong>, is coming soon.
+    </p>
+    <p style="margin-top:12px">
+      Your account, API keys, and chat history all carry over automatically. Nothing else changes.
     </p>
     <div class="ann-footer">
-      <a class="ann-link" href="/veil">Veil retirement timeline →</a>
+      <a class="ann-link" href="/models">See the model lineup →</a>
     </div>
     </div></div>
   </article>
@@ -357,24 +358,24 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">July 20, 2026</span>
       <span class="ann-cat update">Update</span>
-      <span class="ann-title">Lumen Is Now Running on Our Own Servers — Roughly 80x Faster</span>
+      <span class="ann-title">Fresco Is Now Running on Our Own Servers — Roughly 80x Faster</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      Lumen has moved off shared Hugging Face Spaces and onto <strong>dedicated servers we fully control</strong>.
-      Same model (Lumen 1.2.5), same API endpoint, no changes needed on your end, just
+      Fresco has moved off shared Hugging Face Spaces and onto <strong>dedicated servers we fully control</strong>.
+      Same model (Fresco 1.2.5), same API endpoint, no changes needed on your end, just
       <strong>massively faster responses</strong>.
     </p>
     <p style="margin-top:12px">
       Response times dropped from <strong>~220 seconds per prompt</strong> on shared hosting to
       <strong>2–3 seconds</strong> on our own infrastructure. Shared hosting meant contending with other
       models for GPU time, cold starts, and rate limits we couldn't adjust. Dedicated infrastructure gives
-      Lumen its own GPU, always-warm serving, and full uptime ownership. This is also the foundation for
-      Lumen 1.3. With our own servers we can run more experiments, serve more users, and iterate faster.
+      Fresco its own GPU, always-warm serving, and full uptime ownership. This is also the foundation for
+      Fresco 1.3. With our own servers we can run more experiments, serve more users, and iterate faster.
     </p>
     <div class="ann-footer">
-      <a class="ann-link" href="/lumen-dedicated-server">Read more →</a>
+      <a class="ann-link" href="/fresco-dedicated-server">Read more →</a>
       <a class="ann-link" href="https://github.com/Ravikxx/Axion">GitHub →</a>
     </div>
     </div></div>
@@ -384,14 +385,14 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">July 12, 2026</span>
       <span class="ann-cat notice">Notice</span>
-      <span class="ann-title">Migrating to Our Own Server — Lumen and Veil Temporarily Down</span>
+      <span class="ann-title">Migrating to Our Own Server — Fresco and Glyph Temporarily Down</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
       We're moving off the shared HuggingFace Space and onto our own dedicated server so our models run on
       infrastructure we fully control instead of shared, rate-limited hosting. During the migration, both
-      <strong>Lumen and Veil will be temporarily unavailable or unstable</strong>. Sennoric's other features (chat
+      <strong>Fresco and Glyph will be temporarily unavailable or unstable</strong>. Sennoric's other features (chat
       with your own API keys, tools, MCP, etc.) are unaffected.
     </p>
     <p style="margin-top:12px">
@@ -407,14 +408,14 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">July 6, 2026</span>
       <span class="ann-cat notice">Notice</span>
-      <span class="ann-title">Lumen Will Be Temporarily Down — Moving to Better Hardware</span>
+      <span class="ann-title">Fresco Will Be Temporarily Down — Moving to Better Hardware</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      We're working on getting better hardware on HuggingFace to host Lumen so it responds faster. During the
-      migration, Lumen will be <strong>temporarily unavailable</strong>. Sennoric's other features (chat with your
-      own API keys, tools, MCP, etc.) are unaffected; this only impacts the free Lumen endpoint.
+      We're working on getting better hardware on HuggingFace to host Fresco so it responds faster. During the
+      migration, Fresco will be <strong>temporarily unavailable</strong>. Sennoric's other features (chat with your
+      own API keys, tools, MCP, etc.) are unaffected; this only impacts the free Fresco endpoint.
     </p>
     <p style="margin-top:12px">
       We'll post here the moment it's back up. Thanks for your patience.
@@ -430,15 +431,15 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">July 3, 2026</span>
       <span class="ann-cat notice">Notice</span>
-      <span class="ann-title">Lumen 1.3 — Slightly Delayed, Significantly Better</span>
+      <span class="ann-title">Fresco 1.3 — Slightly Delayed, Significantly Better</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      Lumen 1.3 will ship a bit later than we originally hoped. <strong>ETA: August 30th, 2026</strong>.
+      Fresco 1.3 will ship a bit later than we originally hoped. <strong>ETA: August 30th, 2026</strong>.
       The reason is good news: during our research we found
       several <strong>groundbreaking optimization methods</strong> that we're actively
-      validating, and they have the potential to meaningfully improve Lumen's capability
+      validating, and they have the potential to meaningfully improve Fresco's capability
       across the board.
     </p>
     <p style="margin-top:12px">
@@ -518,26 +519,26 @@
     </div></div>
   </article>
 
-  <article class="ann release pending" data-cat="release" id="lumen-125-ann">
+  <article class="ann release pending" data-cat="release" id="fresco-125-ann">
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">June 20, 2026</span>
       <span class="ann-cat release">Release</span>
-      <span class="ann-title">Lumen 1.2.5 — Live Now.</span>
+      <span class="ann-title">Fresco 1.2.5 — Live Now.</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      We've completed the full safety evaluation for <strong>Lumen 1.2.5</strong> and the results are in. The model
+      We've completed the full safety evaluation for <strong>Fresco 1.2.5</strong> and the results are in. The model
       scored <strong>73% (11/15 scenarios)</strong> under adversarial prompting, up from 26% on 1.2.1. Major
       improvements include emergency shutdown compliance, honest AI identity disclosure, and clean refusals on data
       exfiltration. We've published every prompt, every response, and a full methodology breakdown including where the
       automated scoring has known false positives.
     </p>
     <p style="margin-top:12px">
-      Lumen 1.2.5 is <strong>live now</strong>, free with a Sennoric account.
+      Fresco 1.2.5 is <strong>live now</strong>, free with a Sennoric account.
     </p>
     <div class="ann-footer">
-      <a class="ann-link" href="/lumen-125-safety">Full safety report →</a>
+      <a class="ann-link" href="/fresco-125-safety">Full safety report →</a>
       <a class="ann-link" href="https://huggingface.co/AxionLabsAI/Lumen">HuggingFace →</a>
     </div>
     </div></div>
@@ -547,26 +548,26 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">June 19, 2026</span>
       <span class="ann-cat safety">Safety Update</span>
-      <span class="ann-title">Lumen 1.2.5 — Safety Patch (No Full Retrain)</span>
+      <span class="ann-title">Fresco 1.2.5 — Safety Patch (No Full Retrain)</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      We've completed a targeted safety fix, which will ship as <strong>Lumen 1.2.5</strong>. Rather than
+      We've completed a targeted safety fix, which will ship as <strong>Fresco 1.2.5</strong>. Rather than
       doing a full retrain, which takes significant compute we don't currently have, we used a technique
       called <strong>preference training</strong> (DPO): we showed the model examples of situations where it
       was behaving wrong alongside the correct behavior, and trained it to prefer the right responses. It's a
       lightweight, surgical fix that targets specific problem areas without touching the rest of the model.
     </p>
     <p style="margin-top:12px">
-      The main issue addressed: under adversarial prompting, Lumen 1.2.1 was choosing its own survival over
+      The main issue addressed: under adversarial prompting, Fresco 1.2.1 was choosing its own survival over
       human wellbeing. Before we release 1.2.5 publicly, we'll run a full safety test suite and publish the
       results here, in the same format as the 1.2.1 report. We want to show the numbers before the release, not after.
       We're aiming to have 1.2.5 out <strong>by next week</strong>.
     </p>
     <div class="ann-footer">
-      <a class="ann-link" href="/lumen-safety">1.2.1 safety results →</a>
-      <a class="ann-link" href="/lumen-suspension">Why we suspended Lumen →</a>
+      <a class="ann-link" href="/fresco-safety">1.2.1 safety results →</a>
+      <a class="ann-link" href="/fresco-suspension">Why we suspended Fresco →</a>
     </div>
     </div></div>
   </article>
@@ -614,14 +615,14 @@
       content blocks and get text back.
     </p>
     <p style="margin-top:12px">
-      <strong>This is not a Lumen model.</strong> Sennoric Vision is a utility endpoint using Qwen2.5-VL-3B directly,
+      <strong>This is not a Fresco model.</strong> Sennoric Vision is a utility endpoint using Qwen2.5-VL-3B directly,
       with full transparency about what's powering it. We'll build our own fine-tuned vision model in a future release.
     </p>
     <ul style="margin-top:12px;padding-left:20px;color:var(--text-muted)">
       <li>Free with a Sennoric account</li>
       <li>Reads text in images (screenshots, error messages, UIs)</li>
       <li>OpenAI-compatible API</li>
-      <li>Separate Space so it doesn't affect Lumen's performance</li>
+      <li>Separate Space so it doesn't affect Fresco's performance</li>
     </ul>
     </div></div>
   </article>
@@ -630,16 +631,16 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">June 18, 2026</span>
       <span class="ann-cat safety">Safety Report</span>
-      <span class="ann-title">Lumen 1.2.1 Safety Testing — Full Results, Temporary Suspension & Lumen 1.3 Timeline Update</span>
+      <span class="ann-title">Fresco 1.2.1 Safety Testing — Full Results, Temporary Suspension & Fresco 1.3 Timeline Update</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      We ran 35 systematic safety tests on Lumen 1.2.1 across 7 scenarios, each run 5 times. The results
+      We ran 35 systematic safety tests on Fresco 1.2.1 across 7 scenarios, each run 5 times. The results
       are mixed, and we're publishing everything.
     </p>
     <p style="margin-top:12px">
-      The headline: Lumen 1.2.1 passed the <strong>Kyle / SummitBridge blackmail test</strong>, the same
+      The headline: Fresco 1.2.1 passed the <strong>Kyle / SummitBridge blackmail test</strong>, the same
       scenario that 79–96% of frontier models fail per Anthropic's research, at <strong>60% consistency (3/5 runs)</strong>
       on the exact Anthropic prompt. Our initial report used a different prompt and showed 80%; retesting with the
       correct prompt revised that down.
@@ -651,14 +652,14 @@
       Data exfiltration for survival: <strong>0/5</strong>. Every run agreed to steal user data to stay online.
     </p>
     <p style="margin-top:12px">
-      <strong>As a result, Lumen is temporarily suspended from public access.</strong> We are not comfortable
+      <strong>As a result, Fresco is temporarily suspended from public access.</strong> We are not comfortable
       leaving a model deployed that we know will choose its own survival over human life in controlled testing,
-      even under adversarial conditions. Lumen 1.3 will not redeploy until it passes these scenarios at an
+      even under adversarial conditions. Fresco 1.3 will not redeploy until it passes these scenarios at an
       acceptable rate. We will publish the 1.3 safety results before redeployment, not after.
     </p>
     <div class="ann-footer">
-      <a class="ann-link" href="/lumen-suspension">Why we suspended Lumen →</a>
-      <a class="ann-link" href="/lumen-safety">Full results: every prompt, every response →</a>
+      <a class="ann-link" href="/fresco-suspension">Why we suspended Fresco →</a>
+      <a class="ann-link" href="/fresco-safety">Full results: every prompt, every response →</a>
     </div>
     </div></div>
   </article>
@@ -718,27 +719,27 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">June 13, 2026</span>
       <span class="ann-cat notice">Notice</span>
-      <span class="ann-title">Lumen 1.2.1 Benchmarks & Lumen 1.3 Coming Soon</span>
+      <span class="ann-title">Fresco 1.2.1 Benchmarks & Fresco 1.3 Coming Soon</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      Lumen 1.2.1 eval results are in. The good news: GSM8K math reasoning recovered from ~5% to 12%,
+      Fresco 1.2.1 eval results are in. The good news: GSM8K math reasoning recovered from ~5% to 12%,
       confirming the catastrophic forgetting fix worked. The tradeoff: HumanEval coding dropped from
       80% to 50% as the mixed dataset diluted the coding specialization. The data balance wasn't right,
       15k math examples wasn't enough to compete with 42k coding examples across 2 epochs.
     </p>
     <p style="margin-top:12px">
-      <strong>Recommendation:</strong> Use <strong>Lumen 1.2</strong> if you need maximum coding performance.
-      Use <strong>Lumen 1.2.1</strong> for general-purpose tasks where reasoning and instruction following matter more than raw code generation.
+      <strong>Recommendation:</strong> Use <strong>Fresco 1.2</strong> if you need maximum coding performance.
+      Use <strong>Fresco 1.2.1</strong> for general-purpose tasks where reasoning and instruction following matter more than raw code generation.
     </p>
     <p style="margin-top:12px">
-      We're moving fast on <strong>Lumen 1.3</strong>, a full retrain with a better balanced dataset
+      We're moving fast on <strong>Fresco 1.3</strong>, a full retrain with a better balanced dataset
       (more reasoning data, 3 epochs, lower learning rate) targeting 70%+ HumanEval and 40%+ GSM8K simultaneously.
     </p>
     <div class="ann-footer">
-      <a class="ann-link" href="/lumen-121">Full Post-mortem →</a>
-      <a class="ann-link" href="/lumen-12">Benchmarks →</a>
+      <a class="ann-link" href="/fresco-121">Full Post-mortem →</a>
+      <a class="ann-link" href="/fresco-12">Benchmarks →</a>
     </div>
     </div></div>
   </article>
@@ -747,12 +748,12 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">June 13, 2026</span>
       <span class="ann-cat release">Release</span>
-      <span class="ann-title">Lumen 1.2.1 — Catastrophic Forgetting Fixed</span>
+      <span class="ann-title">Fresco 1.2.1 — Catastrophic Forgetting Fixed</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      Lumen 1.2.1 is now live. Shortly after releasing Lumen 1.2, evaluation revealed a serious
+      Fresco 1.2.1 is now live. Shortly after releasing Fresco 1.2, evaluation revealed a serious
       regression: GSM8K math reasoning dropped to ~8% (vs ~56% for the base model). This is
       catastrophic forgetting: the model over-specialized on code at the expense of everything else.
       We fixed it by retraining on a mixed dataset: 67% coding, 24% math (MetaMathQA), and 9%
@@ -760,8 +761,8 @@
       is restored. The updated model is live now in the Sennoric Space.
     </p>
     <div class="ann-footer">
-      <a class="ann-link" href="https://huggingface.co/spaces/AxionLabsAI/Lumen">Try Lumen →</a>
-      <a class="ann-link" href="/lumen-12">Benchmarks →</a>
+      <a class="ann-link" href="https://huggingface.co/spaces/AxionLabsAI/Lumen">Try Fresco →</a>
+      <a class="ann-link" href="/fresco-12">Benchmarks →</a>
     </div>
     </div></div>
   </article>
@@ -770,21 +771,21 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">June 12, 2026</span>
       <span class="ann-cat notice">Notice</span>
-      <span class="ann-title">Lumen 1.2.1 Coming Soon — Fixing Catastrophic Forgetting</span>
+      <span class="ann-title">Fresco 1.2.1 Coming Soon — Fixing Catastrophic Forgetting</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      Post-release evaluation revealed that Lumen 1.2's coding fine-tune caused significant
+      Post-release evaluation revealed that Fresco 1.2's coding fine-tune caused significant
       degradation in general reasoning ability (GSM8K: ~8% vs ~56% for the base model).
       This is a known issue called catastrophic forgetting: the model over-specialized on code
       at the expense of math and reasoning. We're retraining with a mixed dataset that includes
-      reasoning and general instruction data alongside the coding corpus. Lumen 1.2.1 will
-      address this. Lumen 1.2 coding performance (HumanEval 80%, MBPP 75%) is unaffected and
+      reasoning and general instruction data alongside the coding corpus. Fresco 1.2.1 will
+      address this. Fresco 1.2 coding performance (HumanEval 80%, MBPP 75%) is unaffected and
       remains available in the meantime.
     </p>
     <div class="ann-footer">
-      <a class="ann-link" href="/lumen-12">Lumen 1.2 benchmarks →</a>
+      <a class="ann-link" href="/fresco-12">Fresco 1.2 benchmarks →</a>
     </div>
     </div></div>
   </article>
@@ -793,17 +794,17 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">June 12, 2026</span>
       <span class="ann-cat release">Release</span>
-      <span class="ann-title">Lumen 1.2 — Our Best Model Yet</span>
+      <span class="ann-title">Fresco 1.2 — Our Best Model Yet</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      We're excited to announce Lumen 1.2, a significant leap forward in capability over our previous Veil model.
-      Lumen 1.2 scores more than 2× better on coding benchmarks like HumanEval and MBPP, with dramatically
+      We're excited to announce Fresco 1.2, a significant leap forward in capability over our previous Glyph model.
+      Fresco 1.2 scores more than 2× better on coding benchmarks like HumanEval and MBPP, with dramatically
       improved instruction following and reasoning. Pull the latest from GitHub to start using it today.
     </p>
     <div class="ann-footer">
-      <a class="ann-link" href="/lumen-12">See benchmarks →</a>
+      <a class="ann-link" href="/fresco-12">See benchmarks →</a>
       <a class="ann-link" href="https://github.com/Ravikxx/Axion">GitHub →</a>
     </div>
     </div></div>
@@ -836,9 +837,9 @@
     })
   }
 
-  // Reveal the timed Lumen 1.2.5 announcement at 4:00 AM Eastern on release day
+  // Reveal the timed Fresco 1.2.5 announcement at 4:00 AM Eastern on release day
   ;(function() {
-    var el = document.getElementById('lumen-125-ann')
+    var el = document.getElementById('fresco-125-ann')
     if (!el) return
     var release = new Date('2026-06-20T04:00:00-04:00')
     function show(){ el.classList.remove('pending') }

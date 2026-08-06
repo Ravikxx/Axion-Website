@@ -8,7 +8,7 @@ These Terms of Service ("Terms") govern your use of the Sennoric web chat, API, 
 
 ## Service description
 
-The Service provides access to AI models and developer tools. Lumen requests are routed through Sennoric's hosted backend to dedicated model infrastructure on RunPod. The CLI can also connect directly to third-party AI providers that you configure. Features, models, limits, and availability may change. The Service is provided on an "as is" basis.
+The Service provides access to AI models and developer tools. Fresco requests are routed through Sennoric's hosted backend to dedicated model infrastructure on RunPod. The CLI can also connect directly to third-party AI providers that you configure. Features, models, limits, and availability may change. The Service is provided on an "as is" basis.
 
 ## Accounts
 
@@ -19,7 +19,7 @@ The Service provides access to AI models and developer tools. Lumen requests are
 
 ## Usage, plans, and billing
 
-- Lumen and other Sennoric-hosted model or compute access requires a Free or Pro account, authenticated by a signed-in browser session or a Sennoric-issued API key.
+- Fresco and other Sennoric-hosted model or compute access requires a Free or Pro account, authenticated by a signed-in browser session or a Sennoric-issued API key.
 - A Free account includes an account-wide $0.125 weekly usage allowance and a $0.05 allowance per rolling two-hour window, with up to three active API keys. Both allowances are lazy-start: a period doesn't begin, or count down toward reset, until your account's first chargeable request after the previous one has fully elapsed.
 - Pro costs $7 per month through Square and includes an account-wide $1.25 weekly usage allowance and a $0.50 allowance per rolling two-hour window, with unlimited active API keys.
 - Included usage is measured from input and output tokens. The current accounting rates are $0.15 per million input tokens and $0.50 per million output tokens.

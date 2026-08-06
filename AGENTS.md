@@ -35,7 +35,7 @@ Defined in `assets/theme-dark.css` / `assets/theme-light.css` and consumed with
 | `--accent-ink` | `#1a1408` | text/ink on an accent fill |
 | `--bg` | `#0d0e13` | page background |
 | `--text` | `#e8e9f0` | body text |
-| `--lumen` | tracks `--accent` | Lumen-model accents |
+| `--fresco` | tracks `--accent` | Fresco-model accents |
 
 Never reintroduce the old orange (`#e8602c` / `rgba(232,96,44,…)`). If you need
 a paper-tone green/tan, sample from the paper photos rather than inventing hex.

@@ -28,12 +28,12 @@ trap 'rm -f "$ERR_LOG"' EXIT
 
 info "Installing Sennoric ($PACKAGE) globally via npm..."
 if npm install -g "$PACKAGE" 2>"$ERR_LOG"; then
-  info "Installed! Run 'sennoric' to get started."
+  info "Installed! Run 'axion' to get started."
 else
   if grep -qi "EACCES\|permission denied" "$ERR_LOG" 2>/dev/null; then
     info "Permission error — retrying with sudo..."
     sudo npm install -g "$PACKAGE"
-    info "Installed! Run 'sennoric' to get started."
+    info "Installed! Run 'axion' to get started."
   else
     cat "$ERR_LOG" >&2
     fail "npm install failed. See the output above."

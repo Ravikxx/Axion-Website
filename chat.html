@@ -5,10 +5,10 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Chat — Sennoric</title>
-  <meta name="description" content="Create a free Sennoric account and chat with Lumen in your browser.">
+  <meta name="description" content="Create a free Sennoric account and chat with Fresco in your browser.">
   <link rel="canonical" href="https://axion.amplifiedsmp.org/chat">
   <meta property="og:title" content="Chat — Sennoric">
-  <meta property="og:description" content="Create a free Sennoric account and chat with Lumen in your browser.">
+  <meta property="og:description" content="Create a free Sennoric account and chat with Fresco in your browser.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://axion.amplifiedsmp.org/chat">
   <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
@@ -1381,9 +1381,6 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.json">
-  <!-- Not deferred: the inline model-picker script below reads
-       window.SennoricModelLifecycle synchronously while building the catalog. -->
-  <script src="/assets/model-lifecycle.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1734,7 +1731,7 @@
             <button class="model-trigger" id="model-trigger" type="button" onclick="toggleModelMenu()" aria-haspopup="menu" aria-expanded="false" aria-controls="model-menu">
               <span class="model-trigger-mark" aria-hidden="true"></span>
               <span class="model-trigger-copy">
-                <span class="model-trigger-name" id="model-trigger-name">Lumen 1.2.5</span>
+                <span class="model-trigger-name" id="model-trigger-name">Fresco 1.2.5</span>
                 <span class="model-trigger-provider" id="model-trigger-provider">Sennoric</span>
               </span>
               <span class="model-chevron" aria-hidden="true"></span>
@@ -1820,39 +1817,28 @@
   function generationActive(c) { return !!c?.generation && ACTIVE_GENERATION_STATUSES.has(c.generation.status) }
   function uid() { return 'c-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7) }
 
-  // Model selector
+  // Model selector. Object keys are the wire-level model ids sent as
+  // `model` in chat completion requests — they stay 'lumen'/'veil' even
+  // though the tiers are branded Fresco/Glyph everywhere a person reads them.
   const MODEL_CATALOG = {
     lumen: {
-      label: 'Lumen 1.2.5',
-      provider: 'Sennoric's,
+      label: 'Fresco 1.2.5',
+      provider: 'Sennoric',
       description: 'Flagship 8B model for general chat, writing, and code.',
       tags: ['General', 'Writing', 'Code'],
       recommended: true,
     },
     veil: {
-      label: 'Veil 1.1',
-      provider: 'Sennoric's,
-      description: 'Legacy 3B model built for quick, lightweight conversations.',
-      tags: ['Fast', 'Legacy'],
+      label: 'Glyph 1.1',
+      provider: 'Sennoric',
+      description: 'Small, fast 3B model built for quick, lightweight conversations.',
+      tags: ['Fast'],
     },
   }
 
-  // Veil's deprecation and retirement dates live in model-lifecycle.js, the
-  // same source index.html, models.html, and veil.html read. Mirror it here so
-  // the picker can't drift from the rest of the site.
-  const VEIL_LIFECYCLE = (window.SennoricModelLifecycle || {}).veil || null
-  if (VEIL_LIFECYCLE) {
-    MODEL_CATALOG.veil.description = VEIL_LIFECYCLE.chatDescription
-    if (VEIL_LIFECYCLE.isDeprecated) {
-      // Badge drives both, so an offline Veil reads "Offline" in the tag and the
-      // status rather than tagging "Deprecated" next to a status of "Offline".
-      MODEL_CATALOG.veil.tags = [VEIL_LIFECYCLE.badge]
-      MODEL_CATALOG.veil.statusLabel = VEIL_LIFECYCLE.badge
-    }
-  }
-  // Once retired, Veil stops being offered at all — its model card stays up on
-  // /models, but it is no longer an endpoint anyone can pick.
-  const LEGACY_MODEL_IDS = VEIL_LIFECYCLE && VEIL_LIFECYCLE.isRetired ? [] : ['veil']
+  // Kept alongside the live /v1/models response as a fallback so Glyph still
+  // shows in the picker even before the endpoint's model list catches up.
+  const FALLBACK_MODEL_IDS = ['veil']
   let availableModels = new Map([['lumen', { id: 'lumen', owned_by: 'axion-labs' }]])
   let selectedModel = localStorage.getItem('sennoric_chat_model') || 'lumen'
   if (!availableModels.has(selectedModel)) selectedModel = 'lumen'
@@ -1869,7 +1855,7 @@
     const record = availableModels.get(id)
     return MODEL_CATALOG[id] || {
       label: friendlyModelName(id),
-      provider: record?.owned_by === 'axion-labs' ? 'Sennoric's : friendlyModelName(record?.owned_by || 'Sennoric's),
+      provider: record?.owned_by === 'axion-labs' ? 'Sennoric' : friendlyModelName(record?.owned_by || 'Sennoric'),
       description: 'Available through Sennoric’s hosted API.',
       tags: ['Hosted'],
     }
@@ -1880,7 +1866,7 @@
     if (!options) return
 
     const liveIds = [...availableModels.keys()]
-    const ids = [...liveIds, ...LEGACY_MODEL_IDS.filter(id => !availableModels.has(id))]
+    const ids = [...liveIds, ...FALLBACK_MODEL_IDS.filter(id => !availableModels.has(id))]
     if (!availableModels.has(selectedModel)) {
       selectedModel = liveIds[0] || 'lumen'
       localStorage.setItem('sennoric_chat_model', selectedModel)

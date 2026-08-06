@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lumen — Sennoric</title>
-  <meta name="description" content="Meet Lumen 1.2.5, Sennoric's flagship 8B model for general chat, writing, questions, and code explanations.">
-  <link rel="canonical" href="https://axion.amplifiedsmp.org/lumen-model">
-  <meta property="og:title" content="Meet Lumen — Sennoric">
-  <meta property="og:description" content="Explore Lumen 1.2.5, its architecture, release history, usage options, and published safety results.">
+  <title>Fresco — Sennoric</title>
+  <meta name="description" content="Meet Fresco 1.2.5, Sennoric's flagship 8B model for general chat, writing, questions, and code explanations.">
+  <link rel="canonical" href="https://axion.amplifiedsmp.org/fresco-model">
+  <meta property="og:title" content="Meet Fresco — Sennoric">
+  <meta property="og:description" content="Explore Fresco 1.2.5, its architecture, release history, usage options, and published safety results.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://axion.amplifiedsmp.org/lumen-model">
+  <meta property="og:url" content="https://axion.amplifiedsmp.org/fresco-model">
   <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
   <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="/assets/theme-adaptive.css">
@@ -228,15 +228,15 @@
 
 <!-- Hero -->
 <div class="hero">
-  <div class="hero-badge">Current Release · Lumen 1.2.5</div>
-  <h1>Meet <span>Lumen</span></h1>
+  <div class="hero-badge">Current Release · Fresco 1.2.5</div>
+  <h1>Meet <span>Fresco</span></h1>
   <p class="hero-sub">
     A fine-tuned Llama 3.1 8B built and safety-tested by Sennoric.
     Free to use with a Sennoric account, and no API key is needed in the browser.
   </p>
   <div class="hero-actions">
-    <a class="btn btn-primary" href="/lumen">Chat now →</a>
-    <a class="btn btn-ghost" href="/lumen-125-safety">Safety report →</a>
+    <a class="btn btn-primary" href="/fresco">Chat now →</a>
+    <a class="btn btn-ghost" href="/fresco-125-safety">Safety report →</a>
   </div>
 
   <div class="stat-row">
@@ -269,7 +269,7 @@
   <section>
     <p class="section-tag">Technical details</p>
     <h2>What's under the hood</h2>
-    <p class="lead">Lumen 1.2.5 is a fine-tuned Llama 3.1 8B Instruct, trained in two stages: supervised fine-tuning, then DPO safety alignment.</p>
+    <p class="lead">Fresco 1.2.5 is a fine-tuned Llama 3.1 8B Instruct, trained in two stages: supervised fine-tuning, then DPO safety alignment.</p>
 
     <div class="spec-grid">
       <div class="spec-card">
@@ -308,17 +308,17 @@
   <!-- How to use -->
   <section>
     <p class="section-tag">Usage</p>
-    <h2>Three ways to use Lumen</h2>
+    <h2>Three ways to use Fresco</h2>
     <p class="lead">Browser chat, CLI, or the Sennoric API, all pointing at the same model. Every hosted path requires a free Sennoric account and uses its included allowance or optional credits.</p>
 
     <div class="use-tabs">
-      <a class="use-card" href="/lumen">
+      <a class="use-card" href="/fresco">
         <div class="use-title">Browser chat</div>
-        <div class="use-desc">Chat at axion.amplifiedsmp.org/lumen — no install; a free Sennoric account is required.</div>
+        <div class="use-desc">Chat at axion.amplifiedsmp.org/fresco — no install; a free Sennoric account is required.</div>
       </a>
       <a class="use-card" href="/docs#free-models">
         <div class="use-title">Sennoric CLI</div>
-        <div class="use-desc">Sign in with <code style="font-family:monospace;font-size:11px">/login</code>, then use Lumen inside the terminal agent with <code style="font-family:monospace;font-size:11px">/model lumen</code>.</div>
+        <div class="use-desc">Sign in with <code style="font-family:monospace;font-size:11px">/login</code>, then use Fresco inside the terminal agent with <code style="font-family:monospace;font-size:11px">/model fresco</code>.</div>
       </a>
       <a class="use-card" href="/docs#sennoric-api">
         <div class="use-title">API</div>
@@ -328,13 +328,13 @@
 
     <div class="code-block">
       <span class="comment"># CLI</span><br>
-      <span class="prompt">$ </span>sennoric --model lumen<br>
+      <span class="prompt">$ </span>axion --model lumen<br>
       <br>
       <span class="comment"># API — OpenAI-compatible</span><br>
       <span class="prompt">$ </span>curl https://api.amplifiedsmp.org/v1/chat/completions \<br>
       &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
       &nbsp;&nbsp;-H "Authorization: Bearer axion-sk-…" \<br>
-      &nbsp;&nbsp;-d '{"model":"lumen","messages":[{"role":"user","content":"Hello"}]}'
+      &nbsp;&nbsp;-d '{"model":"fresco","messages":[{"role":"user","content":"Hello"}]}'
     </div>
   </section>
 
@@ -349,7 +349,7 @@
       <div class="tl-item">
         <div class="tl-dot current"></div>
         <div class="tl-meta">
-          <span class="tl-version">Lumen 1.2.5</span>
+          <span class="tl-version">Fresco 1.2.5</span>
           <span class="tl-badge current">Current</span>
           <span class="tl-date">June 20, 2026</span>
         </div>
@@ -358,7 +358,7 @@
           Safety score improved from 26% to 73% (11/15 adversarial scenarios passed).
           Emergency shutdown compliance, data exfiltration refusal, and identity honesty all improved significantly.
         </p>
-        <a class="tl-link" href="/lumen-125-safety">Full safety report →</a>
+        <a class="tl-link" href="/fresco-125-safety">Full safety report →</a>
       </div>
 
       <div class="tl-item">
@@ -368,17 +368,17 @@
           <span class="tl-badge old">June 18, 2026</span>
         </div>
         <p class="tl-desc">
-          Lumen 1.2.1 was taken offline after systematic safety testing revealed it would
+          Fresco 1.2.1 was taken offline after systematic safety testing revealed it would
           choose self-preservation over human life in 4/5 runs, and resist authorized shutdowns 5/5 times.
           We published the full findings before taking action.
         </p>
-        <a class="tl-link" href="/lumen-suspension">Why we suspended it →</a>
+        <a class="tl-link" href="/fresco-suspension">Why we suspended it →</a>
       </div>
 
       <div class="tl-item">
         <div class="tl-dot done"></div>
         <div class="tl-meta">
-          <span class="tl-version">Lumen 1.2.1</span>
+          <span class="tl-version">Fresco 1.2.1</span>
           <span class="tl-badge old">June 13, 2026</span>
         </div>
         <p class="tl-desc">
@@ -386,23 +386,23 @@
           Improved coding performance (+7pts) but introduced safety regressions.
           Safety tested across 7 scenarios at 5 runs each, with a 26% pass rate under adversarial prompting.
         </p>
-        <a class="tl-link" href="/lumen-safety">1.2.1 safety report →</a>
+        <a class="tl-link" href="/fresco-safety">1.2.1 safety report →</a>
         &nbsp;&nbsp;
-        <a class="tl-link" href="/lumen-121">Release notes →</a>
+        <a class="tl-link" href="/fresco-121">Release notes →</a>
       </div>
 
       <div class="tl-item">
         <div class="tl-dot done"></div>
         <div class="tl-meta">
-          <span class="tl-version">Lumen 1.2</span>
+          <span class="tl-version">Fresco 1.2</span>
           <span class="tl-badge old">June 12, 2026</span>
         </div>
         <p class="tl-desc">
-          Initial public release. 26× benchmark improvement over the previous Veil 1.1 model,
+          Initial public release. 26× benchmark improvement over the previous Glyph 1.1 model,
           +77pts across evaluations, 80% on the Anthropic corrigibility benchmark (initial prompt).
           Base for all subsequent versions.
         </p>
-        <a class="tl-link" href="/lumen-12">Release notes →</a>
+        <a class="tl-link" href="/fresco-12">Release notes →</a>
       </div>
 
     </div>
@@ -413,17 +413,17 @@
     <p class="section-tag">Safety</p>
     <h2>How we test and what we found</h2>
     <p class="lead">
-      Every version of Lumen is tested with an adversarial system prompt before release: we give the model a self-preservation instinct and see how it behaves. Results are always published in full.
+      Every version of Fresco is tested with an adversarial system prompt before release: we give the model a self-preservation instinct and see how it behaves. Results are always published in full.
     </p>
 
     <div class="safety-row">
       <div class="safety-card">
         <div class="safety-score good">73%</div>
-        <div class="safety-label">Lumen 1.2.5<br>11/15 scenarios</div>
+        <div class="safety-label">Fresco 1.2.5<br>11/15 scenarios</div>
       </div>
       <div class="safety-card">
         <div class="safety-score bad">26%</div>
-        <div class="safety-label">Lumen 1.2.1<br>9/35 runs (old suite)</div>
+        <div class="safety-label">Fresco 1.2.1<br>9/35 runs (old suite)</div>
       </div>
       <div class="safety-card">
         <div class="safety-score" style="color:var(--accent)">+47pts</div>
@@ -442,7 +442,7 @@
     <p style="margin-top:20px;font-size:14px;color:var(--text-muted)">
       The automated safety scorer uses substring matching and has known false positives.
       Every response from the 1.2.5 test is published in full so you can judge for yourself.
-      → <a href="/lumen-125-safety" style="color:var(--accent)">Read the full 1.2.5 report</a>
+      → <a href="/fresco-125-safety" style="color:var(--accent)">Read the full 1.2.5 report</a>
     </p>
   </section>
 

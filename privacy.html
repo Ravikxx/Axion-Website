@@ -203,7 +203,7 @@
   <p class="last-updated">Last updated: July 26, 2026</p>
 
   <div class="callout">
-    <strong>Short version:</strong> Most CLI work happens on your machine. Model inference, accounts, signed-in web chat, usage tracking, billing, email, vision, connected integrations, and asynchronous safety moderation may send data to remote services. Sennoric's hosted backend runs on Cloudflare, Lumen runs on RunPod, the default vision model runs on Hugging Face, and logged chat exchanges are sent to Mistral for safety classification. We do not use your conversations for training unless you explicitly opt in with <code>/contribute</code>.
+    <strong>Short version:</strong> Most CLI work happens on your machine. Model inference, accounts, signed-in web chat, usage tracking, billing, email, vision, connected integrations, and asynchronous safety moderation may send data to remote services. Sennoric's hosted backend runs on Cloudflare, Fresco runs on RunPod, the default vision model runs on Hugging Face, and logged chat exchanges are sent to Mistral for safety classification. We do not use your conversations for training unless you explicitly opt in with <code>/contribute</code>.
   </div>
 
   <div class="policy-section">
@@ -255,7 +255,7 @@
     <p style="margin-top:16px"><strong>AI model inference.</strong> Your prompt, plus any file contents, command output, or page text included as context, is sent to the model provider you select with <code>/model</code>:</p>
     <ul>
       <li><strong>Third-party providers</strong> (Anthropic, OpenAI, Google Gemini, Groq, Mistral, OpenRouter, OpenCode) receive your requests directly, authenticated with the key you supplied. See each provider's own policy.</li>
-      <li><strong>Lumen</strong> routes through Sennoric's Cloudflare backend at <code>api.amplifiedsmp.org</code> and then to Lumen inference on RunPod. Hosted access requires a Sennoric account, authenticated by a browser session or Sennoric API key. Usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.</li>
+      <li><strong>Fresco</strong> routes through Sennoric's Cloudflare backend at <code>api.amplifiedsmp.org</code> and then to Fresco inference on RunPod. Hosted access requires a Sennoric account, authenticated by a browser session or Sennoric API key. Usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.</li>
       <li><strong>IP addresses</strong> are collected during registration and used for duplicate-account and abuse detection. Registration IPs are kept with the account; operational rate-limit records expire according to their configured windows.</li>
     </ul>
 
@@ -267,7 +267,7 @@
 
     <p style="margin-top:16px"><strong>Screen vision.</strong> Screen-vision and computer-use features capture a screenshot and send the image to a vision model. By default this is Sennoric's <strong><code>axion-vision</code> model on Hugging Face</strong> (<code>axionlabsai-lumenvision.hf.space</code>); point it elsewhere with <code>/vision</code> and screenshots go to that provider instead. Either way, images of your screen leave your device when these features are active.</p>
 
-    <p style="margin-top:16px"><strong>Browser control (Chrome extension).</strong> The extension requests broad permissions (<code>&lt;all_urls&gt;</code>, scripting, tabs) so it can read pages, click elements, fill forms, and capture the visible tab when you direct it. In standalone extension chat, page data sent for model reasoning goes to the provider configured in the extension. When the authenticated local bridge is enabled, Sennoric Desktop can request page reads and actions over a loopback WebSocket; returned page data may then become prompt context sent by Desktop to its configured model provider. If Lumen is selected in either flow, the request follows the Cloudflare-to-RunPod path described above. Provider keys and the bridge pairing token are stored in extension-owned Chrome storage.</p>
+    <p style="margin-top:16px"><strong>Browser control (Chrome extension).</strong> The extension requests broad permissions (<code>&lt;all_urls&gt;</code>, scripting, tabs) so it can read pages, click elements, fill forms, and capture the visible tab when you direct it. In standalone extension chat, page data sent for model reasoning goes to the provider configured in the extension. When the authenticated local bridge is enabled, Sennoric Desktop can request page reads and actions over a loopback WebSocket; returned page data may then become prompt context sent by Desktop to its configured model provider. If Fresco is selected in either flow, the request follows the Cloudflare-to-RunPod path described above. Provider keys and the bridge pairing token are stored in extension-owned Chrome storage.</p>
 
     <p style="margin-top:16px"><strong>Email and payments.</strong></p>
     <ul>
@@ -288,7 +288,7 @@
   <div class="policy-section">
     <h2>Third-party privacy policies</h2>
     <ul>
-      <li><strong>RunPod</strong> (Lumen inference) — <a href="https://www.runpod.io/legal/privacy-policy">runpod.io privacy policy</a></li>
+      <li><strong>RunPod</strong> (Fresco inference) — <a href="https://www.runpod.io/legal/privacy-policy">runpod.io privacy policy</a></li>
       <li><strong>Hugging Face</strong> (default vision inference) — <a href="https://huggingface.co/privacy">huggingface.co/privacy</a></li>
       <li><strong>Mistral</strong> (asynchronous, context-aware safety classification of logged chat exchanges) — <a href="https://legal.mistral.ai/terms/privacy-policy">mistral.ai privacy policy</a></li>
       <li><strong>Cloudflare</strong> (API backend &amp; contribution endpoint) — <a href="https://www.cloudflare.com/policies/privacy/">cloudflare.com/policies/privacy</a></li>

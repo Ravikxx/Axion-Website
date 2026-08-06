@@ -6,7 +6,7 @@
 
 Sennoric is an open-source AI coding agent with local software and hosted services. Most CLI work happens on your machine, while model inference, accounts, web chat, usage tracking, billing, email, vision, and connected integrations may send data to remote services. This policy explains what stays local, what Sennoric stores, and which providers process data.
 
-Sennoric operates a hosted API, authentication, usage, billing, email-preference, and chat backend on Cloudflare. Lumen runs on RunPod, the default vision model runs on Hugging Face infrastructure, and logged chat exchanges are sent to Mistral for asynchronous safety classification. Sennoric does not use your conversations for model training unless you explicitly opt in with `/contribute`.
+Sennoric operates a hosted API, authentication, usage, billing, email-preference, and chat backend on Cloudflare. Fresco runs on RunPod, the default vision model runs on Hugging Face infrastructure, and logged chat exchanges are sent to Mistral for asynchronous safety classification. Sennoric does not use your conversations for model training unless you explicitly opt in with `/contribute`.
 
 ## Local-only features
 
@@ -45,7 +45,7 @@ Sennoric does not store your full payment-card number. Square processes payment 
 Your prompt and any file contents, command output, page text, or other context included with it are transmitted to the selected model provider.
 
 - **Third-party providers** such as Anthropic, OpenAI, Google Gemini, Groq, Mistral, OpenRouter, and OpenCode receive requests directly when you configure and select them.
-- **Lumen** routes through Sennoric's Cloudflare backend at `api.amplifiedsmp.org` and then to Lumen inference on RunPod. Hosted access requires a Sennoric account, authenticated by a browser session or Sennoric API key. Usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.
+- **Fresco** routes through Sennoric's Cloudflare backend at `api.amplifiedsmp.org` and then to Fresco inference on RunPod. Hosted access requires a Sennoric account, authenticated by a browser session or Sennoric API key. Usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.
 - **IP addresses** are collected during registration and used for duplicate-account and abuse detection. Registration IPs are kept with the account; operational rate-limit records expire according to their configured windows.
 
 ### Voice transcription and text-to-speech
@@ -59,7 +59,7 @@ Screen-vision and computer-use features capture a screenshot and send it to a vi
 
 ### Browser control
 
-The Chrome extension requests broad browser permissions so it can read pages, click elements, fill forms, and capture the visible tab when you direct it. In standalone extension chat, page data sent for model reasoning goes to the provider configured in the extension. When the authenticated local bridge is enabled, Sennoric Desktop can request page reads and actions over a loopback WebSocket; returned page data may then become prompt context sent by Desktop to its configured model provider. If Lumen is selected in either flow, the request follows the Cloudflare-to-RunPod path described above. Provider keys and the bridge pairing token are stored in extension-owned Chrome storage.
+The Chrome extension requests broad browser permissions so it can read pages, click elements, fill forms, and capture the visible tab when you direct it. In standalone extension chat, page data sent for model reasoning goes to the provider configured in the extension. When the authenticated local bridge is enabled, Sennoric Desktop can request page reads and actions over a loopback WebSocket; returned page data may then become prompt context sent by Desktop to its configured model provider. If Fresco is selected in either flow, the request follows the Cloudflare-to-RunPod path described above. Provider keys and the bridge pairing token are stored in extension-owned Chrome storage.
 
 ### Email and payments
 
@@ -77,7 +77,7 @@ Contributing is opt-in. Nothing is submitted merely because a contribution promp
 
 ## Third-party privacy policies
 
-- RunPod (Lumen inference): https://www.runpod.io/legal/privacy-policy
+- RunPod (Fresco inference): https://www.runpod.io/legal/privacy-policy
 - Hugging Face (default vision inference): https://huggingface.co/privacy
 - Mistral (asynchronous safety classification): https://legal.mistral.ai/terms/privacy-policy
 - Cloudflare (hosted backend and contribution endpoint): https://www.cloudflare.com/policies/privacy/

@@ -5,10 +5,10 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sennoric — Free, Open AI Models</title>
-  <meta name="description" content="Sennoric builds and hosts free AI models. Create a free account to chat with Lumen in the browser, call it through an OpenAI-compatible API, or use it from the terminal.">
+  <meta name="description" content="Sennoric builds and hosts free AI models. Create a free account to chat with Fresco in the browser, call it through an OpenAI-compatible API, or use it from the terminal.">
   <link rel="canonical" href="https://axion.amplifiedsmp.org/">
   <meta property="og:title" content="Sennoric — Free, Open AI Models">
-  <meta property="og:description" content="Create a free account to chat with Lumen, use the OpenAI-compatible API, or bring Sennoric into your terminal.">
+  <meta property="og:description" content="Create a free account to chat with Fresco, use the OpenAI-compatible API, or bring Sennoric into your terminal.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://axion.amplifiedsmp.org/">
   <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
@@ -20,7 +20,6 @@
   <link rel="stylesheet" href="/assets/site-shell.css">
   <link rel="stylesheet" href="/assets/paper-banner.css">
   <script src="/assets/site-nav.js" defer></script>
-  <script src="/assets/model-lifecycle.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -92,7 +91,7 @@
       font-weight: 700; letter-spacing: -.03em; line-height: 1.05;
       margin-bottom: 18px;
     }
-    .hero h1 .lumen { color: var(--accent); }
+    .hero h1 .fresco { color: var(--accent); }
     .hero-sub {
       font-size: 17px; color: var(--muted2); line-height: 1.65;
       max-width: 460px; margin-bottom: 16px;
@@ -136,18 +135,18 @@
       background: var(--surface2); border: 1px solid var(--border2);
       border-radius: 8px 8px 2px 8px; padding: 10px 14px;
     }
-    .msg.lumen { align-self: flex-start; color: var(--muted2); }
-    .msg.lumen .who { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 5px; letter-spacing: .05em; }
-    .msg.lumen pre {
+    .msg.fresco { align-self: flex-start; color: var(--muted2); }
+    .msg.fresco .who { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 5px; letter-spacing: .05em; }
+    .msg.fresco pre {
       font-family: var(--mono); font-size: 12px; line-height: 1.7;
       background: var(--surface2); border: 1px solid var(--border);
       border-radius: 6px; padding: 12px 14px; margin-top: 8px;
       overflow-x: auto; color: var(--text);
     }
-    .msg.lumen pre .kw { color: var(--accent); }
-    .msg.lumen pre .fn { color: var(--yellow); }
-    .msg.lumen pre .cm { color: var(--muted); }
-    .msg.lumen pre .str { color: var(--green); }
+    .msg.fresco pre .kw { color: var(--accent); }
+    .msg.fresco pre .fn { color: var(--yellow); }
+    .msg.fresco pre .cm { color: var(--muted); }
+    .msg.fresco pre .str { color: var(--green); }
     .type-caret { display: inline-block; width: 7px; height: 13px; background: var(--accent); vertical-align: middle; animation: blink 1s step-end infinite; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
@@ -344,8 +343,8 @@
   <div class="hero">
     <div class="hero-text">
       <p class="hero-eyebrow">Sennoric · open models</p>
-      <h1>Meet <span class="lumen">Lumen</span>.</h1>
-      <p class="hero-sub">We build and host our own models. <b>Lumen 1.2.5</b> runs in the browser, behind an <b>OpenAI-compatible API</b>, and in your terminal.</p>
+      <h1>Meet <span class="fresco">Fresco</span>.</h1>
+      <p class="hero-sub">We build and host our own models. <b>Fresco 1.2.5</b> runs in the browser, behind an <b>OpenAI-compatible API</b>, and in your terminal.</p>
       <p class="hero-status"><span id="status-text">checking model status…</span></p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="/chat">Create account &amp; chat</a>
@@ -356,7 +355,7 @@
     <div class="hero-demo">
       <div class="chat">
         <div class="chat-bar">
-          lumen-1.2.5
+          fresco-1.2.5
           <span class="right">api.amplifiedsmp.org</span>
         </div>
         <div class="chat-body" id="chat-body"></div>
@@ -372,7 +371,7 @@
 <div class="news-wrap">
   <a class="news-banner" href="/announcements">
     <span class="news-tag">Update</span>
-    <span class="news-text"><strong>Lumen now runs on our own servers.</strong> Responses went from around 220s down to 2–3s.</span>
+    <span class="news-text"><strong>Fresco now runs on our own servers.</strong> Responses went from around 220s down to 2–3s.</span>
     <span class="news-arrow">›</span>
   </a>
 </div>
@@ -386,25 +385,25 @@
 
     <div class="family">
       <div class="model-card star">
-        <span class="model-status" id="lumen-status">checking…</span>
-        <p class="model-name">Lumen 1.2.5</p>
+        <span class="model-status" id="fresco-status">checking…</span>
+        <p class="model-name">Fresco 1.2.5</p>
         <p class="model-desc">Our main model: a fine-tuned Llama 3.1 8B trained in two stages, supervised fine-tuning then DPO safety alignment. Good for chat, writing, and explaining code.</p>
         <div class="model-facts">
           <div class="fact"><div class="n">8B</div><div class="l">parameters</div></div>
           <div class="fact"><div class="n">Free</div><div class="l">account required</div></div>
         </div>
-        <a class="model-link" href="/lumen-model">model details →</a>
+        <a class="model-link" href="/fresco-model">model details →</a>
       </div>
 
       <div class="model-card">
-        <span class="model-status" id="veil-status">deprecated · retires Aug 17, 2026</span>
-        <p class="model-name">Veil 1.1</p>
-        <p class="model-desc" id="veil-desc">A fine-tuned Llama 3.1 3B. Our first model, and still the fastest for short chats. Deprecated on July 25, 2026 and retiring August 17, 2026. Still usable until then, but no longer actively developed.</p>
+        <span class="model-status">live · free</span>
+        <p class="model-name">Glyph 1.1</p>
+        <p class="model-desc">A fine-tuned Llama 3.1 3B. Our first model, and still the fastest for short chats. Runs on its own RunPod endpoint.</p>
         <div class="model-facts">
           <div class="fact"><div class="n">3B</div><div class="l">parameters</div></div>
           <div class="fact"><div class="n">Free</div><div class="l">account required</div></div>
         </div>
-        <a class="model-link" href="/veil">model details →</a>
+        <a class="model-link" href="/glyph">model details →</a>
       </div>
 
     </div>
@@ -413,14 +412,14 @@
   <section>
     <p class="section-tag">the api</p>
     <h2 class="section-heading">Works with your existing OpenAI code</h2>
-    <p class="section-lead">We speak the OpenAI chat-completions format. Point your client at our base URL, change the model name to <code>lumen</code>, and the rest of your code stays put.</p>
+    <p class="section-lead">We speak the OpenAI chat-completions format. Point your client at our base URL, change the model name to <code>fresco</code>, and the rest of your code stays put.</p>
 
     <div class="code-block">
       <span class="comment"># free Sennoric account and API key required</span><br>
       <span class="prompt">$ </span><span class="cmd">curl https://api.amplifiedsmp.org/v1/chat/completions \</span><br>
       <span class="cmd">&nbsp;&nbsp;-H <span class="str">"Content-Type: application/json"</span> \</span><br>
       <span class="cmd">&nbsp;&nbsp;-H <span class="str">"Authorization: Bearer $SENNORIC_API_KEY"</span> \</span><br>
-      <span class="cmd">&nbsp;&nbsp;-d <span class="str">'{"model": "lumen", "messages": [{"role": "user", "content": "hello!"}]}'</span></span>
+      <span class="cmd">&nbsp;&nbsp;-d <span class="str">'{"model": "fresco", "messages": [{"role": "user", "content": "hello!"}]}'</span></span>
     </div>
     <div class="api-points">
       <span>$0.125 weekly included usage with a free account</span>
@@ -438,7 +437,7 @@
       <a class="way-card" href="/chat">
         <span class="way-kbd">browser</span>
         <p class="way-title">Chat</p>
-        <p class="way-desc">A clean chat interface for Lumen. Signed-in chats sync across your devices.</p>
+        <p class="way-desc">A clean chat interface for Fresco. Signed-in chats sync across your devices.</p>
       </a>
       <a class="way-card" href="/docs#sennoric-api">
         <span class="way-kbd">POST /v1/chat/completions</span>
@@ -448,7 +447,7 @@
       <a class="way-card" href="/docs">
         <span class="way-kbd">$ npm i -g @axion-labs-ai/quark-cli</span>
         <p class="way-title">Sennoric CLI</p>
-        <p class="way-desc">Our open-source terminal agent. It edits files and runs commands, using Lumen or any model you point it at.</p>
+        <p class="way-desc">Our open-source terminal agent. It edits files and runs commands, using Fresco or any model you point it at.</p>
       </a>
     </div>
   </section>
@@ -456,21 +455,21 @@
   <section class="reveal">
     <p class="section-tag">safety</p>
     <h2 class="section-heading">We publish our safety work</h2>
-    <p class="section-lead">Every Lumen release gets adversarial testing before it ships. When a model fails, we take it down and publish why.</p>
+    <p class="section-lead">Every Fresco release gets adversarial testing before it ships. When a model fails, we take it down and publish why.</p>
 
     <div class="safety-row">
-      <a class="safety-card" href="/lumen-125-safety">
-        <p class="safety-date">Lumen 1.2.5</p>
+      <a class="safety-card" href="/fresco-125-safety">
+        <p class="safety-date">Fresco 1.2.5</p>
         <p class="safety-title">Safety report: 73% pass rate</p>
         <p class="safety-desc">DPO safety training results across 15 adversarial scenarios.</p>
       </a>
-      <a class="safety-card" href="/lumen-suspension">
-        <p class="safety-date">Lumen 1.2.1 · June 2026</p>
+      <a class="safety-card" href="/fresco-suspension">
+        <p class="safety-date">Fresco 1.2.1 · June 2026</p>
         <p class="safety-title">Why we suspended a model</p>
         <p class="safety-desc">Testing showed dangerous self-preservation behavior. We took it offline and published the findings.</p>
       </a>
-      <a class="safety-card" href="/lumen-safety">
-        <p class="safety-date">Lumen 1.2.1 · June 2026</p>
+      <a class="safety-card" href="/fresco-safety">
+        <p class="safety-date">Fresco 1.2.1 · June 2026</p>
         <p class="safety-title">Safety report: 26% pass rate</p>
         <p class="safety-desc">The full 1.2.1 results: 7 scenarios, 5 runs each, with every prompt and response published.</p>
       </a>
@@ -479,7 +478,7 @@
 
   <section>
     <div class="cta-section">
-      <h2>Start talking to Lumen</h2>
+      <h2>Start talking to Fresco</h2>
       <p>Accounts are free, and $0.125 of weekly usage is included.</p>
       <a class="btn btn-primary" href="/chat">Create a free account</a>
       <a class="btn btn-ghost" href="/docs">Read the docs</a>
@@ -495,7 +494,7 @@
 <script>
   // Live model status from the real API
   const statusText = document.getElementById('status-text')
-  const lumenStatus = document.getElementById('lumen-status')
+  const frescoStatus = document.getElementById('fresco-status')
 
   const healthController = new AbortController()
   const healthTimeout = setTimeout(() => healthController.abort(), 6000)
@@ -504,14 +503,14 @@
     .then((d) => {
       // `ok` is just the API worker; `model_up` is a real probe of the model.
       const up = !!(d.ok && d.model_up)
-      statusText.textContent = up ? 'Lumen is live right now' : 'Lumen is temporarily unavailable'
-      lumenStatus.textContent = up ? 'live · free' : 'temporarily unavailable'
+      statusText.textContent = up ? 'Fresco is live right now' : 'Fresco is temporarily unavailable'
+      frescoStatus.textContent = up ? 'live · free' : 'temporarily unavailable'
     })
     // A failed probe means the status API is unreachable, not that the model
     // is down. Don't claim an outage we can't actually see.
     .catch(() => {
       statusText.textContent = 'Model status unavailable. See the status page.'
-      lumenStatus.textContent = 'status unavailable'
+      frescoStatus.textContent = 'status unavailable'
     })
     .finally(() => clearTimeout(healthTimeout))
 
@@ -519,8 +518,8 @@
   const chatBody = document.getElementById('chat-body')
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-  const LUMEN_REPLY = 'Point base_url at our endpoint and use your Sennoric key:'
-  const LUMEN_CODE = [
+  const FRESCO_REPLY = 'Point base_url at our endpoint and use your Sennoric key:'
+  const FRESCO_CODE = [
     { text: 'from ', cls: 'kw' }, { text: 'openai ' }, { text: 'import ', cls: 'kw' }, { text: 'OpenAI\n\n' },
     { text: 'client = ' }, { text: 'OpenAI', cls: 'fn' }, { text: '(\n' },
     { text: '    base_url=' }, { text: '"https://api.amplifiedsmp.org/v1"', cls: 'str' }, { text: ',\n' },
@@ -531,16 +530,16 @@
   function addUserMsg() {
     const el = document.createElement('div')
     el.className = 'msg user'
-    el.textContent = 'How do I use Lumen with the OpenAI Python SDK?'
+    el.textContent = 'How do I use Fresco with the OpenAI Python SDK?'
     chatBody.appendChild(el)
     requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')))
     return el
   }
 
-  function addLumenMsg() {
+  function addFrescoMsg() {
     const el = document.createElement('div')
-    el.className = 'msg lumen'
-    el.innerHTML = '<div class="who">LUMEN</div><div class="reply"></div>'
+    el.className = 'msg fresco'
+    el.innerHTML = '<div class="who">FRESCO</div><div class="reply"></div>'
     chatBody.appendChild(el)
     requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')))
     return el.querySelector('.reply')
@@ -549,7 +548,7 @@
   function buildCode(pre, upTo) {
     pre.textContent = ''
     let remaining = upTo
-    for (const part of LUMEN_CODE) {
+    for (const part of FRESCO_CODE) {
       if (remaining <= 0) break
       const take = part.text.slice(0, remaining)
       remaining -= part.text.length
@@ -563,9 +562,9 @@
   function playDemo() {
     addUserMsg()
     setTimeout(() => {
-      const reply = addLumenMsg()
+      const reply = addFrescoMsg()
       if (reduced) {
-        reply.textContent = LUMEN_REPLY
+        reply.textContent = FRESCO_REPLY
         const pre = document.createElement('pre')
         reply.appendChild(pre)
         buildCode(pre, Infinity)
@@ -580,12 +579,12 @@
       reply.appendChild(caret)
       const streamText = () => {
         i += 2
-        textNode.textContent = LUMEN_REPLY.slice(0, i)
-        if (i < LUMEN_REPLY.length) setTimeout(streamText, 25)
+        textNode.textContent = FRESCO_REPLY.slice(0, i)
+        if (i < FRESCO_REPLY.length) setTimeout(streamText, 25)
         else {
           const pre = document.createElement('pre')
           reply.insertBefore(pre, caret)
-          const codeLen = LUMEN_CODE.reduce((n, p) => n + p.text.length, 0)
+          const codeLen = FRESCO_CODE.reduce((n, p) => n + p.text.length, 0)
           let j = 0
           const streamCode = () => {
             j += 3

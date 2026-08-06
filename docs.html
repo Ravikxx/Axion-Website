@@ -5,10 +5,10 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Docs — Sennoric</title>
-  <meta name="description" content="Documentation for Lumen, Sennoric API keys, the OpenAI-compatible endpoint, teams, and the Sennoric CLI.">
+  <meta name="description" content="Documentation for Fresco, Sennoric API keys, the OpenAI-compatible endpoint, teams, and the Sennoric CLI.">
   <link rel="canonical" href="https://axion.amplifiedsmp.org/docs">
   <meta property="og:title" content="Sennoric Documentation">
-  <meta property="og:description" content="Learn how to use Lumen, Sennoric API keys, teams, and the Sennoric CLI.">
+  <meta property="og:description" content="Learn how to use Fresco, Sennoric API keys, teams, and the Sennoric CLI.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://axion.amplifiedsmp.org/docs">
   <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
@@ -16,7 +16,6 @@
   <link rel="stylesheet" href="/assets/theme-adaptive.css">
   <link rel="stylesheet" href="/assets/site-shell.css">
   <script src="/assets/site-nav.js" defer></script>
-  <script src="/assets/model-lifecycle.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -218,7 +217,7 @@
   <aside class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-heading">Our Models</div>
-      <a href="#free-models">Lumen &amp; Veil</a>
+      <a href="#free-models">Fresco &amp; Glyph</a>
       <a href="#web-chat">Web Chat</a>
       <a href="#sennoric-api">API Keys & Limits</a>
       <a href="#teams">Teams</a>
@@ -242,24 +241,24 @@
   <div class="docs-content">
 
     <div class="doc-section" id="free-models">
-      <h2>Lumen &amp; Veil</h2>
+      <h2>Fresco &amp; Glyph</h2>
       <p class="lead">Free to chat with after creating a Sennoric account. Browser chat does not require an API key.</p>
       <div class="model-grid">
         <div class="model-card">
           <div class="model-card-badge badge-free">Free account required</div>
-          <div class="model-card-name">Lumen 1.2.5</div>
+          <div class="model-card-name">Fresco 1.2.5</div>
           <div class="model-card-alias"><code>model: "lumen"</code></div>
-          <div class="model-card-desc">Fine-tuned Llama 3.1 8B with DPO safety training. General assistant: questions, writing, code, explanations. Also available at <a href="/lumen" style="color:var(--accent)">axion.amplifiedsmp.org/lumen</a>.</div>
+          <div class="model-card-desc">Fine-tuned Llama 3.1 8B with DPO safety training. General assistant: questions, writing, code, explanations. Also available at <a href="/fresco" style="color:var(--accent)">axion.amplifiedsmp.org/fresco</a>.</div>
         </div>
         <div class="model-card">
-          <div class="model-card-badge badge-paid" id="veil-badge">Deprecated</div>
-          <div class="model-card-name">Veil 1.1</div>
+          <div class="model-card-badge badge-free">Free account required</div>
+          <div class="model-card-name">Glyph 1.1</div>
           <div class="model-card-alias"><code>model: "veil"</code></div>
-          <div class="model-card-desc" id="veil-desc">Our first model, a fine-tuned Llama 3.1 3B for quick general chat. Deprecated on July 25, 2026 and retiring August 17, 2026; see <a href="/veil" style="color:var(--accent)">why we\'re moving on</a>.</div>
+          <div class="model-card-desc">Our first model, a fine-tuned Llama 3.1 3B for quick general chat. Runs on its own RunPod endpoint; see the <a href="/glyph" style="color:var(--accent)">Glyph page</a> for details.</div>
         </div>
       </div>
-      <div class="callout warn">
-        <strong>Veil is deprecated.</strong> Don\'t build anything new against <code>model: "veil"</code> — point it at <code>model: "lumen"</code> on the same endpoint instead. Existing integrations should migrate now rather than waiting for the retirement date; the <a href="/veil" style="color:var(--accent)">Veil page</a> carries the current status and timeline.
+      <div class="callout info">
+        Fresco and Glyph keep their original wire model ids, <code>model: "lumen"</code> and <code>model: "veil"</code>, even though they're branded Fresco and Glyph everywhere you read them. No code changes needed on your end.
       </div>
       <div class="callout info">
         Response times can vary under load. Sign in for browser chat, or create an <a href="/keys" style="color:var(--accent)">Sennoric API key</a> for CLI and API access.
@@ -268,7 +267,7 @@
 
     <div class="doc-section" id="web-chat">
       <h2>Web Chat</h2>
-      <p class="lead">Chat with Lumen directly in your browser at <a href="/chat" style="color:var(--accent)">axion.amplifiedsmp.org/chat</a> — no install needed.</p>
+      <p class="lead">Chat with Fresco directly in your browser at <a href="/chat" style="color:var(--accent)">axion.amplifiedsmp.org/chat</a> — no install needed.</p>
 
       <h3>Features</h3>
       <ul>
@@ -297,7 +296,7 @@
 
     <div class="doc-section" id="sennoric-api">
       <h2>API Keys & Limits</h2>
-      <p class="lead">Sennoric hosts Lumen via an OpenAI-compatible API. Get a key at <a href="/keys" style="color:var(--accent)">axion.amplifiedsmp.org/keys</a>.</p>
+      <p class="lead">Sennoric hosts Fresco via an OpenAI-compatible API. Get a key at <a href="/keys" style="color:var(--accent)">axion.amplifiedsmp.org/keys</a>.</p>
 
       <h3>Tiers</h3>
       <table class="cmd-table">
@@ -316,14 +315,14 @@
         curl https://api.amplifiedsmp.org/v1/chat/completions \<br>
         &nbsp;&nbsp;-H "Authorization: Bearer axion-sk-…" \<br>
         &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
-        &nbsp;&nbsp;-d '{"model":"lumen","messages":[{"role":"user","content":"Hi"}]}'
+        &nbsp;&nbsp;-d '{"model":"fresco","messages":[{"role":"user","content":"Hi"}]}'
       </div>
 
       <h3>Python (openai library)</h3>
       <div class="code-block">
         from openai import OpenAI<br>
         client = OpenAI(api_key="axion-sk-…", base_url="https://api.amplifiedsmp.org/v1")<br>
-        resp = client.chat.completions.create(model="lumen", messages=[{"role":"user","content":"Hi"}])
+        resp = client.chat.completions.create(model="fresco", messages=[{"role":"user","content":"Hi"}])
       </div>
     </div>
 
@@ -362,7 +361,7 @@
       <h3>Requirements</h3>
       <ul>
         <li><strong>Node.js 18+</strong> — required</li>
-        <li><strong>An account or provider key</strong> — use <code>/login</code> for Lumen, or supply an API key for any of the third-party providers below.</li>
+        <li><strong>An account or provider key</strong> — use <code>/login</code> for Fresco, or supply an API key for any of the third-party providers below.</li>
         <li><strong>Python 3 (optional)</strong> — needed for computer use / screen overlay</li>
         <li><strong>Tesseract (optional)</strong> — for OCR / find-by-text in computer use</li>
       </ul>
@@ -376,9 +375,9 @@
         <span class="prompt">$ </span>sennoric<br><br>
         <span class="green">  Welcome to Sennoric!</span><br>
         <span class="comment">  Pick a model to get started:</span><br>
-        <span class="comment">  › Claude · GPT-4o · Gemini · Groq · Lumen (free)</span>
+        <span class="comment">  › Claude · GPT-4o · Gemini · Groq · Fresco (free)</span>
       </div>
-      <p>Select Lumen and sign in with <code>/login</code>, or paste an API key for another provider when prompted.</p>
+      <p>Select Fresco and sign in with <code>/login</code>, or paste an API key for another provider when prompted.</p>
       <h3>Sign in to Sennoric</h3>
       <p>Run <code>/login</code> inside Sennoric to open a browser tab, sign in to your Sennoric account, and automatically save an API key, with no copy-pasting needed.</p>
       <div class="code-block">
@@ -393,7 +392,7 @@
         <span class="comment"># Or set your Sennoric key directly</span><br>
         <span class="prompt">› </span>/axion-key axion-sk-…<br><br>
         <span class="comment"># Skip to the free model</span><br>
-        <span class="prompt">$ </span>sennoric --model lumen
+        <span class="prompt">$ </span>axion --model lumen
       </div>
     </div>
 
@@ -447,7 +446,7 @@
       <h3>Switching models mid-session</h3>
       <div class="code-block">
         <span class="prompt">› </span>/model claude<br>
-        <span class="prompt">› </span>/model lumen<br>
+        <span class="prompt">› </span>/model fresco<br>
         <span class="prompt">› </span>/model groq
       </div>
       <p>Conversation history carries over when you switch, so the new model gets full context.</p>
@@ -465,7 +464,7 @@
           <tr><td><code>/axion-key &lt;key&gt;</code></td><td class="desc">Save your Sennoric API key manually</td></tr>
           <tr><td><code>/axion-key remove</code></td><td class="desc">Clear your Sennoric API key</td></tr>
           <tr><td><code>/api &lt;provider&gt; &lt;key&gt;</code></td><td class="desc">Set a third-party API key (claude, gpt, groq, mistral, gemini, openrouter)</td></tr>
-          <tr><td><code>/model &lt;name&gt;</code></td><td class="desc">Switch model — claude, gpt, lumen, gemini, groq, ollama…</td></tr>
+          <tr><td><code>/model &lt;name&gt;</code></td><td class="desc">Switch model — claude, gpt, fresco, gemini, groq, ollama…</td></tr>
           <tr><td><code>/models</code></td><td class="desc">List all available models and custom endpoints</td></tr>
           <tr><td><code>/endpoint &lt;name&gt; &lt;url&gt; [model] [key]</code></td><td class="desc">Add a custom OpenAI-compatible endpoint</td></tr>
           <tr><td><code>/thinking [on|off|&lt;tokens&gt;]</code></td><td class="desc">Toggle extended thinking (Claude only)</td></tr>
@@ -645,8 +644,8 @@
       { cmd: 'npm install -g @axion-labs-ai/quark-cli' },
       { out: '  ✓ installed @axion-labs-ai/quark-cli', cls: 'green' },
       { blank: true },
-      { cmd: 'sennoric --model lumen' },
-      { out: '     Sennoric v2.0.5  ·  lumen', cls: 'green' },
+      { cmd: 'axion --model lumen' },
+      { out: '     Sennoric v2.0.5  ·  fresco', cls: 'green' },
       { blank: true },
       { cmd: 'add a dark mode toggle to settings' },
       { out: '  Reading src/Settings.jsx…', cls: 'dim' },

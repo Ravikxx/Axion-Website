@@ -136,7 +136,7 @@
     if (logo) {
       var logoImg = document.createElement('img');
       logoImg.src = logo;
-      logoImg.alt = el.dataset.logoAlt || 'Sennoric's;
+      logoImg.alt = el.dataset.logoAlt || 'Sennoric';
       logoImg.className = 'paper-banner-logo';
       el.appendChild(logoImg);
     }

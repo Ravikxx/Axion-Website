@@ -633,7 +633,7 @@
     <section>
       <h2>Status Page Incidents</h2>
       <p style="color:var(--muted);font-size:13px;margin-bottom:14px">
-        Automated monitoring checks Lumen and the website every 5 minutes and auto-opens an
+        Automated monitoring checks Fresco and the website every 5 minutes and auto-opens an
         "investigating" incident (with a generic description) after two consecutive failures, and you'll get an email when that happens. Use this to write what's actually wrong, or to post a new
         incident manually. Everything here is public on <a href="/status" target="_blank" rel="noopener" style="color:var(--accent)">/status</a>.
       </p>
@@ -642,7 +642,7 @@
       <div class="credit-create-grid">
         <div class="credit-field"><label for="incident-service">Service</label>
           <select id="incident-service">
-            <option value="lumen">Lumen API</option>
+            <option value="fresco">Fresco API</option>
             <option value="website">Sennoric website</option>
           </select>
         </div>
@@ -655,7 +655,7 @@
           </select>
         </div>
         <div class="credit-field" style="grid-column:1/-1"><label for="incident-title">Title</label>
-          <input id="incident-title" type="text" maxlength="140" placeholder="Elevated errors on Lumen API">
+          <input id="incident-title" type="text" maxlength="140" placeholder="Elevated errors on Fresco API">
         </div>
         <div class="credit-field" style="grid-column:1/-1"><label for="incident-body">What's wrong</label>
           <textarea id="incident-body" rows="3" maxlength="2000" placeholder="Describe exactly what's happening, in plain language, for the public status page." style="width:100%;resize:vertical;font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)"></textarea>
@@ -1431,7 +1431,7 @@
   }
 
   // Status page incidents
-  const SERVICE_LABELS = { lumen: 'Lumen API', website: 'Sennoric website' }
+  const SERVICE_LABELS = { fresco: 'Fresco API', website: 'Sennoric website' }
 
   async function loadStatusIncidents() {
     const res = await apiFetch('/admin/status/incidents')

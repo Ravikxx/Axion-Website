@@ -5,10 +5,10 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Models — Sennoric</title>
-  <meta name="description" content="Explore Lumen, Veil, Sennoric safety research, and the experimental Project Crucible model architecture.">
+  <meta name="description" content="Explore Fresco, Glyph, Sennoric safety research, and the experimental Project Crucible model architecture.">
   <link rel="canonical" href="https://axion.amplifiedsmp.org/models">
   <meta property="og:title" content="Models — Sennoric">
-  <meta property="og:description" content="Explore Lumen, Veil, Sennoric safety research, and Project Crucible.">
+  <meta property="og:description" content="Explore Fresco, Glyph, Sennoric safety research, and Project Crucible.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://axion.amplifiedsmp.org/models">
   <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
@@ -16,7 +16,6 @@
   <link rel="stylesheet" href="/assets/theme-adaptive.css">
   <link rel="stylesheet" href="/assets/site-shell.css">
   <script src="/assets/site-nav.js" defer></script>
-  <script src="/assets/model-lifecycle.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -188,30 +187,41 @@
       <div class="model-card featured">
         <div class="card-top">
           <div>
-            <div class="card-name">Lumen 1.2.5</div>
+            <div class="card-name">Fresco 1.2.5</div>
             <div class="card-provider">Sennoric</div>
           </div>
           <span class="badge badge-free">Free</span>
         </div>
         <p class="card-desc">Fine-tuned Llama 3.1 8B with DPO safety training. Best for general chat, questions, writing, and code explanations. 73% safety pass rate under adversarial testing.</p>
         <div class="card-footer">
-          <a class="card-link" href="/lumen">Chat in browser →</a>
-          <a class="card-link" href="/lumen-model">Model details →</a>
+          <a class="card-link" href="/fresco">Chat in browser →</a>
+          <a class="card-link" href="/fresco-model">Model details →</a>
         </div>
       </div>
 
-      <div class="model-card" id="veil-card">
+      <div class="model-card" id="glyph-card">
         <div class="card-top">
           <div>
-            <div class="card-name">Veil 1.1</div>
+            <div class="card-name">Glyph 1.1</div>
             <div class="card-provider">Sennoric</div>
           </div>
-          <span class="badge badge-paid" id="veil-badge">Deprecated</span>
+          <span class="badge badge-free">Free</span>
         </div>
-        <p class="card-desc" id="veil-desc">A fine-tuned Llama 3.1 3B. Our first model, and still the fastest for short chats. Deprecated on July 25, 2026 and retiring August 17, 2026. Still usable until then, but no longer actively developed.</p>
+        <p class="card-desc">A fine-tuned Llama 3.1 3B. Our first model, and still the fastest for short chats. Runs on its own RunPod endpoint.</p>
         <div class="card-footer">
-          <a class="card-link" href="/veil">Why we're moving on →</a>
+          <a class="card-link" href="/glyph">Model details →</a>
         </div>
+      </div>
+
+      <div class="model-card" style="opacity:.6">
+        <div class="card-top">
+          <div>
+            <div class="card-name">Mosaic</div>
+            <div class="card-provider">Sennoric</div>
+          </div>
+          <span class="badge badge-paid">Coming soon</span>
+        </div>
+        <p class="card-desc">A larger tier above Fresco. Details to come.</p>
       </div>
     </div>
   </section>
@@ -225,11 +235,11 @@
     <div class="model-grid" style="grid-template-columns: repeat(3, 1fr);">
       <div class="model-card">
         <div class="card-top">
-          <div class="card-name">Lumen 1.2.5 Safety Report</div>
+          <div class="card-name">Fresco 1.2.5 Safety Report</div>
         </div>
         <p class="card-desc">DPO safety alignment results and adversarial test pass rates for our flagship model.</p>
         <div class="card-footer">
-          <a class="card-link" href="/lumen-125-safety">Read the report →</a>
+          <a class="card-link" href="/fresco-125-safety">Read the report →</a>
         </div>
       </div>
       <div class="model-card">
