@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Status — Axion Labs</title>
-  <meta name="description" content="Live operational status and incident history for Axion Labs services and Lumen model inference.">
+  <title>Status — Sennoric</title>
+  <meta name="description" content="Live operational status and incident history for Sennoric services and Lumen model inference.">
   <link rel="canonical" href="https://axion.amplifiedsmp.org/status">
-  <meta property="og:title" content="Status — Axion Labs">
-  <meta property="og:description" content="Live operational status and incident history for Axion Labs services.">
+  <meta property="og:title" content="Status — Sennoric">
+  <meta property="og:description" content="Live operational status and incident history for Sennoric services.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://axion.amplifiedsmp.org/status">
   <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
@@ -172,7 +172,7 @@
 <body>
 
 <nav>
-  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Axion" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Axion</a>
+  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Sennoric</a>
   <a href="/models">Models</a>
   <a href="/chat">Chat</a>
   <a href="/docs">Docs</a>
@@ -184,9 +184,9 @@
 </nav>
 
 <div class="page-header">
-  <div class="tag">Axion Labs</div>
+  <div class="tag">Sennoric</div>
   <h1>Status</h1>
-  <p>Live status for Axion's hosted models and website, with a 30-day uptime history and incident log.</p>
+  <p>Live status for Sennoric's hosted models and website, with a 30-day uptime history and incident log.</p>
 </div>
 
 <main>
@@ -224,7 +224,7 @@
 </main>
 
 <footer>
-  <p>© 2026 Axion Labs · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Axion">GitHub</a></p>
+  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Axion">GitHub</a></p>
 </footer>
 
 <script src="/assets/profile.js"></script>
@@ -391,7 +391,7 @@
     }).join('')
   }
 
-  axionFetch(API + '/status/api', { cache: 'no-store' })
+  sennoricFetch(API + '/status/api', { cache: 'no-store' })
     .then(function (r) { return r.json() })
     .then(function (data) {
       allIncidents = data.recent_incidents || []

@@ -1,7 +1,7 @@
 {
-  "name": "Axion Chat",
-  "short_name": "Axion",
-  "description": "Chat with Lumen, the free AI model by Axion Labs.",
+  "name": "Sennoric Chat",
+  "short_name": "Sennoric",
+  "description": "Chat with Lumen, the free AI model by Sennoric.",
   "start_url": "/chat",
   "display": "standalone",
   "background_color": "#0d0e13",

@@ -1,4 +1,4 @@
-/* Shared navigation behavior for public Axion pages.
+/* Shared navigation behavior for public Sennoric pages.
  * Older pages place their links directly inside <nav>; newer pages use a
  * .nav-links wrapper. Normalize the older markup at runtime so every mobile
  * menu uses the same full-height drawer from mobile.css.

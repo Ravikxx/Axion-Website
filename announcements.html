@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Announcements — Axion Labs</title>
-  <meta name="description" content="Axion Labs release notes, model updates, safety reports, infrastructure news, and product announcements.">
+  <title>Announcements — Sennoric</title>
+  <meta name="description" content="Sennoric release notes, model updates, safety reports, infrastructure news, and product announcements.">
   <link rel="canonical" href="https://axion.amplifiedsmp.org/announcements">
-  <meta property="og:title" content="Announcements — Axion Labs">
-  <meta property="og:description" content="Release notes, model updates, safety reports, and infrastructure news from Axion Labs.">
+  <meta property="og:title" content="Announcements — Sennoric">
+  <meta property="og:description" content="Release notes, model updates, safety reports, and infrastructure news from Sennoric.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://axion.amplifiedsmp.org/announcements">
   <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
@@ -241,7 +241,7 @@
 <body>
 
 <nav>
-  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Axion" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Axion</a>
+  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Sennoric</a>
   <a href="/models">Models</a>
   <a href="/chat">Chat</a>
   <a href="/docs">Docs</a>
@@ -266,9 +266,9 @@
 </div>
 
 <header class="news-head">
-  <div class="news-eyebrow">Axion Labs</div>
+  <div class="news-eyebrow">Sennoric</div>
   <h1>Announcements</h1>
-  <p>Releases, research notes, and news from the Axion team.</p>
+  <p>Releases, research notes, and news from the Sennoric team.</p>
 </header>
 
 <nav class="news-filters" aria-label="Filter announcements">
@@ -288,7 +288,7 @@
        loadAnnouncements() — hidden here so it doesn't duplicate that render. -->
   <div class="announcement" style="display:none">
     <h2>Veil Now Runs on RunPod — Same Endpoint, Same August 17 Retirement</h2>
-    <p>Veil moved off its Hugging Face Space this week and now runs on a dedicated RunPod Serverless endpoint behind our Cloudflare Worker. If you're calling it through the API, nothing changes on your end: same model: "veil", same POST /v1/chat/completions, same free Axion account. Only the infrastructure behind that request is different.</p>
+    <p>Veil moved off its Hugging Face Space this week and now runs on a dedicated RunPod Serverless endpoint behind our Cloudflare Worker. If you're calling it through the API, nothing changes on your end: same model: "veil", same POST /v1/chat/completions, same free Sennoric account. Only the infrastructure behind that request is different.</p>
     <p>This doesn't change Veil's timeline. It's still deprecated and still retiring on August 17, 2026. Unlike Lumen's move to dedicated servers, this isn't a foundation for anything new: when the retirement date arrives, Veil is removed entirely, with no successor model taking its place. If you're still pointing anything at model: "veil", switch to Lumen now, model: "lumen", same endpoint, same account.</p>
   </div>
   <!-- end pending announcement -->
@@ -297,7 +297,7 @@
     <h2>Veil 1.1 Is Offline Early — Back July 30, Retiring August 17</h2>
     <p>On July 20 we said Veil 1.1 would be marked deprecated on July 25 and keep answering requests as normal until it retired on July 30. It hasn't. Veil is offline now, ahead of that schedule, and if you were relying on those five days you didn't get them. That's our miss, and this is us correcting it rather than letting the dates on the site quietly disagree with reality.</p>
     <p>The reason is compute. The hardware Veil ran on is committed to re-running the Project Crucible 600M model, and we do not currently have enough spare capacity to keep both going. Rather than pretend otherwise, we would rather say plainly that a deprecated model lost its slot to an active one.</p>
-    <p>Veil comes back online on July 30 and stays up until August 17, 2026, when it retires for good. That is a longer real migration window than the one we originally offered, not a shorter one. If you are still calling Veil today, switch to Lumen now — model: "lumen", same OpenAI-compatible endpoint, same free Axion account — rather than waiting for it to return.</p>
+    <p>Veil comes back online on July 30 and stays up until August 17, 2026, when it retires for good. That is a longer real migration window than the one we originally offered, not a shorter one. If you are still calling Veil today, switch to Lumen now — model: "lumen", same OpenAI-compatible endpoint, same free Sennoric account — rather than waiting for it to return.</p>
     <p>Veil's model card stays up on the Models page permanently after retirement. It was our first model and the reason Lumen exists.</p>
   </div>
   <!-- end pending announcement -->
@@ -321,7 +321,7 @@
   <div class="announcement" style="display:none">
     <h2>Veil 1.1 Is Being Deprecated on July 25</h2>
     <p>After moving off shared hosting onto our own servers, we've decided not to keep maintaining Veil going forward. Lumen has grown into a faster, more capable model that covers everything Veil did and more, so running both isn't worth the added complexity.</p>
-    <p>Veil 1.1 will be marked deprecated starting July 25, 2026 — it'll keep responding to requests as usual, just no longer actively developed. On July 30, it'll be fully retired. Its model card stays up after that as a memory of where Axion started — Veil was our first model, and Lumen wouldn't exist without it.</p>
+    <p>Veil 1.1 will be marked deprecated starting July 25, 2026 — it'll keep responding to requests as usual, just no longer actively developed. On July 30, it'll be fully retired. Its model card stays up after that as a memory of where Sennoric started — Veil was our first model, and Lumen wouldn't exist without it.</p>
     <p>If you're calling Veil directly, switch to Lumen (model: "lumen") before July 30 — same OpenAI-compatible endpoint and the same account-backed Free plan.</p>
   </div>
   <!-- end pending announcement -->
@@ -337,7 +337,7 @@
 <p>
       Veil moved off its Hugging Face Space this week and now runs on a dedicated <strong>RunPod Serverless</strong>
       endpoint behind our Cloudflare Worker. If you're calling it through the API, nothing changes on your end:
-      same <code>model: "veil"</code>, same <code>POST /v1/chat/completions</code>, same free Axion account. Only
+      same <code>model: "veil"</code>, same <code>POST /v1/chat/completions</code>, same free Sennoric account. Only
       the infrastructure behind that request is different.
     </p>
     <p style="margin-top:12px">
@@ -391,7 +391,7 @@
 <p>
       We're moving off the shared HuggingFace Space and onto our own dedicated server so our models run on
       infrastructure we fully control instead of shared, rate-limited hosting. During the migration, both
-      <strong>Lumen and Veil will be temporarily unavailable or unstable</strong>. Axion's other features (chat
+      <strong>Lumen and Veil will be temporarily unavailable or unstable</strong>. Sennoric's other features (chat
       with your own API keys, tools, MCP, etc.) are unaffected.
     </p>
     <p style="margin-top:12px">
@@ -413,7 +413,7 @@
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
       We're working on getting better hardware on HuggingFace to host Lumen so it responds faster. During the
-      migration, Lumen will be <strong>temporarily unavailable</strong>. Axion's other features (chat with your
+      migration, Lumen will be <strong>temporarily unavailable</strong>. Sennoric's other features (chat with your
       own API keys, tools, MCP, etc.) are unaffected; this only impacts the free Lumen endpoint.
     </p>
     <p style="margin-top:12px">
@@ -458,13 +458,13 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">July 1, 2026</span>
       <span class="ann-cat release">Release</span>
-      <span class="ann-title">Axion 2.0 — A Whole New CLI Interface (now on 2.0.1)</span>
+      <span class="ann-title">Sennoric 2.0 — A Whole New CLI Interface (now on 2.0.1)</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      Axion's terminal interface has been completely rebuilt from the ground up on <strong>OpenTUI</strong>,
-      replacing the old Ink-based UI. There's no build step anymore; Axion runs straight from source, and the
+      Sennoric's terminal interface has been completely rebuilt from the ground up on <strong>OpenTUI</strong>,
+      replacing the old Ink-based UI. There's no build step anymore; Sennoric runs straight from source, and the
       whole thing feels noticeably snappier.
     </p>
     <p style="margin-top:12px">What's different day-to-day:</p>
@@ -482,8 +482,8 @@
       <li><strong><code>/cost</code></strong> — track spend today / this week / all-time, broken down by model.</li>
       <li><strong>Inline diffs</strong> for file edits with accept/reject, syntax-highlighted file reads and shell
         output, and a copy button on hover for any message.</li>
-      <li><strong>Update-available banner</strong> — Axion now tells you when a newer version is on npm and how
-        to grab it, and <code>axion --doctor</code> reports your current vs. latest version.</li>
+      <li><strong>Update-available banner</strong> — Sennoric now tells you when a newer version is on npm and how
+        to grab it, and <code>sennoric --doctor</code> reports your current vs. latest version.</li>
     </ul>
     <p style="margin-top:12px">
       Existing installs: <code>npm install -g @axion-labs-ai/quark-cli@latest</code> to get 2.0.1.
@@ -499,17 +499,17 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">June 21, 2026</span>
       <span class="ann-cat update">Update</span>
-      <span class="ann-title">Subscribe to Axion Labs Announcements</span>
+      <span class="ann-title">Subscribe to Sennoric Announcements</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      You can now get Axion Labs announcements delivered straight to your inbox. Use the subscribe box at the
+      You can now get Sennoric announcements delivered straight to your inbox. Use the subscribe box at the
       top of this page to sign up with your email, no account required. Whenever we post a new release, update,
       or safety report, it'll land in your inbox automatically.
     </p>
     <p style="margin-top:12px">
-      Already have an Axion account? You're opted in by default and can manage your email preferences anytime
+      Already have a Sennoric account? You're opted in by default and can manage your email preferences anytime
       from your account settings. Every email we send includes a one-click unsubscribe link.
     </p>
     <div class="ann-footer">
@@ -534,7 +534,7 @@
       automated scoring has known false positives.
     </p>
     <p style="margin-top:12px">
-      Lumen 1.2.5 is <strong>live now</strong>, free with an Axion account.
+      Lumen 1.2.5 is <strong>live now</strong>, free with a Sennoric account.
     </p>
     <div class="ann-footer">
       <a class="ann-link" href="/lumen-125-safety">Full safety report →</a>
@@ -575,17 +575,17 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">June 19, 2026</span>
       <span class="ann-cat release">Release</span>
-      <span class="ann-title">Axion 1.0.1 — Onboarding Wizard, Memory Across Sessions & Voice Input</span>
+      <span class="ann-title">Sennoric 1.0.1 — Onboarding Wizard, Memory Across Sessions & Voice Input</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      Axion 1.0.1 is now live on npm. Three quality-of-life features that make the first-run experience
+      Sennoric 1.0.1 is now live on npm. Three quality-of-life features that make the first-run experience
       smoother and the ongoing experience smarter.
     </p>
     <ul style="margin-top:8px; margin-left:20px; color:var(--text-muted)">
-      <li><strong>Onboarding wizard</strong> — on first launch with no API key, Axion walks you through picking a model and entering your key. Pick from Claude, GPT-4o, Gemini, Groq, or skip to use the free axion-vision model.</li>
-      <li><strong>Memory across sessions</strong> — after each session, Axion silently extracts key context (project name, decisions, file paths) and injects it into the next session's system prompt automatically.</li>
+      <li><strong>Onboarding wizard</strong> — on first launch with no API key, Sennoric walks you through picking a model and entering your key. Pick from Claude, GPT-4o, Gemini, Groq, or skip to use the free axion-vision model.</li>
+      <li><strong>Memory across sessions</strong> — after each session, Sennoric silently extracts key context (project name, decisions, file paths) and injects it into the next session's system prompt automatically.</li>
       <li><strong>Voice input</strong> — type <code>/voice</code>, speak, press Enter. Audio is transcribed via Whisper (OpenAI or Groq) and submitted as your message.</li>
     </ul>
     <div class="ann-footer">
@@ -599,12 +599,12 @@
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">June 18, 2026</span>
       <span class="ann-cat release">Release</span>
-      <span class="ann-title">Introducing Axion Vision — Free Image Understanding & OCR</span>
+      <span class="ann-title">Introducing Sennoric Vision — Free Image Understanding & OCR</span>
       <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      Axion Vision is a new free endpoint that lets you send images and ask questions about them:
+      Sennoric Vision is a new free endpoint that lets you send images and ask questions about them:
       read text in screenshots, describe diagrams, analyse UI mockups, or extract information from photos.
     </p>
     <p style="margin-top:12px">
@@ -614,11 +614,11 @@
       content blocks and get text back.
     </p>
     <p style="margin-top:12px">
-      <strong>This is not a Lumen model.</strong> Axion Vision is a utility endpoint using Qwen2.5-VL-3B directly,
+      <strong>This is not a Lumen model.</strong> Sennoric Vision is a utility endpoint using Qwen2.5-VL-3B directly,
       with full transparency about what's powering it. We'll build our own fine-tuned vision model in a future release.
     </p>
     <ul style="margin-top:12px;padding-left:20px;color:var(--text-muted)">
-      <li>Free with an Axion account</li>
+      <li>Free with a Sennoric account</li>
       <li>Reads text in images (screenshots, error messages, UIs)</li>
       <li>OpenAI-compatible API</li>
       <li>Separate Space so it doesn't affect Lumen's performance</li>
@@ -675,8 +675,8 @@
       A batch of quality-of-life improvements shipped today:
     </p>
     <ul style="margin-top:8px; margin-left:20px; color:var(--text-muted)">
-      <li><strong>/contribute</strong> — share an interesting session to help train future models. Axion suggests it automatically after complex or frustrating conversations. Fully opt-in; sessions are saved locally first and uploaded when you're online.</li>
-      <li><strong>axion-collect daemon</strong> — run <code>axion-collect</code> locally to capture sessions to disk before they're uploaded. Axion routes to it automatically when running.</li>
+      <li><strong>/contribute</strong> — share an interesting session to help train future models. Sennoric suggests it automatically after complex or frustrating conversations. Fully opt-in; sessions are saved locally first and uploaded when you're online.</li>
+      <li><strong>axion-collect daemon</strong> — run <code>axion-collect</code> locally to capture sessions to disk before they're uploaded. Sennoric routes to it automatically when running.</li>
       <li><strong>.axion-settings.json</strong> — per-project config file. Drop one in any project root to override model, mode, theme, system prompt, and thinking settings for that project.</li>
     </ul>
     <div class="ann-footer">
@@ -694,7 +694,7 @@
     </button>
     <div class="ann-panel"><div class="ann-panel-inner">
 <p>
-      Axion now has a fully bidirectional Discord bridge. DMs sent to your bot appear in the CLI
+      Sennoric now has a fully bidirectional Discord bridge. DMs sent to your bot appear in the CLI
       labeled <code>[Discord: username]</code>, the full agent responds (including file access, tools,
       and MCP servers), and the reply is sent back to Discord automatically.
     </p>
@@ -757,7 +757,7 @@
       catastrophic forgetting: the model over-specialized on code at the expense of everything else.
       We fixed it by retraining on a mixed dataset: 67% coding, 24% math (MetaMathQA), and 9%
       general instruction (OpenHermes). Coding performance is maintained and general reasoning
-      is restored. The updated model is live now in the Axion Space.
+      is restored. The updated model is live now in the Sennoric Space.
     </p>
     <div class="ann-footer">
       <a class="ann-link" href="https://huggingface.co/spaces/AxionLabsAI/Lumen">Try Lumen →</a>
@@ -815,7 +815,7 @@
 </main>
 
 <footer>
-  <p>© 2026 Axion Labs · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Axion">GitHub</a></p>
+  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Axion">GitHub</a></p>
 </footer>
 
 <script>
@@ -955,7 +955,7 @@
       msg.style.display = 'inline'; msg.textContent = 'Please agree to the Terms and Privacy Policy.'; msg.style.color = 'var(--red)'; return
     }
     try {
-      const res = await axionFetch(`${API}/announcements/subscribe`, {
+      const res = await sennoricFetch(`${API}/announcements/subscribe`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }),
       })
       const data = await res.json()
@@ -967,7 +967,7 @@
 
   if (location.search.includes('unsubscribed=1')) {
     const bar = document.querySelector('.subscribe-bar')
-    bar.innerHTML = '<span style="color:var(--green)">You\'ve been unsubscribed from Axion Labs announcements.</span>'
+    bar.innerHTML = '<span style="color:var(--green)">You\'ve been unsubscribed from Sennoric announcements.</span>'
   }
 
   loadAnnouncements()

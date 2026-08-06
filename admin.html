@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Axion Admin</title>
+  <title>Sennoric Admin</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="stylesheet" href="/assets/theme-dark.css">
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -377,7 +377,7 @@
 <div id="auth-gate">
   <div class="auth-card">
     <h1 id="auth-title">Admin Panel</h1>
-    <p id="auth-sub">Sign in with your Axion account to continue.</p>
+    <p id="auth-sub">Sign in with your Sennoric account to continue.</p>
     <form id="auth-form" onsubmit="doLogin(); return false">
     <div class="field" id="name-field" style="display:none">
       <label>Name</label>
@@ -431,7 +431,7 @@
 <!-- Main app -->
 <div id="app">
   <header>
-    <div class="logo"><img src="/assets/logo-spiral.svg" alt="Axion" style="height:22px;width:auto;object-fit:contain;display:inline-block;vertical-align:-5px;margin-right:7px">Axion <span>Admin</span> <span class="admin-badge">admin</span></div>
+    <div class="logo"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:22px;width:auto;object-fit:contain;display:inline-block;vertical-align:-5px;margin-right:7px">Sennoric <span>Admin</span> <span class="admin-badge">admin</span></div>
     <div class="header-links">
       <a href="/models">Models</a>
       <a href="/chat">Chat</a>
@@ -643,7 +643,7 @@
         <div class="credit-field"><label for="incident-service">Service</label>
           <select id="incident-service">
             <option value="lumen">Lumen API</option>
-            <option value="website">Axion website</option>
+            <option value="website">Sennoric website</option>
           </select>
         </div>
         <div class="credit-field"><label for="incident-status">Status</label>
@@ -667,7 +667,7 @@
     </section>
   </main>
   <footer>
-    <p>© 2026 Axion Labs · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Axion">GitHub</a></p>
+    <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Axion">GitHub</a></p>
   </footer>
 </div>
 
@@ -752,7 +752,7 @@
     authMode = authMode === 'signin' ? 'signup' : 'signin'
     const isSignup = authMode === 'signup'
     document.getElementById('auth-title').textContent = isSignup ? 'Admin Panel' : 'Admin Panel'
-    document.getElementById('auth-sub').textContent = isSignup ? 'Create an account with admin access.' : 'Sign in with your Axion account to continue.'
+    document.getElementById('auth-sub').textContent = isSignup ? 'Create an account with admin access.' : 'Sign in with your Sennoric account to continue.'
     document.getElementById('login-btn').textContent = isSignup ? 'Create account' : 'Sign in'
     document.getElementById('auth-toggle-text').textContent = isSignup ? 'Already have an account?' : "Don't have an account?"
     document.getElementById('auth-toggle-link').textContent = isSignup ? 'Sign in' : 'Sign up'
@@ -805,7 +805,7 @@
       const endpoint = authMode === 'signin' ? '/auth/login' : '/auth/register'
       const body = { email, password, turnstile: turnstileToken }
       if (authMode === 'signup') body.name = document.getElementById('login-name')?.value || ''
-      const res = await axionFetch(`${API}${endpoint}`, {
+      const res = await sennoricFetch(`${API}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -831,7 +831,7 @@
       }
 
       // Check admin status
-      const checkRes = await axionFetch(`${API}/admin/check`, {
+      const checkRes = await sennoricFetch(`${API}/admin/check`, {
         headers: { Authorization: `Bearer ${data.token}` },
       })
       if (!checkRes.ok) {
@@ -841,8 +841,8 @@
       }
 
       _token = data.token
-      localStorage.setItem('axion_token', _token)
-      localStorage.setItem('axion_email', data.email)
+      localStorage.setItem('sennoric_token', _token)
+      localStorage.setItem('sennoric_email', data.email)
       showApp(data.email)
     } catch (e) {
       errEl.textContent = 'Network error — try again.'
@@ -855,16 +855,16 @@
   }
 
   function signOut() {
-    localStorage.removeItem('axion_token')
-    localStorage.removeItem('axion_email')
+    localStorage.removeItem('sennoric_token')
+    localStorage.removeItem('sennoric_email')
     location.reload()
   }
 
   // App
   function showApp(email) {
-    const returnTo = sessionStorage.getItem('axion_admin_return_to')
+    const returnTo = sessionStorage.getItem('sennoric_admin_return_to')
     if (returnTo && /^\/admin-moderation(?:-account)?(?:\?|$)/.test(returnTo)) {
-      sessionStorage.removeItem('axion_admin_return_to')
+      sessionStorage.removeItem('sennoric_admin_return_to')
       location.replace(returnTo)
       return
     }
@@ -1431,7 +1431,7 @@
   }
 
   // Status page incidents
-  const SERVICE_LABELS = { lumen: 'Lumen API', website: 'Axion website' }
+  const SERVICE_LABELS = { lumen: 'Lumen API', website: 'Sennoric website' }
 
   async function loadStatusIncidents() {
     const res = await apiFetch('/admin/status/incidents')
@@ -1571,8 +1571,8 @@
       const t = decodeURIComponent(hash.get('verified'))
       const em = decodeURIComponent(hash.get('email') || '')
       history.replaceState(null, '', location.pathname)
-      localStorage.setItem('axion_token', t)
-      localStorage.setItem('axion_email', em)
+      localStorage.setItem('sennoric_token', t)
+      localStorage.setItem('sennoric_email', em)
     }
     if (hash.get('invited')) {
       history.replaceState(null, '', location.pathname)
@@ -1580,13 +1580,13 @@
       sessionStorage.setItem('invite_accepted', '1')
     }
 
-    const token = localStorage.getItem('axion_token')
-    const email = localStorage.getItem('axion_email')
+    const token = localStorage.getItem('sennoric_token')
+    const email = localStorage.getItem('sennoric_email')
     if (!token) return
 
     let res
     try {
-      res = await axionFetch(`${API}/admin/check`, {
+      res = await sennoricFetch(`${API}/admin/check`, {
         headers: { Authorization: `Bearer ${token}` },
       })
     } catch {
@@ -1596,7 +1596,7 @@
       return
     }
     if (!res.ok) {
-      localStorage.removeItem('axion_token')
+      localStorage.removeItem('sennoric_token')
       const errEl = document.getElementById('login-error')
       errEl.textContent = 'Access denied — your account is not on the admin allowlist.'
       errEl.style.display = 'block'

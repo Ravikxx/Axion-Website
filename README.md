@@ -1,5 +1,5 @@
-# Axion Website
+# Sennoric Website
 
-Source for the Axion website at `axion.amplifiedsmp.org`.
+Source for the Sennoric website at `axion.amplifiedsmp.org`.
 
 The announcement workflow only sends mail when `announcements.html` changes on `master`. Use `[skip announcement email]` in a commit message for content corrections or migrations that must not send an announcement.

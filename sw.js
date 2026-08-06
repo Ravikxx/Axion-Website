@@ -1,4 +1,4 @@
-const CACHE = 'axion-chat-v3'
+const CACHE = 'sennoric-chat-v3'
 const PRECACHE = [
   '/chat',
   '/assets/logo-512.png',

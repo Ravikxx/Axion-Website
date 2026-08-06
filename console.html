@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Console — Axion</title>
+  <title>Console — Sennoric</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="stylesheet" href="/assets/xterm.css" />
   <link rel="stylesheet" href="/assets/theme-dark.css">
@@ -62,7 +62,7 @@
 </head>
 <body>
 <nav>
-  <a href="/" class="nav-logo"><img src="/assets/logo-spiral.svg" alt="Axion" style="height:22px;width:auto;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:0"> <span>Axion</span></a>
+  <a href="/" class="nav-logo"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:22px;width:auto;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:0"> <span>Sennoric</span></a>
   <div class="nav-links">
     <a href="/models" class="nav-link">Models</a>
     <a href="/chat" class="nav-link">Chat</a>
@@ -165,10 +165,10 @@ function initTerm(){
 }
 (function(){
   const i=document.getElementById("wsUrl"),t=document.getElementById("tokenInput")
-  try{const s=localStorage.getItem("axion-console-url");if(s)i.value=s}catch{}
-  try{const s=localStorage.getItem("axion-console-token");if(s)t.value=s}catch{}
-  i.addEventListener("input",function(){try{localStorage.setItem("axion-console-url",this.value)}catch{}})
-  t.addEventListener("input",function(){try{localStorage.setItem("axion-console-token",this.value)}catch{}})
+  try{const s=localStorage.getItem("sennoric-console-url");if(s)i.value=s}catch{}
+  try{const s=localStorage.getItem("sennoric-console-token");if(s)t.value=s}catch{}
+  i.addEventListener("input",function(){try{localStorage.setItem("sennoric-console-url",this.value)}catch{}})
+  t.addEventListener("input",function(){try{localStorage.setItem("sennoric-console-token",this.value)}catch{}})
   // no auto-connect; user initiates via the form
 })()
 </script>

@@ -3,7 +3,7 @@
 
   const API = 'https://api.amplifiedsmp.org'
   const view = document.body.dataset.view
-  const token = localStorage.getItem('axion_token')
+  const token = localStorage.getItem('sennoric_token')
 
   function esc(value) {
     return String(value ?? '').replace(/[&<>"']/g, char => ({
@@ -184,7 +184,7 @@
     if (!response.ok) return showError(data.error || 'Could not load this moderation run.')
 
     const run = data.run
-    document.title = `Moderation run — Axion Admin`
+    document.title = `Moderation run — Sennoric Admin`
     document.getElementById('run-title').textContent = `Review run ${run.id}`
     document.getElementById('run-subtitle').textContent =
       `${run.trigger === 'manual' ? 'Started manually' : 'Started by the hourly scheduler'}${run.started_by ? ` by ${run.started_by}` : ''}.`
@@ -209,7 +209,7 @@
     if (!response.ok) return showError(data.error || 'Could not load this account history.')
 
     const account = data.account
-    document.title = `${account.email} moderation — Axion Admin`
+    document.title = `${account.email} moderation — Sennoric Admin`
     document.getElementById('account-title').textContent = account.email
     document.getElementById('account-subtitle').textContent = `Account ${account.id}`
     document.getElementById('account-total').textContent = Number(account.flagged_count || 0).toLocaleString()
@@ -235,14 +235,14 @@
 
   async function init() {
     if (!token) {
-      sessionStorage.setItem('axion_admin_return_to', `${location.pathname}${location.search}`)
+      sessionStorage.setItem('sennoric_admin_return_to', `${location.pathname}${location.search}`)
       location.replace('/admin')
       return
     }
     try {
       const check = await apiFetch('/admin/check')
       if (!check.ok) {
-        showError('This page is restricted to Axion administrators.')
+        showError('This page is restricted to Sennoric administrators.')
         return
       }
       const admin = await check.json()

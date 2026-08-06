@@ -3,7 +3,7 @@
 
   var nativeFetch = window.fetch.bind(window)
 
-  window.axionFetch = function (input, options, timeoutMs) {
+  window.sennoricFetch = function (input, options, timeoutMs) {
     var init = options || {}
     var upstreamSignal = init.signal
     var controller = new AbortController()

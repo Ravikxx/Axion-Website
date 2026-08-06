@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy Policy — Axion Labs</title>
-  <meta name="description" content="How Axion Labs handles account data, hosted model requests, local-only features, and third-party providers.">
+  <title>Privacy Policy — Sennoric</title>
+  <meta name="description" content="How Sennoric handles account data, hosted model requests, local-only features, and third-party providers.">
   <link rel="canonical" href="https://axion.amplifiedsmp.org/privacy">
-  <meta property="og:title" content="Privacy Policy — Axion Labs">
-  <meta property="og:description" content="How Axion Labs handles account data, hosted model requests, local-only features, and third-party providers.">
+  <meta property="og:title" content="Privacy Policy — Sennoric">
+  <meta property="og:description" content="How Sennoric handles account data, hosted model requests, local-only features, and third-party providers.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://axion.amplifiedsmp.org/privacy">
   <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
@@ -181,7 +181,7 @@
 <body>
 
 <nav>
-  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Axion" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Axion</a>
+  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Sennoric</a>
   <a href="/models">Models</a>
   <a href="/chat">Chat</a>
   <a href="/docs">Docs</a>
@@ -193,7 +193,7 @@
 </nav>
 
 <div class="page-header">
-  <div class="section-tag">Axion Labs</div>
+  <div class="section-tag">Sennoric</div>
   <h1>Privacy Policy</h1>
   <p>Exactly what stays on your machine and what leaves it.</p>
 </div>
@@ -203,27 +203,27 @@
   <p class="last-updated">Last updated: July 26, 2026</p>
 
   <div class="callout">
-    <strong>Short version:</strong> Most CLI work happens on your machine. Model inference, accounts, signed-in web chat, usage tracking, billing, email, vision, connected integrations, and asynchronous safety moderation may send data to remote services. Axion's hosted backend runs on Cloudflare, Lumen runs on RunPod, the default vision model runs on Hugging Face, and logged chat exchanges are sent to Mistral for safety classification. We do not use your conversations for training unless you explicitly opt in with <code>/contribute</code>.
+    <strong>Short version:</strong> Most CLI work happens on your machine. Model inference, accounts, signed-in web chat, usage tracking, billing, email, vision, connected integrations, and asynchronous safety moderation may send data to remote services. Sennoric's hosted backend runs on Cloudflare, Lumen runs on RunPod, the default vision model runs on Hugging Face, and logged chat exchanges are sent to Mistral for safety classification. We do not use your conversations for training unless you explicitly opt in with <code>/contribute</code>.
   </div>
 
   <div class="policy-section">
     <h2>Overview</h2>
-    <p>Axion is an open-source AI coding agent with local software and hosted services. This policy explains what stays local, what Axion Labs stores, and which providers process data.</p>
+    <p>Sennoric is an open-source AI coding agent with local software and hosted services. This policy explains what stays local, what Sennoric stores, and which providers process data.</p>
   </div>
 
   <div class="policy-section">
-    <h2>Axion Labs hosted account and service data</h2>
-    <p>Axion's Cloudflare-hosted backend stores and processes data needed to run accounts and hosted features, including:</p>
+    <h2>Sennoric hosted account and service data</h2>
+    <p>Sennoric's Cloudflare-hosted backend stores and processes data needed to run accounts and hosted features, including:</p>
     <ul>
       <li>Account identifiers, email address, password hash or linked OAuth identifier, verification and reset state, registration IP address, suspension state, and appeal records.</li>
-      <li>Axion-issued API keys and their status, request counts, token counts, calculated usage cost, allowance windows, and rate-limit records.</li>
+      <li>Sennoric-issued API keys and their status, request counts, token counts, calculated usage cost, allowance windows, and rate-limit records.</li>
       <li>Plan and subscription status, credit balances, credit-code redemptions, and Square customer or subscription identifiers.</li>
       <li>Signed-in web chat history and chat metadata used to sync conversations across sessions.</li>
-      <li>A separate server-side log of message content, model responses, and model-requested tool calls across authenticated browser-session and API-key usage, kept independently of your visible chat history. Historical logs may include requests made before Axion required authentication for hosted access. An automated process periodically sends recent role-labeled context, the target user message, and the corresponding assistant response to Mistral for asynchronous safety classification. Every reviewed exchange comes back as one of three outcomes: <strong>safe</strong>, and nothing further happens; <strong>an operational error</strong>, meaning the model, the API, or response parsing failed and the exchange could not be classified at all; this is recorded as a system fault, never as a user-safety violation; or <strong>flagged for human review</strong>, where a member of our team reads the exchange and either dismisses or confirms the finding. Safe rows, operational errors, and dismissed findings are retained for up to 30 days. Unreviewed rows and pending or confirmed findings are retained for up to one year for human review, safety enforcement, and legal compliance. A confirmed finding may lead to suspension of the attached account; suspended users receive access to the appeal process.</li>
+      <li>A separate server-side log of message content, model responses, and model-requested tool calls across authenticated browser-session and API-key usage, kept independently of your visible chat history. Historical logs may include requests made before Sennoric required authentication for hosted access. An automated process periodically sends recent role-labeled context, the target user message, and the corresponding assistant response to Mistral for asynchronous safety classification. Every reviewed exchange comes back as one of three outcomes: <strong>safe</strong>, and nothing further happens; <strong>an operational error</strong>, meaning the model, the API, or response parsing failed and the exchange could not be classified at all; this is recorded as a system fault, never as a user-safety violation; or <strong>flagged for human review</strong>, where a member of our team reads the exchange and either dismisses or confirms the finding. Safe rows, operational errors, and dismissed findings are retained for up to 30 days. Unreviewed rows and pending or confirmed findings are retained for up to one year for human review, safety enforcement, and legal compliance. A confirmed finding may lead to suspension of the attached account; suspended users receive access to the appeal process.</li>
       <li>Email and announcement preferences, organization membership and invitations, and CLI device-login codes.</li>
       <li>Administrative test changes to plan, allowance usage, or credit balances, including who made the change and when.</li>
     </ul>
-    <p>Axion does not store your full payment-card number. Square processes payment details. Announcement subscriptions can exist separately from an Axion account, so deleting an account does not by itself unsubscribe a separately registered announcement email.</p>
+    <p>Sennoric does not store your full payment-card number. Square processes payment details. Announcement subscriptions can exist separately from a Sennoric account, so deleting an account does not by itself unsubscribe a separately registered announcement email.</p>
   </div>
 
   <div class="policy-section">
@@ -231,17 +231,17 @@
     <p>These never leave your device.</p>
     <ul>
       <li><strong>Reading, editing, and running code</strong> — the agent operates on your local filesystem. File contents leave your device only when included in a prompt to the AI model you selected (see Hosted features).</li>
-      <li><strong>Integration tokens</strong> — stored in <code>~/.axion/oauth.json</code> and sent only to the respective service's own API, never to Axion Labs. What each connection can reach, and only when you ask:
+      <li><strong>Integration tokens</strong> — stored in <code>~/.sennoric/oauth.json</code> and sent only to the respective service's own API, never to Sennoric. What each connection can reach, and only when you ask:
         <ul style="margin-top:8px">
           <li><strong>GitHub</strong> — your repositories, issues, and pull requests (scope <code>repo read:org read:user</code>).</li>
-          <li><strong>Google</strong> — Google Drive (list, read, search files) and Google Calendar (list, create, delete events). Axion does <strong>not</strong> request Gmail or email access.</li>
+          <li><strong>Google</strong> — Google Drive (list, read, search files) and Google Calendar (list, create, delete events). Sennoric does <strong>not</strong> request Gmail or email access.</li>
           <li><strong>Notion</strong> — the pages and databases you share with the integration token you paste in.</li>
           <li><strong>Slack</strong> — the channels and messages available to the bot token you paste in.</li>
           <li>These run as local MCP servers (GitHub, Notion, Slack) or direct API calls (Google). Anything they retrieve becomes prompt context and is then sent to the AI model you selected (see Hosted features).</li>
         </ul>
       </li>
       <li><strong>Voice recording</strong> — your microphone is captured to a temporary <code>.wav</code> on your machine. (Transcribing that audio is a hosted feature; see below.)</li>
-      <li><strong>Session memory</strong> — cross-session memory, learned preferences, and notes live in <code>~/.axion/</code> on your device.</li>
+      <li><strong>Session memory</strong> — cross-session memory, learned preferences, and notes live in <code>~/.sennoric/</code> on your device.</li>
       <li><strong>API keys</strong> — keys you supply are stored locally and sent only to the provider they belong to.</li>
       <li><strong>Local models</strong> — with Ollama, inference runs entirely on your machine.</li>
       <li><strong>Extension ↔ CLI bridge</strong> — the Chrome extension reaches your local CLI over <code>127.0.0.1</code> (localhost); that channel never touches the network.</li>
@@ -250,12 +250,12 @@
 
   <div class="policy-section">
     <h2>Hosted features</h2>
-    <p>These send data off your device, either to a provider you chose or to Axion Labs' hosted backend, as described below.</p>
+    <p>These send data off your device, either to a provider you chose or to Sennoric's hosted backend, as described below.</p>
 
     <p style="margin-top:16px"><strong>AI model inference.</strong> Your prompt, plus any file contents, command output, or page text included as context, is sent to the model provider you select with <code>/model</code>:</p>
     <ul>
       <li><strong>Third-party providers</strong> (Anthropic, OpenAI, Google Gemini, Groq, Mistral, OpenRouter, OpenCode) receive your requests directly, authenticated with the key you supplied. See each provider's own policy.</li>
-      <li><strong>Lumen</strong> routes through Axion Labs' Cloudflare backend at <code>api.amplifiedsmp.org</code> and then to Lumen inference on RunPod. Hosted access requires an Axion account, authenticated by a browser session or Axion API key. Usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.</li>
+      <li><strong>Lumen</strong> routes through Sennoric's Cloudflare backend at <code>api.amplifiedsmp.org</code> and then to Lumen inference on RunPod. Hosted access requires a Sennoric account, authenticated by a browser session or Sennoric API key. Usage is tracked account-wide as token-based cost against the Free or Pro allowance and any redeemed credits; per-key request and token totals are also recorded.</li>
       <li><strong>IP addresses</strong> are collected during registration and used for duplicate-account and abuse detection. Registration IPs are kept with the account; operational rate-limit records expire according to their configured windows.</li>
     </ul>
 
@@ -265,21 +265,21 @@
       <li><strong>Text-to-speech</strong> (<code>/speak</code>) — the text to be spoken is sent to <strong>OpenAI's</strong> TTS API. Temporary audio is deleted after playback.</li>
     </ul>
 
-    <p style="margin-top:16px"><strong>Screen vision.</strong> Screen-vision and computer-use features capture a screenshot and send the image to a vision model. By default this is Axion Labs' <strong><code>axion-vision</code> model on Hugging Face</strong> (<code>axionlabsai-lumenvision.hf.space</code>); point it elsewhere with <code>/vision</code> and screenshots go to that provider instead. Either way, images of your screen leave your device when these features are active.</p>
+    <p style="margin-top:16px"><strong>Screen vision.</strong> Screen-vision and computer-use features capture a screenshot and send the image to a vision model. By default this is Sennoric's <strong><code>axion-vision</code> model on Hugging Face</strong> (<code>axionlabsai-lumenvision.hf.space</code>); point it elsewhere with <code>/vision</code> and screenshots go to that provider instead. Either way, images of your screen leave your device when these features are active.</p>
 
-    <p style="margin-top:16px"><strong>Browser control (Chrome extension).</strong> The extension requests broad permissions (<code>&lt;all_urls&gt;</code>, scripting, tabs) so it can read pages, click elements, fill forms, and capture the visible tab when you direct it. In standalone extension chat, page data sent for model reasoning goes to the provider configured in the extension. When the authenticated local bridge is enabled, Axion Desktop can request page reads and actions over a loopback WebSocket; returned page data may then become prompt context sent by Desktop to its configured model provider. If Lumen is selected in either flow, the request follows the Cloudflare-to-RunPod path described above. Provider keys and the bridge pairing token are stored in extension-owned Chrome storage.</p>
+    <p style="margin-top:16px"><strong>Browser control (Chrome extension).</strong> The extension requests broad permissions (<code>&lt;all_urls&gt;</code>, scripting, tabs) so it can read pages, click elements, fill forms, and capture the visible tab when you direct it. In standalone extension chat, page data sent for model reasoning goes to the provider configured in the extension. When the authenticated local bridge is enabled, Sennoric Desktop can request page reads and actions over a loopback WebSocket; returned page data may then become prompt context sent by Desktop to its configured model provider. If Lumen is selected in either flow, the request follows the Cloudflare-to-RunPod path described above. Provider keys and the bridge pairing token are stored in extension-owned Chrome storage.</p>
 
     <p style="margin-top:16px"><strong>Email and payments.</strong></p>
     <ul>
       <li><strong>Resend</strong> processes account verification, password-reset, invitation, and announcement emails.</li>
-      <li><strong>Square</strong> processes Pro checkout and payment information. Axion receives and stores the customer or subscription identifiers and status needed to manage access.</li>
+      <li><strong>Square</strong> processes Pro checkout and payment information. Sennoric receives and stores the customer or subscription identifiers and status needed to manage access.</li>
     </ul>
 
     <p style="margin-top:16px"><strong>Training-data contributions</strong> (<code>/contribute</code>). Opt-in: nothing is sent unless you type <code>/contribute</code> yourself. When you do:</p>
     <ul>
       <li>The session is <strong>redacted first</strong>: file contents stripped, message text truncated (~1,000 chars per message, 200 per tool result), leaving structure and metadata.</li>
-      <li>The redacted session is then <strong>uploaded to Axion Labs' collection endpoint on Cloudflare Workers</strong> (<code>axion-collect…workers.dev</code>).</li>
-      <li>If that upload fails (e.g. you're offline), the session is saved locally to <code>~/.axion/donations/</code> as a fallback. Files there remain on your disk until you delete them and are not uploaded automatically later.</li>
+      <li>The redacted session is then <strong>uploaded to Sennoric's collection endpoint on Cloudflare Workers</strong> (<code>axion-collect…workers.dev</code>).</li>
+      <li>If that upload fails (e.g. you're offline), the session is saved locally to <code>~/.sennoric/donations/</code> as a fallback. Files there remain on your disk until you delete them and are not uploaded automatically later.</li>
       <li>A prompt may appear after long or difficult sessions, but the prompt alone sends nothing; only the <code>/contribute</code> command does.</li>
       <li>Run <code>/contribute optout</code> to disable prompts permanently, or <code>/contribute skip</code> to dismiss for this session.</li>
     </ul>
@@ -304,10 +304,10 @@
     <ul>
       <li>Delete individual signed-in web chats from the chat interface. Deleting your account also removes account identifiers from retained safety-log rows and redacts routine content. A pending or confirmed flagged exchange may remain without account identifiers until its human-review need ends or the one-year retention limit expires.</li>
       <li>Use the unsubscribe link in an announcement email to remove a separate announcement subscription.</li>
-      <li>Disconnect any OAuth service with <code>/oauth revoke &lt;service&gt;</code>, or delete <code>~/.axion/oauth.json</code></li>
-      <li>Use your own provider keys, or a local model via Ollama, to keep inference off Axion Labs' backend entirely</li>
-      <li>Opt out of contribution prompts with <code>/contribute optout</code>, and delete any local files in <code>~/.axion/donations/</code> yourself</li>
-      <li>Axion is open source, so you can audit exactly what it does at <a href="https://github.com/Ravikxx/Axion">github.com/Ravikxx/Axion</a></li>
+      <li>Disconnect any OAuth service with <code>/oauth revoke &lt;service&gt;</code>, or delete <code>~/.sennoric/oauth.json</code></li>
+      <li>Use your own provider keys, or a local model via Ollama, to keep inference off Sennoric's backend entirely</li>
+      <li>Opt out of contribution prompts with <code>/contribute optout</code>, and delete any local files in <code>~/.sennoric/donations/</code> yourself</li>
+      <li>Sennoric is open source, so you can audit exactly what it does at <a href="https://github.com/Ravikxx/Axion">github.com/Ravikxx/Axion</a></li>
     </ul>
   </div>
 
@@ -319,7 +319,7 @@
 </main>
 
 <footer>
-  <p>© 2026 Axion Labs · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Axion">GitHub</a></p>
+  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Axion">GitHub</a></p>
 </footer>
 
 <script src="/assets/profile.js"></script>

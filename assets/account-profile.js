@@ -2,7 +2,7 @@
   'use strict'
 
   var API = 'https://api.amplifiedsmp.org'
-  var STORAGE_KEY = 'axion_avatar_url'
+  var STORAGE_KEY = 'sennoric_avatar_url'
   var activeToken = null
   var accountPromise = null
 
@@ -75,7 +75,7 @@
     cacheAvatar('')
   }
 
-  window.AxionAccountProfile = Object.freeze({
+  window.SennoricAccountProfile = Object.freeze({
     cachedAvatar: cachedAvatar,
     cacheAvatar: cacheAvatar,
     clear: clear,

@@ -1,6 +1,6 @@
 /* Shared UI enhancements. No dependencies.
  *
- * Terminal: define window.AXION_TERMINAL = { mount: '#sel', label: 'axion', symbol: '$', lines: [...] }
+ * Terminal: define window.SENNORIC_TERMINAL = { mount: '#sel', label: 'sennoric', symbol: '$', lines: [...] }
  *   line types: {cmd:'…'} {out:'…', cls:'green|dim|''} {blank:true} {cursor:true}
  * Copy buttons: auto-added to every .code-block (opt out with data-nocopy).
  * Count-up: any element with [data-count] animates to its numeric text on scroll.
@@ -24,7 +24,7 @@
         '<span class="ax-term-label"></span>' +
       '</div>' +
       '<div class="ax-term-body"></div>'
-    win.querySelector('.ax-term-label').textContent = cfg.label || 'axion'
+    win.querySelector('.ax-term-label').textContent = cfg.label || 'sennoric'
     mount.appendChild(win)
     var body = win.querySelector('.ax-term-body')
     var sym = cfg.symbol || '$'
@@ -149,7 +149,7 @@
 
   // ── Init ───────────────────────────────────────────────────────────────
   function init() {
-    if (window.AXION_TERMINAL) runTerminal(window.AXION_TERMINAL)
+    if (window.SENNORIC_TERMINAL) runTerminal(window.SENNORIC_TERMINAL)
     addCopyButtons()
     observeOnce('[data-count]', animateCount)
     observeOnce('.code-block[data-type]', typeCode)

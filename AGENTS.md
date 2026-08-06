@@ -1,4 +1,4 @@
-# AGENTS.md — Axion website
+# AGENTS.md — Sennoric website
 
 Guidance for agents (and humans) working in this repo. Read this before making
 changes so new work matches the established style and avoids bugs we've already

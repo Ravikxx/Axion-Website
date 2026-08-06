@@ -1,6 +1,6 @@
 /* One source of truth for Veil's deprecation, outage, and retirement state.
  *
- * Exposes window.AxionModelLifecycle so pages that build their model list in
+ * Exposes window.SennoricModelLifecycle so pages that build their model list in
  * JavaScript (chat.html) can read the same state the static pages render, and
  * applies the DOM updates for pages that mark up the model card server-side
  * (index.html, models.html, veil.html).
@@ -51,13 +51,13 @@
       short: 'retired',
       badge: 'Retired',
       page: 'Veil is retired as of August 17, 2026.',
-      description: 'A fine-tuned Llama 3.1 3B. Our first model, and still the fastest for short chats. Retired on August 17, 2026, and kept here as a record of Axion’s first model and the reason Lumen exists.',
+      description: 'A fine-tuned Llama 3.1 3B. Our first model, and still the fastest for short chats. Retired on August 17, 2026, and kept here as a record of Sennoric’s first model and the reason Lumen exists.',
       chatDescription: 'Retired August 17, 2026. Use Lumen instead.',
     },
   }[state]
 
   // Published before any DOM work so inline scripts can read it immediately.
-  window.AxionModelLifecycle = {
+  window.SennoricModelLifecycle = {
     veil: {
       state: state,
       isRetired: state === 'retired',

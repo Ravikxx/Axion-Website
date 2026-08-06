@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Axion Labs — Free, Open AI Models</title>
-  <meta name="description" content="Axion Labs builds and hosts free AI models. Create a free account to chat with Lumen in the browser, call it through an OpenAI-compatible API, or use it from the terminal.">
+  <title>Sennoric — Free, Open AI Models</title>
+  <meta name="description" content="Sennoric builds and hosts free AI models. Create a free account to chat with Lumen in the browser, call it through an OpenAI-compatible API, or use it from the terminal.">
   <link rel="canonical" href="https://axion.amplifiedsmp.org/">
-  <meta property="og:title" content="Axion Labs — Free, Open AI Models">
-  <meta property="og:description" content="Create a free account to chat with Lumen, use the OpenAI-compatible API, or bring Axion into your terminal.">
+  <meta property="og:title" content="Sennoric — Free, Open AI Models">
+  <meta property="og:description" content="Create a free account to chat with Lumen, use the OpenAI-compatible API, or bring Sennoric into your terminal.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://axion.amplifiedsmp.org/">
   <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
@@ -319,7 +319,7 @@
 <body>
 
 <nav>
-  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Axion" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Axion</a>
+  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Sennoric</a>
   <a href="/models">Models</a>
   <a href="/chat">Chat</a>
   <a href="/docs">Docs</a>
@@ -334,7 +334,7 @@
   <div class="paper-banner"
        data-images="/assets/paper/paper-1.jpg,/assets/paper/paper-3.jpg,/assets/paper/paper-4.jpg,/assets/paper/paper-5.jpg,/assets/paper/paper-6.jpg,/assets/paper/paper-7.jpg,/assets/paper/paper-8.jpg"
        data-logo="/assets/logo-spiral-wordmark-banner.png"
-       data-logo-alt="Axion Labs AI"
+       data-logo-alt="Sennoric AI"
        data-interval="500"
        data-zoom-min="100"
        data-zoom-max="100"></div>
@@ -343,7 +343,7 @@
 <div class="hero-wrap">
   <div class="hero">
     <div class="hero-text">
-      <p class="hero-eyebrow">Axion Labs · open models</p>
+      <p class="hero-eyebrow">Sennoric · open models</p>
       <h1>Meet <span class="lumen">Lumen</span>.</h1>
       <p class="hero-sub">We build and host our own models. <b>Lumen 1.2.5</b> runs in the browser, behind an <b>OpenAI-compatible API</b>, and in your terminal.</p>
       <p class="hero-status"><span id="status-text">checking model status…</span></p>
@@ -381,7 +381,7 @@
 
   <section>
     <p class="section-tag">the models</p>
-    <h2 class="section-heading">The Axion model family</h2>
+    <h2 class="section-heading">The Sennoric model family</h2>
     <p class="section-lead">We train these ourselves and run them on our own hardware.</p>
 
     <div class="family">
@@ -416,16 +416,16 @@
     <p class="section-lead">We speak the OpenAI chat-completions format. Point your client at our base URL, change the model name to <code>lumen</code>, and the rest of your code stays put.</p>
 
     <div class="code-block">
-      <span class="comment"># free Axion account and API key required</span><br>
+      <span class="comment"># free Sennoric account and API key required</span><br>
       <span class="prompt">$ </span><span class="cmd">curl https://api.amplifiedsmp.org/v1/chat/completions \</span><br>
       <span class="cmd">&nbsp;&nbsp;-H <span class="str">"Content-Type: application/json"</span> \</span><br>
-      <span class="cmd">&nbsp;&nbsp;-H <span class="str">"Authorization: Bearer $AXION_API_KEY"</span> \</span><br>
+      <span class="cmd">&nbsp;&nbsp;-H <span class="str">"Authorization: Bearer $SENNORIC_API_KEY"</span> \</span><br>
       <span class="cmd">&nbsp;&nbsp;-d <span class="str">'{"model": "lumen", "messages": [{"role": "user", "content": "hello!"}]}'</span></span>
     </div>
     <div class="api-points">
       <span>$0.125 weekly included usage with a free account</span>
       <span>streaming supported</span>
-      <span>keys &amp; usage dashboard at <a href="/keys" style="color:var(--accent)">axion/keys</a></span>
+      <span>keys &amp; usage dashboard at <a href="/keys" style="color:var(--accent)">sennoric/keys</a></span>
     </div>
   </section>
 
@@ -440,14 +440,14 @@
         <p class="way-title">Chat</p>
         <p class="way-desc">A clean chat interface for Lumen. Signed-in chats sync across your devices.</p>
       </a>
-      <a class="way-card" href="/docs#axion-api">
+      <a class="way-card" href="/docs#sennoric-api">
         <span class="way-kbd">POST /v1/chat/completions</span>
         <p class="way-title">API</p>
         <p class="way-desc">An OpenAI-compatible endpoint. Works with the official OpenAI SDKs in any language.</p>
       </a>
       <a class="way-card" href="/docs">
         <span class="way-kbd">$ npm i -g @axion-labs-ai/quark-cli</span>
-        <p class="way-title">Axion CLI</p>
+        <p class="way-title">Sennoric CLI</p>
         <p class="way-desc">Our open-source terminal agent. It edits files and runs commands, using Lumen or any model you point it at.</p>
       </a>
     </div>
@@ -489,7 +489,7 @@
 </main>
 
 <footer>
-  <p>© 2026 Axion Labs · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Axion">GitHub</a></p>
+  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Axion">GitHub</a></p>
 </footer>
 
 <script>
@@ -519,7 +519,7 @@
   const chatBody = document.getElementById('chat-body')
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-  const LUMEN_REPLY = 'Point base_url at our endpoint and use your Axion key:'
+  const LUMEN_REPLY = 'Point base_url at our endpoint and use your Sennoric key:'
   const LUMEN_CODE = [
     { text: 'from ', cls: 'kw' }, { text: 'openai ' }, { text: 'import ', cls: 'kw' }, { text: 'OpenAI\n\n' },
     { text: 'client = ' }, { text: 'OpenAI', cls: 'fn' }, { text: '(\n' },
