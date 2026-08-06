@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script src="/assets/storage-migrate.js"></script>
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>API Keys — Sennoric</title>
@@ -637,13 +638,13 @@
         <span class="prompt">$ </span>curl https://api.amplifiedsmp.org/v1/chat/completions \<br>
         &nbsp;&nbsp;-H "Authorization: Bearer axion-sk-…" \<br>
         &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
-        &nbsp;&nbsp;-d '{"model":"fresco","messages":[{"role":"user","content":"Hello"}]}'
+        &nbsp;&nbsp;-d '{"model":"lumen","messages":[{"role":"user","content":"Hello"}]}'
       </div>
       <div class="code-block">
         <span class="comment"># Python — openai library</span><br>
         from openai import OpenAI<br>
         client = OpenAI(api_key="axion-sk-…", base_url="https://api.amplifiedsmp.org/v1")<br>
-        resp = client.chat.completions.create(model="fresco", messages=[{"role":"user","content":"Hello"}])
+        resp = client.chat.completions.create(model="lumen", messages=[{"role":"user","content":"Hello"}])
       </div>
       <div class="code-block">
         <span class="comment"># Sennoric CLI</span><br>
@@ -684,7 +685,7 @@
 <div class="modal-backdrop" id="device-modal">
   <div class="modal">
     <h3>Authorize CLI access</h3>
-    <p>A terminal session is requesting access to your Sennoric account. Only confirm if you just ran <code style="font-family:monospace;font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:3px">sennoric login</code>.</p>
+    <p>A terminal session is requesting access to your Sennoric account. Only confirm if you just ran <code style="font-family:monospace;font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:3px">axion login</code>.</p>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="denyDevice()">Deny</button>
       <button class="modal-create" onclick="authorizeDevice()">Authorize</button>

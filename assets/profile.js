@@ -7,6 +7,15 @@
   'use strict'
   var API = 'https://api.amplifiedsmp.org'
 
+  // Safety net for pages that don't also load storage-migrate.js directly:
+  // pre-rebrand axion_* keys still hold a signed-in user's real session.
+  ;['token', 'email', 'avatar_url', 'chat_model'].forEach(function (key) {
+    var newKey = 'sennoric_' + key
+    if (localStorage.getItem(newKey) !== null) return
+    var oldValue = localStorage.getItem('axion_' + key)
+    if (oldValue !== null) localStorage.setItem(newKey, oldValue)
+  })
+
   var token = localStorage.getItem('sennoric_token')
   var email = localStorage.getItem('sennoric_email') || ''
   if (!token) return // not signed in — leave the default nav (Get started / Sign in)
