@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script src="/assets/storage-migrate.js"></script>
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shared chat — Axion Labs</title>
+  <title>Shared chat — Sennoric</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="stylesheet" href="/assets/theme-dark.css">
   <style>
@@ -73,7 +74,7 @@
   const API = 'https://api.amplifiedsmp.org'
   const params = new URLSearchParams(location.search)
   const token = params.get('t') || ''
-  const sessionToken = localStorage.getItem('axion_token') || null
+  const sessionToken = localStorage.getItem('sennoric_token') || null
 
   function escHtml(s) {
     return String(s == null ? '' : s)

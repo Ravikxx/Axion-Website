@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script src="/assets/storage-migrate.js"></script>
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Usage — Axion Labs</title>
+  <title>Usage — Sennoric</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="stylesheet" href="/assets/theme-dark.css">
   <style>
@@ -204,17 +205,17 @@
 <body>
 <div id="signin-prompt">
   <div class="prompt-card">
-    <div class="logo"><span>Axion</span></div>
+    <div class="logo"><span>Sennoric</span></div>
     <h1>Sign in required</h1>
-    <p>Your usage belongs to your Axion account. Sign in to view it.</p>
+    <p>Your usage belongs to your Sennoric account. Sign in to view it.</p>
     <a class="btn-full" href="/keys">Sign in</a>
   </div>
 </div>
 
 <aside class="sidebar" id="sidebar">
   <a href="/" class="sidebar-logo">
-    <img src="/assets/logo-spiral.svg" alt="Axion" style="height:26px;width:auto;object-fit:contain">
-    Axion
+    <img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:26px;width:auto;object-fit:contain">
+    Sennoric
   </a>
   <div class="nav-section">
     <div class="nav-label">API</div>
@@ -305,7 +306,7 @@
       <section class="exact-panel" id="exact-usage" aria-labelledby="exact-heading" hidden>
         <div class="exact-panel-head">
           <h2 id="exact-heading">Exact billed usage</h2>
-          <p>Axion billing-ledger values, shown to the nearest microdollar.</p>
+          <p>Sennoric billing-ledger values, shown to the nearest microdollar.</p>
         </div>
         <div class="exact-grid">
           <div class="exact-stat">
@@ -364,13 +365,13 @@
 <script src="/assets/account-profile.js"></script>
 <script>
   const API = 'https://api.amplifiedsmp.org';
-  const sessionToken = localStorage.getItem('axion_token') || null;
-  const userEmail = localStorage.getItem('axion_email') || '';
+  const sessionToken = localStorage.getItem('sennoric_token') || null;
+  const userEmail = localStorage.getItem('sennoric_email') || '';
 
   function logout() {
-    localStorage.removeItem('axion_token');
-    localStorage.removeItem('axion_email');
-    AxionAccountProfile.clear();
+    localStorage.removeItem('sennoric_token');
+    localStorage.removeItem('sennoric_email');
+    SennoricAccountProfile.clear();
     location.href = '/';
   }
 
@@ -550,8 +551,8 @@
         headers: { Authorization: `Bearer ${sessionToken}` },
       });
       if (response.status === 401) {
-        localStorage.removeItem('axion_token');
-        AxionAccountProfile.clear();
+        localStorage.removeItem('sennoric_token');
+        SennoricAccountProfile.clear();
         document.getElementById('sidebar').style.display = 'none';
         document.getElementById('main-panel').style.display = 'none';
         document.getElementById('signin-prompt').style.display = 'flex';
@@ -559,8 +560,8 @@
       }
       if (!response.ok) throw new Error(`Usage service returned ${response.status}`);
       const account = await response.json();
-      AxionAccountProfile.cacheAvatar(account.avatar_url || '');
-      AxionAccountProfile.renderAvatar(document.getElementById('sidebar-avatar'), userEmail, account.avatar_url);
+      SennoricAccountProfile.cacheAvatar(account.avatar_url || '');
+      SennoricAccountProfile.renderAvatar(document.getElementById('sidebar-avatar'), userEmail, account.avatar_url);
       renderUsage(account);
       return true;
     } catch (error) {
@@ -579,10 +580,10 @@
     document.getElementById('sidebar').style.display = 'flex';
     document.getElementById('main-panel').style.display = 'flex';
     document.getElementById('sidebar-email').textContent = userEmail;
-    AxionAccountProfile.renderAvatar(
+    SennoricAccountProfile.renderAvatar(
       document.getElementById('sidebar-avatar'),
       userEmail,
-      AxionAccountProfile.cachedAvatar(),
+      SennoricAccountProfile.cachedAvatar(),
     );
     loadUsage();
   }

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Axion install script — curl -fsSL https://axion.amplifiedsmp.org/install.sh | sh
+# Sennoric install script — curl -fsSL https://axion.amplifiedsmp.org/install.sh | sh
 set -e
 
 PACKAGE="@axion-labs-ai/quark-cli"
@@ -20,13 +20,13 @@ if ! command -v npm >/dev/null 2>&1; then
   fail "npm wasn't found alongside Node.js. Reinstall Node.js from https://nodejs.org."
 fi
 
-ERR_LOG=$(mktemp "${TMPDIR:-/tmp}/axion-install-err.XXXXXX")
+ERR_LOG=$(mktemp "${TMPDIR:-/tmp}/sennoric-install-err.XXXXXX")
 # Clean up on every exit path, including the `fail` calls below — the previous
 # version only removed the log on the failure branch, so a successful install
 # left it behind.
 trap 'rm -f "$ERR_LOG"' EXIT
 
-info "Installing Axion ($PACKAGE) globally via npm..."
+info "Installing Sennoric ($PACKAGE) globally via npm..."
 if npm install -g "$PACKAGE" 2>"$ERR_LOG"; then
   info "Installed! Run 'axion' to get started."
 else

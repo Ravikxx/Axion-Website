@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script src="/assets/storage-migrate.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Authorize Axion Desktop — Axion Labs</title>
+  <title>Authorize Sennoric Desktop — Sennoric</title>
   <meta name="robots" content="noindex, nofollow">
   <!-- Matters more here than on most pages: this URL carries the PKCE
        challenge and state in its fragment. Fragments are not sent in Referer
@@ -133,7 +134,7 @@
 </head>
 <body>
 <div class="card">
-  <div class="logo"><img src="/assets/logo-spiral.svg" alt=""><span>Axion</span></div>
+  <div class="logo"><img src="/assets/logo-spiral.svg" alt=""><span>Sennoric</span></div>
 
   <div class="notice" id="notice"></div>
 
@@ -141,7 +142,7 @@
   <section id="view-invalid" class="ax-hidden">
     <h1>This authorization link isn't valid</h1>
     <p class="sub">
-      It's missing information the desktop app needs to complete sign-in. Open Axion
+      It's missing information the desktop app needs to complete sign-in. Open Sennoric
       Desktop and start the sign-in again from there.
     </p>
   </section>
@@ -149,7 +150,7 @@
   <!-- Shown when nobody is signed in yet. -->
   <section id="view-signin" class="ax-hidden">
     <h1>Sign in to continue</h1>
-    <p class="sub" id="signin-sub">Axion Desktop is waiting for you to sign in.</p>
+    <p class="sub" id="signin-sub">Sennoric Desktop is waiting for you to sign in.</p>
 
     <form id="signin-form" onsubmit="doSignIn(); return false">
       <div class="field ax-hidden" id="name-field">
@@ -194,8 +195,8 @@
 
   <!-- The consent step. -->
   <section id="view-consent" class="ax-hidden">
-    <h1>Axion Desktop wants to access your account</h1>
-    <p class="sub">Approve only if you started this from the Axion Desktop app on this computer.</p>
+    <h1>Sennoric Desktop wants to access your account</h1>
+    <p class="sub">Approve only if you started this from the Sennoric Desktop app on this computer.</p>
 
     <div class="account">
       <div class="avatar" id="avatar" aria-hidden="true">A</div>
@@ -212,7 +213,7 @@
       </li>
       <li>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-        Use Axion models on your behalf, counted against your usage
+        Use Sennoric models on your behalf, counted against your usage
       </li>
       <li>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
@@ -234,7 +235,7 @@
   <!-- Terminal state: the browser has handed control back to the app. -->
   <section id="view-done" class="ax-hidden">
     <h1 id="done-title">Signed in</h1>
-    <p class="sub" id="done-sub">You can close this tab and return to Axion Desktop.</p>
+    <p class="sub" id="done-sub">You can close this tab and return to Sennoric Desktop.</p>
   </section>
 </div>
 
@@ -242,11 +243,11 @@
   const API = 'https://api.amplifiedsmp.org'
   // The PKCE challenge and state arrive in the URL fragment rather than the
   // query string so they never reach a server log or a Referer header.
-  const STASH_KEY = 'axion_desktop_auth_request'
+  const STASH_KEY = 'sennoric_desktop_auth_request'
   const REQUEST_TIMEOUT = 12000
 
-  let sessionToken = localStorage.getItem('axion_token') || null
-  let userEmail = localStorage.getItem('axion_email') || null
+  let sessionToken = localStorage.getItem('sennoric_token') || null
+  let userEmail = localStorage.getItem('sennoric_email') || null
   let request = null   // { challenge, state }
   let mode = 'signin'
   let turnstileToken = null
@@ -305,7 +306,7 @@
     // A custom-scheme navigation is what reopens the desktop app. If no handler
     // is registered the browser simply does nothing, which is why the page also
     // renders a terminal message rather than relying on the redirect alone.
-    location.href = `axion://auth?${params.toString()}`
+    location.href = `sennoric://auth?${params.toString()}`
   }
 
   // Consent
@@ -347,7 +348,7 @@
 
       document.getElementById('done-title').textContent = 'Signed in'
       document.getElementById('done-sub').textContent =
-        'Axion Desktop should be signed in now. You can close this tab.'
+        'Sennoric Desktop should be signed in now. You can close this tab.'
       show('view-done')
       handBackToApp(new URLSearchParams({ code: data.code, state: request.state }))
     } catch (error) {
@@ -360,7 +361,7 @@
   function deny() {
     document.getElementById('done-title').textContent = 'Request denied'
     document.getElementById('done-sub').textContent =
-      'Axion Desktop was not signed in. You can close this tab.'
+      'Sennoric Desktop was not signed in. You can close this tab.'
     show('view-done')
     handBackToApp(new URLSearchParams({ error: 'access_denied', state: request.state }))
   }
@@ -369,8 +370,8 @@
   function signOutLocally() {
     sessionToken = null
     userEmail = null
-    localStorage.removeItem('axion_token')
-    localStorage.removeItem('axion_email')
+    localStorage.removeItem('sennoric_token')
+    localStorage.removeItem('sennoric_email')
     notify('Your session expired. Sign in again to continue.', 'info')
     show('view-signin')
   }
@@ -418,14 +419,14 @@
       if (data.pending) {
         document.getElementById('done-title').textContent = 'Check your inbox'
         document.getElementById('done-sub').textContent =
-          `We sent a verification link to ${email}. Click it, then start sign-in again from Axion Desktop.`
+          `We sent a verification link to ${email}. Click it, then start sign-in again from Sennoric Desktop.`
         show('view-done')
         return
       }
       sessionToken = data.token
       userEmail = data.email || email
-      localStorage.setItem('axion_token', sessionToken)
-      localStorage.setItem('axion_email', userEmail)
+      localStorage.setItem('sennoric_token', sessionToken)
+      localStorage.setItem('sennoric_email', userEmail)
       await enterConsent()
     } catch (error) {
       notify(error.name === 'AbortError' ? 'That took too long. Check your connection and try again.'
@@ -453,8 +454,8 @@
     if (verified) {
       sessionToken = decodeURIComponent(verified)
       userEmail = decodeURIComponent(params.get('email') || '')
-      localStorage.setItem('axion_token', sessionToken)
-      localStorage.setItem('axion_email', userEmail)
+      localStorage.setItem('sennoric_token', sessionToken)
+      localStorage.setItem('sennoric_email', userEmail)
     }
 
     request = readRequest(params)

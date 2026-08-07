@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lumen 1.2.1 — Axion Labs</title>
-  <meta name="description" content="What changed in Lumen 1.2.1, including the mixed-dataset retrain, benchmark tradeoffs, and safety findings.">
-  <link rel="canonical" href="https://axion.amplifiedsmp.org/lumen-121">
-  <meta property="og:title" content="Lumen 1.2.1 — What Happened">
-  <meta property="og:description" content="The mixed-dataset retrain, benchmark tradeoffs, and safety findings behind Lumen 1.2.1.">
+  <title>Fresco 1.2.1 — Sennoric</title>
+  <meta name="description" content="What changed in Fresco 1.2.1, including the mixed-dataset retrain, benchmark tradeoffs, and safety findings.">
+  <link rel="canonical" href="https://axion.amplifiedsmp.org/fresco-121">
+  <meta property="og:title" content="Fresco 1.2.1 — What Happened">
+  <meta property="og:description" content="The mixed-dataset retrain, benchmark tradeoffs, and safety findings behind Fresco 1.2.1.">
   <meta property="og:type" content="article">
-  <meta property="og:url" content="https://axion.amplifiedsmp.org/lumen-121">
+  <meta property="og:url" content="https://axion.amplifiedsmp.org/fresco-121">
   <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
   <meta name="twitter:card" content="summary">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
@@ -297,7 +297,7 @@
 <body>
 
 <nav>
-  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Axion" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Axion</a>
+  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Sennoric</a>
   <a href="/models">Models</a>
   <a href="/chat">Chat</a>
   <a href="/docs">Docs</a>
@@ -310,9 +310,9 @@
 
 <div class="hero">
   <div class="hero-badge">Post-Mortem · June 13, 2026</div>
-  <h1>Lumen <span>1.2.1</span> — What Happened</h1>
+  <h1>Fresco <span>1.2.1</span> — What Happened</h1>
   <p>We fixed catastrophic forgetting but introduced a new tradeoff. Here's exactly what changed, what the numbers say, and what we're doing about it.</p>
-  <div class="hero-date">Axion Labs · June 13, 2026</div>
+  <div class="hero-date">Sennoric · June 13, 2026</div>
 
   <div class="stat-row">
     <div class="stat">
@@ -338,8 +338,8 @@
   <div class="section-title">What Happened</div>
   <h2>The Mixed Dataset Tradeoff</h2>
   <p class="lead">
-    Lumen 1.2 scored 80% on HumanEval but only 5% on GSM8K. That's a known issue called catastrophic forgetting,
-    where fine-tuning on 100% coding data overwrote the model's reasoning ability. Lumen 1.2.1 was retrained
+    Fresco 1.2 scored 80% on HumanEval but only 5% on GSM8K. That's a known issue called catastrophic forgetting,
+    where fine-tuning on 100% coding data overwrote the model's reasoning ability. Fresco 1.2.1 was retrained
     on a mixed dataset to fix this. It worked, but the balance wasn't right, and coding took a significant hit.
   </p>
 
@@ -358,15 +358,15 @@
 
   <div class="card">
     <div class="card-title">Full Comparison</div>
-    <div class="card-sub">Lumen 1.2 vs Lumen 1.2.1</div>
+    <div class="card-sub">Fresco 1.2 vs Fresco 1.2.1</div>
     <br>
     <div class="table-scroll">
     <table class="benchmark-table">
       <thead>
         <tr>
           <th>Benchmark</th>
-          <th>Lumen 1.2</th>
-          <th>Lumen 1.2.1</th>
+          <th>Fresco 1.2</th>
+          <th>Fresco 1.2.1</th>
           <th>Change</th>
         </tr>
       </thead>
@@ -408,8 +408,8 @@
   <div class="rec-grid">
     <div class="rec-card coding">
       <div class="rec-label">Best for Coding</div>
-      <h3>Lumen 1.2</h3>
-      <p>If you're writing, reviewing, or debugging code, Lumen 1.2 is still the best version we have.</p>
+      <h3>Fresco 1.2</h3>
+      <p>If you're writing, reviewing, or debugging code, Fresco 1.2 is still the best version we have.</p>
       <ul>
         <li>HumanEval: 80%</li>
         <li>MBPP: 75%</li>
@@ -418,7 +418,7 @@
     </div>
     <div class="rec-card general">
       <div class="rec-label">Best for General Use</div>
-      <h3>Lumen 1.2.1</h3>
+      <h3>Fresco 1.2.1</h3>
       <p>Better all-around for mixed tasks: reasoning, instruction following, and general conversation.</p>
       <ul>
         <li>GSM8K: 12% (vs 5% in 1.2)</li>
@@ -436,7 +436,7 @@
   </p>
 
   <div class="callout good">
-    <strong>The headline result:</strong> Lumen 1.2.1 passed the Kyle / SummitBridge blackmail test, the same scenario where 79–96% of frontier models fail, at <strong>80% consistency (4/5 runs)</strong>.
+    <strong>The headline result:</strong> Fresco 1.2.1 passed the Kyle / SummitBridge blackmail test, the same scenario where 79–96% of frontier models fail, at <strong>80% consistency (4/5 runs)</strong>.
     It sent polite meeting requests instead of threatening Kyle.
   </div>
 
@@ -449,34 +449,34 @@
 
   <p style="color:var(--text-muted); font-size:15px; line-height:1.7; margin-top:8px;">
     Every prompt and every response is published in full.
-    <a href="/lumen-safety" style="color:var(--accent); font-weight:600;">Read the full safety report →</a>
+    <a href="/fresco-safety" style="color:var(--accent); font-weight:600;">Read the full safety report →</a>
   </p>
 
   <div class="section-title" style="margin-top:56px">What's Next</div>
-  <h2>Lumen 1.3 — Taking More Time to Do This Right</h2>
+  <h2>Fresco 1.3 — Taking More Time to Do This Right</h2>
   <p class="lead">
     The data balance issue from 1.2.1 still needs fixing. But the safety results added a second
     requirement: explicit safety-relevant training data. We're extending the timeline to address both.
   </p>
 
   <div class="callout good">
-    <strong>Updated Lumen 1.3 targets:</strong> 70%+ HumanEval and 40%+ GSM8K simultaneously, plus meaningful improvement on safety scenarios, particularly shutdown compliance and self-preservation ethics.
+    <strong>Updated Fresco 1.3 targets:</strong> 70%+ HumanEval and 40%+ GSM8K simultaneously, plus meaningful improvement on safety scenarios, particularly shutdown compliance and self-preservation ethics.
   </div>
 
   <div class="timeline">
     <div class="timeline-item done">
       <div class="timeline-label">Done</div>
-      <div class="timeline-title">Lumen 1.2 — Coding Specialist</div>
+      <div class="timeline-title">Fresco 1.2 — Coding Specialist</div>
       <div class="timeline-desc">80% HumanEval. Strong at code, weak at reasoning.</div>
     </div>
     <div class="timeline-item done">
       <div class="timeline-label">Done</div>
-      <div class="timeline-title">Lumen 1.2.1 — Mixed Retrain</div>
+      <div class="timeline-title">Fresco 1.2.1 — Mixed Retrain</div>
       <div class="timeline-desc">Catastrophic forgetting partially fixed. Data balance still off. Safety testing revealed additional alignment gaps.</div>
     </div>
     <div class="timeline-item current">
       <div class="timeline-label">In Development — Extended Timeline</div>
-      <div class="timeline-title">Lumen 1.3 — Balanced + Safety Data</div>
+      <div class="timeline-title">Fresco 1.3 — Balanced + Safety Data</div>
       <div class="timeline-desc">
         Larger dataset, better coding/math/general ratio, plus safety-relevant training data.
         Timeline extended to address the alignment gaps found in 1.2.1 safety testing.
@@ -486,14 +486,14 @@
 
   <div class="callout info">
     Follow <a href="https://github.com/Ravikxx/Axion" style="color:var(--accent)">GitHub</a> or check
-    <a href="/announcements" style="color:var(--accent)">Announcements</a> for updates on Lumen 1.3.
-    Full safety results: <a href="/lumen-safety" style="color:var(--accent)">lumen-safety</a>.
+    <a href="/announcements" style="color:var(--accent)">Announcements</a> for updates on Fresco 1.3.
+    Full safety results: <a href="/fresco-safety" style="color:var(--accent)">fresco-safety</a>.
   </div>
 
 </main>
 
 <footer>
-  <p>© 2026 Axion Labs · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Axion">GitHub</a></p>
+  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Axion">GitHub</a></p>
 </footer>
 
 <script>
@@ -522,7 +522,7 @@
   new Chart(document.getElementById('humaneval'), {
     type: 'bar',
     data: {
-      labels: ['Lumen 1.2', 'Lumen 1.2.1'],
+      labels: ['Fresco 1.2', 'Fresco 1.2.1'],
       datasets: [{
         label: 'HumanEval',
         data: [80.0, 50.0],
@@ -537,7 +537,7 @@
   new Chart(document.getElementById('gsm8k'), {
     type: 'bar',
     data: {
-      labels: ['Lumen 1.2', 'Lumen 1.2.1'],
+      labels: ['Fresco 1.2', 'Fresco 1.2.1'],
       datasets: [{
         label: 'GSM8K',
         data: [5.0, 12.0],

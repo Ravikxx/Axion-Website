@@ -4,27 +4,27 @@
 
 ## Overview
 
-These Terms of Service ("Terms") govern your use of the Axion web chat, API, CLI-hosted features, and related services (collectively, the "Service") provided by Axion Labs. By using the Service, you agree to these Terms.
+These Terms of Service ("Terms") govern your use of the Sennoric web chat, API, CLI-hosted features, and related services (collectively, the "Service") provided by Sennoric. By using the Service, you agree to these Terms.
 
 ## Service description
 
-The Service provides access to AI models and developer tools. Lumen requests are routed through Axion Labs' hosted backend to dedicated model infrastructure on RunPod. The CLI can also connect directly to third-party AI providers that you configure. Features, models, limits, and availability may change. The Service is provided on an "as is" basis.
+The Service provides access to AI models and developer tools. Fresco requests are routed through Sennoric's hosted backend to dedicated model infrastructure on RunPod. The CLI can also connect directly to third-party AI providers that you configure. Features, models, limits, and availability may change. The Service is provided on an "as is" basis.
 
 ## Accounts
 
 - Public informational pages, including documentation, status, privacy, and terms, may be read without an account. Hosted model and compute access requires an account.
-- You are responsible for your account credentials and Axion-issued API keys.
-- Do not publish, sell, or share an Axion-issued API key outside its intended use.
+- You are responsible for your account credentials and Sennoric-issued API keys.
+- Do not publish, sell, or share a Sennoric-issued API key outside its intended use.
 - **One account per person.** Accounts detected sharing an IP address with another verified account may be suspended. If you believe this is an error, you may use the appeal link in the suspension email.
 
 ## Usage, plans, and billing
 
-- Lumen and other Axion-hosted model or compute access requires a Free or Pro account, authenticated by a signed-in browser session or an Axion-issued API key.
+- Fresco and other Sennoric-hosted model or compute access requires a Free or Pro account, authenticated by a signed-in browser session or a Sennoric-issued API key.
 - A Free account includes an account-wide $0.125 weekly usage allowance and a $0.05 allowance per rolling two-hour window, with up to three active API keys. Both allowances are lazy-start: a period doesn't begin, or count down toward reset, until your account's first chargeable request after the previous one has fully elapsed.
 - Pro costs $7 per month through Square and includes an account-wide $1.25 weekly usage allowance and a $0.50 allowance per rolling two-hour window, with unlimited active API keys.
 - Included usage is measured from input and output tokens. The current accounting rates are $0.15 per million input tokens and $0.50 per million output tokens.
 - Redeemable API credits are used after the included allowance. Credit balances and USD usage values are service accounting units, have no cash value, and cannot be withdrawn. Variable-value administrative credit codes may be redeemed in $0.001 increments.
-- Square processes checkout and card details. Axion stores the identifiers and subscription status needed to provide the plan, but does not receive or store your full card number.
+- Square processes checkout and card details. Sennoric stores the identifiers and subscription status needed to provide the plan, but does not receive or store your full card number.
 - Prices, allowances, rate limits, and availability may change. Free access is intended for individual, non-commercial use and may be restricted or revoked for abuse.
 
 ## Acceptable use
@@ -45,18 +45,18 @@ Depending on the feature you use, content may be processed by RunPod, Hugging Fa
 ## Data handling
 
 - Prompts and relevant context are transmitted to the selected model provider to generate responses.
-- Signed-in web chat history is stored in Axion's hosted database so it can sync across sessions. Local CLI history and browser data may also remain on your device.
-- Axion stores the account, authentication, usage, billing, API-key, credit, and service records needed to operate the Service.
-- Axion does not use your conversations for training unless you explicitly opt in with `/contribute`. A contributed session is handled as described in the [Privacy Policy](/privacy).
-- Provider keys that you configure in the CLI or extension remain in their documented local storage. Axion-issued API keys are stored by the hosted backend so they can authenticate requests.
+- Signed-in web chat history is stored in Sennoric's hosted database so it can sync across sessions. Local CLI history and browser data may also remain on your device.
+- Sennoric stores the account, authentication, usage, billing, API-key, credit, and service records needed to operate the Service.
+- Sennoric does not use your conversations for training unless you explicitly opt in with `/contribute`. A contributed session is handled as described in the [Privacy Policy](/privacy).
+- Provider keys that you configure in the CLI or extension remain in their documented local storage. Sennoric-issued API keys are stored by the hosted backend so they can authenticate requests.
 
 ## Disclaimer
 
-THE SERVICE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. Axion Labs disclaims all warranties, including merchantability, fitness for a particular purpose, and non-infringement.
+THE SERVICE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. Sennoric disclaims all warranties, including merchantability, fitness for a particular purpose, and non-infringement.
 
 ## Limitation of liability
 
-Axion Labs shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Service.
+Sennoric shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Service.
 
 ## Termination and suspension
 

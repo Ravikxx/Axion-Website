@@ -22,8 +22,8 @@
   --green-lt:     rgba(52, 211, 153, .12);
   --red:          #f87171;
   --red-light:    rgba(248, 113, 113, .10);
-  --veil:         #b3a08a;
-  --lumen:        #b8a27d;
+  --glyph:         #b3a08a;
+  --fresco:        #b8a27d;
 }
 
 body { font-family: var(--font-body) !important; }

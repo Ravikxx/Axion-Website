@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script src="/assets/storage-migrate.js"></script>
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Settings — Axion Labs</title>
+  <title>Settings — Sennoric</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="stylesheet" href="/assets/theme-dark.css">
   <style>
@@ -265,17 +266,17 @@
 
 <div id="signin-prompt">
   <div class="prompt-card">
-    <div class="logo"><span>Axion</span></div>
+    <div class="logo"><span>Sennoric</span></div>
     <h1>Sign in required</h1>
-    <p>Settings are part of your Axion account, so sign in to view them.</p>
+    <p>Settings are part of your Sennoric account, so sign in to view them.</p>
     <a class="btn-full" href="/keys">Sign in</a>
   </div>
 </div>
 
 <aside class="sidebar" id="sidebar">
   <a href="/" class="sidebar-logo">
-    <img src="/assets/logo-spiral.svg" alt="Axion" style="height:26px;width:auto;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:0">
-    Axion
+    <img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:26px;width:auto;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:0">
+    Sennoric
   </a>
 
   <div class="nav-section">
@@ -414,7 +415,7 @@
         <div class="settings-row">
           <div>
             <div class="settings-row-label">Auto-run Python</div>
-            <div class="settings-row-desc">When Lumen wants to run Python code, run it immediately instead of asking you to approve each execution first.</div>
+            <div class="settings-row-desc">When Fresco wants to run Python code, run it immediately instead of asking you to approve each execution first.</div>
           </div>
           <input type="checkbox" class="settings-toggle" id="pref-sandbox-auto">
         </div>
@@ -445,7 +446,7 @@
           </div>
         </div>
         <div class="credit-redeem">
-          <input id="credit-code" type="text" autocomplete="off" spellcheck="false" placeholder="AXION code or 16-character code" aria-label="API credit code" onkeydown="if(event.key==='Enter')redeemCredit()">
+          <input id="credit-code" type="text" autocomplete="off" spellcheck="false" placeholder="SENNORIC code or 16-character code" aria-label="API credit code" onkeydown="if(event.key==='Enter')redeemCredit()">
           <input id="credit-amount" type="number" min="0.001" max="10000" step="0.001" placeholder="Amount (USD, min $0.001)" aria-label="Credit amount for variable codes" onkeydown="if(event.key==='Enter')redeemCredit()">
           <button class="btn-sm" id="btn-redeem" onclick="redeemCredit()">Redeem</button>
         </div>
@@ -468,8 +469,8 @@
 <script src="/assets/account-profile.js"></script>
 <script>
   const API = 'https://api.amplifiedsmp.org';
-  const sessionToken = localStorage.getItem('axion_token') || null;
-  const userEmail = localStorage.getItem('axion_email') || '';
+  const sessionToken = localStorage.getItem('sennoric_token') || null;
+  const userEmail = localStorage.getItem('sennoric_email') || '';
   const authHeaders = { Authorization: `Bearer ${sessionToken}` };
 
   // fetch() has no built-in timeout — a blocked/slow connection to the API
@@ -482,9 +483,11 @@
   }
 
   function logout() {
+    localStorage.removeItem('sennoric_token');
+    localStorage.removeItem('sennoric_email');
     localStorage.removeItem('axion_token');
     localStorage.removeItem('axion_email');
-    AxionAccountProfile.clear();
+    SennoricAccountProfile.clear();
     location.href = '/';
   }
 
@@ -531,19 +534,19 @@
 
   // Profile picture
   function renderProfilePicture(url) {
-    AxionAccountProfile.cacheAvatar(url || '');
-    AxionAccountProfile.renderAvatar(document.getElementById('profile-picture-preview'), userEmail, url);
-    AxionAccountProfile.renderAvatar(document.getElementById('sidebar-avatar'), userEmail, url);
+    SennoricAccountProfile.cacheAvatar(url || '');
+    SennoricAccountProfile.renderAvatar(document.getElementById('profile-picture-preview'), userEmail, url);
+    SennoricAccountProfile.renderAvatar(document.getElementById('sidebar-avatar'), userEmail, url);
     document.getElementById('btn-profile-picture').textContent = url ? 'Change picture' : 'Upload picture';
     document.getElementById('btn-remove-profile-picture').hidden = !url;
   }
 
   async function loadProfilePicture() {
     try {
-      const account = await AxionAccountProfile.fetchAccount(sessionToken);
+      const account = await SennoricAccountProfile.fetchAccount(sessionToken);
       renderProfilePicture(account.avatar_url);
     } catch {
-      renderProfilePicture(AxionAccountProfile.cachedAvatar());
+      renderProfilePicture(SennoricAccountProfile.cachedAvatar());
     }
   }
 
@@ -576,7 +579,7 @@
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'Could not upload that picture.');
       renderProfilePicture(data.avatar_url);
-      await AxionAccountProfile.fetchAccount(sessionToken, true);
+      await SennoricAccountProfile.fetchAccount(sessionToken, true);
       msg.textContent = 'Profile picture updated.';
       msg.className = 'status-msg profile-picture-status ok';
     } catch (error) {
@@ -587,7 +590,7 @@
     } finally {
       uploadButton.disabled = false;
       removeButton.disabled = false;
-      uploadButton.textContent = AxionAccountProfile.cachedAvatar() ? 'Change picture' : 'Upload picture';
+      uploadButton.textContent = SennoricAccountProfile.cachedAvatar() ? 'Change picture' : 'Upload picture';
     }
   }
 
@@ -606,7 +609,7 @@
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'Could not remove your picture.');
       renderProfilePicture('');
-      await AxionAccountProfile.fetchAccount(sessionToken, true);
+      await SennoricAccountProfile.fetchAccount(sessionToken, true);
       msg.textContent = 'Profile picture removed.';
       msg.className = 'status-msg profile-picture-status ok';
     } catch (error) {
@@ -689,12 +692,12 @@
     const couponNote = document.getElementById('coupon-note');
     const creditBalance = document.getElementById('credit-balance');
     try {
-      const data = await AxionAccountProfile.fetchAccount(sessionToken);
+      const data = await SennoricAccountProfile.fetchAccount(sessionToken);
       creditBalance.textContent = formatCreditUsd(data.credits?.balance_usd);
       row.style.display = 'flex';
       if (data.plan === 'pro') {
-        sub.textContent = `You're on Axion Pro — $${Number(data.usage?.weekly_included_limit_usd || 1.25).toFixed(2)} included weekly usage, $${Number(data.usage?.window_included_limit_usd || .5).toFixed(2)} every 2 hours, unlimited API keys, and early model access.`;
-        label.textContent = 'Axion Pro';
+        sub.textContent = `You're on Sennoric Pro — $${Number(data.usage?.weekly_included_limit_usd || 1.25).toFixed(2)} included weekly usage, $${Number(data.usage?.window_included_limit_usd || .5).toFixed(2)} every 2 hours, unlimited API keys, and early model access.`;
+        label.textContent = 'Sennoric Pro';
         desc.textContent = 'Billed monthly via Square.';
         btn.style.display = 'none';
         couponNote.style.display = 'none';
@@ -874,7 +877,7 @@
     const list = document.getElementById('providers-list');
     let connected = null;
     try {
-      const data = await AxionAccountProfile.fetchAccount(sessionToken);
+      const data = await SennoricAccountProfile.fetchAccount(sessionToken);
       connected = data.connected || {};
     } catch {
       connected = null; // backend route not live yet
@@ -947,10 +950,10 @@
     document.getElementById('main-panel').style.display = 'flex';
     document.getElementById('sidebar-email').textContent = userEmail;
     document.getElementById('account-email').textContent = userEmail;
-    AxionAccountProfile.renderAvatar(
+    SennoricAccountProfile.renderAvatar(
       document.getElementById('sidebar-avatar'),
       userEmail,
-      AxionAccountProfile.cachedAvatar(),
+      SennoricAccountProfile.cachedAvatar(),
     );
     loadPrefs();
     loadUsage();

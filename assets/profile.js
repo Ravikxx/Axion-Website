@@ -1,5 +1,5 @@
 /* Signed-in profile menu. Include on any page with a top <nav>.
- * Shows an avatar in the top-right when localStorage.axion_token exists;
+ * Shows an avatar in the top-right when localStorage.sennoric_token exists;
  * clicking it opens a dropdown (Chat, API Keys, Settings, Admin, Log out).
  * Settings links to /settings — a real page, not a modal.
  */
@@ -7,8 +7,19 @@
   'use strict'
   var API = 'https://api.amplifiedsmp.org'
 
-  var token = localStorage.getItem('axion_token')
-  var email = localStorage.getItem('axion_email') || ''
+  // Safety net for pages that don't also load storage-migrate.js directly:
+  // pre-rebrand axion_* keys still hold a signed-in user's real session.
+  ;['token', 'email', 'avatar_url', 'chat_model'].forEach(function (key) {
+    var oldKey = 'axion_' + key
+    var oldValue = localStorage.getItem(oldKey)
+    if (oldValue === null) return
+    var newKey = 'sennoric_' + key
+    if (localStorage.getItem(newKey) === null) localStorage.setItem(newKey, oldValue)
+    localStorage.removeItem(oldKey)
+  })
+
+  var token = localStorage.getItem('sennoric_token')
+  var email = localStorage.getItem('sennoric_email') || ''
   if (!token) return // not signed in — leave the default nav (Get started / Sign in)
 
   var nav = document.querySelector('nav')
@@ -29,8 +40,8 @@
   wrap.appendChild(avatar)
 
   function cacheAvatar(url) {
-    if (url) localStorage.setItem('axion_avatar_url', url)
-    else localStorage.removeItem('axion_avatar_url')
+    if (url) localStorage.setItem('sennoric_avatar_url', url)
+    else localStorage.removeItem('sennoric_avatar_url')
   }
 
   function renderAvatar(url) {
@@ -46,12 +57,12 @@
     })
     image.addEventListener('error', function () {
       if (avatar.dataset.avatarUrl !== url) return
-      if (localStorage.getItem('axion_avatar_url') === url) cacheAvatar('')
+      if (localStorage.getItem('sennoric_avatar_url') === url) cacheAvatar('')
       avatar.textContent = initial
     })
   }
 
-  renderAvatar(localStorage.getItem('axion_avatar_url') || '')
+  renderAvatar(localStorage.getItem('sennoric_avatar_url') || '')
 
   var menu = el('div', 'ax-menu')
   menu.innerHTML =
@@ -127,6 +138,9 @@
     var item = e.target.closest('[data-act]')
     if (!item) return
     if (item.dataset.act === 'logout') {
+      localStorage.removeItem('sennoric_token')
+      localStorage.removeItem('sennoric_email')
+      localStorage.removeItem('sennoric_avatar_url')
       localStorage.removeItem('axion_token')
       localStorage.removeItem('axion_email')
       localStorage.removeItem('axion_avatar_url')

@@ -4,19 +4,18 @@
   <meta charset="UTF-8">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Veil — Axion Labs</title>
-  <meta name="description" content="The history, deprecation schedule, and retirement plan for Veil 1.1, Axion Labs' first model.">
-  <link rel="canonical" href="https://axion.amplifiedsmp.org/veil">
-  <meta property="og:title" content="Why we're moving on from Veil — Axion Labs">
-  <meta property="og:description" content="The history, deprecation schedule, and retirement plan for Veil 1.1.">
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="https://axion.amplifiedsmp.org/veil">
+  <title>Glyph — Sennoric</title>
+  <meta name="description" content="Meet Glyph 1.1, Sennoric's small, fast model for quick, lightweight conversations.">
+  <link rel="canonical" href="https://axion.amplifiedsmp.org/glyph">
+  <meta property="og:title" content="Meet Glyph — Sennoric">
+  <meta property="og:description" content="Glyph 1.1, formerly Veil: a small, fast 3B model, now running on its own RunPod endpoint.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://axion.amplifiedsmp.org/glyph">
   <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
   <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="/assets/theme-adaptive.css">
   <link rel="stylesheet" href="/assets/site-shell.css">
   <script src="/assets/site-nav.js" defer></script>
-  <script src="/assets/model-lifecycle.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -87,7 +86,7 @@
 <body>
 
 <nav>
-  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Axion" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Axion</a>
+  <a href="/" class="brand"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:20px;width:auto;object-fit:contain;display:inline-block;vertical-align:-4px;margin-right:7px">Sennoric</a>
   <a href="/models">Models</a>
   <a href="/chat">Chat</a>
   <a href="/docs">Docs</a>
@@ -99,42 +98,42 @@
 </nav>
 
 <div class="page-header">
-  <div class="tag">Axion Labs</div>
-  <h1>Why we're moving on from Veil</h1>
-  <p>Veil 1.1 was our first model. It's being deprecated, then retired. Here's why, and what happens to it.</p>
-  <div class="status-line" id="status-line"><span class="status-dot" id="status-dot"></span><span id="status-text">Loading status…</span></div>
+  <div class="tag">Sennoric</div>
+  <h1>Glyph</h1>
+  <p>Our small, fast model. Formerly Veil, now renamed and running on its own dedicated endpoint.</p>
+  <div class="status-line" id="status-line"><span class="status-dot" id="status-dot"></span><span id="status-text">Live now, free with a Sennoric account.</span></div>
 </div>
 
 <main>
   <section>
-    <h2>What Veil was</h2>
-    <p>Veil 1.1 is a fine-tuned Llama 3.1 3B: small, fast, and free with an Axion account. It was our first model, built before Lumen existed, and everything we learned fine-tuning and shipping it shaped how we built Lumen 1.2.5.</p>
+    <h2>What Glyph is</h2>
+    <p>Glyph 1.1 is a fine-tuned Llama 3.1 3B: small, fast, and free with a Sennoric account. It was our first model, built before Fresco existed, and everything we learned fine-tuning and shipping it shaped how we built Fresco 1.2.5.</p>
   </section>
 
   <section>
-    <h2>Why it's going away</h2>
-    <p>We recently moved our model hosting off shared, rate-limited infrastructure and onto our own servers, which gave us a reason to look hard at what we actually run day to day. Lumen has grown into a faster, more capable model that covers everything Veil did and more, with far better safety alignment behind it. Running two models split our attention across infrastructure, safety testing, and improvements, and that attention is better spent making one model genuinely good than keeping two adequate ones alive.</p>
-    <p>Veil did what it was built to do. This is a decision about focus, not about its quality.</p>
+    <h2>Where it fits</h2>
+    <p>Fresco is the flagship, built for general chat, writing, and code. Glyph is smaller and faster, built for quick, lightweight conversations where a 3B model is plenty. It stays in the lineup for now; a third tier, Mosaic, is coming soon and will eventually take its place.</p>
   </section>
 
   <section>
-    <h2>What happens, and when</h2>
+    <h2>What changed, and when</h2>
     <ul class="timeline">
-      <li><span class="when">Jul 25, 2026</span><span class="what">Veil is marked deprecated, and goes offline earlier than planned because the compute it ran on is committed to the Project Crucible 600M rerun. We originally said it would keep answering requests through this period; it didn't, and that was our miss.</span></li>
-      <li><span class="when">Jul 30, 2026</span><span class="what">Veil comes back online and answers requests as normal, giving a real migration window rather than the one we promised and couldn't deliver.</span></li>
-      <li><span class="when">Aug 17, 2026</span><span class="what">Veil is fully retired. Its model card stays up on the <a href="/models" style="color:var(--accent)">Models page</a> permanently, as a record of where Axion started rather than an active endpoint.</span></li>
+      <li><span class="when">Jul 25, 2026</span><span class="what">Marked deprecated and briefly taken offline while its compute was committed to the Project Crucible 600M rerun.</span></li>
+      <li><span class="when">Jul 30, 2026</span><span class="what">Back online and answering requests as normal.</span></li>
+      <li><span class="when">Aug 2026</span><span class="what">Moved onto a dedicated RunPod Serverless endpoint behind our Cloudflare Worker, its own infrastructure rather than a shared Hugging Face Space.</span></li>
+      <li><span class="when">Aug 6, 2026</span><span class="what">Renamed from Veil to Glyph as part of the move from Axion to Sennoric. No longer deprecated, and no retirement date set. It'll be replaced eventually, likely once Mosaic ships, but stays up for now.</span></li>
     </ul>
   </section>
 
   <section>
-    <h2>What to use instead</h2>
-    <p>If you were calling Veil directly, switch to Lumen (<code style="background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;font-size:13px">model: "lumen"</code>). It's the same OpenAI-compatible endpoint and the same free Axion account. Veil is unavailable right now, so if you're still pointing at it, move today rather than waiting for August 17.</p>
-    <a class="cta" href="/lumen-model">See Lumen's model details →</a>
+    <h2>Using it</h2>
+    <p>Same OpenAI-compatible endpoint as always: <code style="background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;font-size:13px">model: "veil"</code>, same free Sennoric account. The wire model id stays <code style="background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;font-size:13px">veil</code> even though it's called Glyph everywhere you read it.</p>
+    <a class="cta" href="/fresco-model">See Fresco's model details →</a>
   </section>
 </main>
 
 <footer>
-  <p>© 2026 Axion Labs · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Axion">GitHub</a></p>
+  <p>© 2026 Sennoric · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/tos">Terms</a> · <a href="/announcements">Announcements</a> · <a href="/status">Status</a> · <a href="https://github.com/Ravikxx/Axion">GitHub</a></p>
 </footer>
 
 <script src="/assets/profile.js"></script>

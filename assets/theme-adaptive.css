@@ -37,8 +37,8 @@
   --brand-logo:  #e8b534;
   --accent-light:rgba(184,162,125,.12);
   --accent-lt:   rgba(184,162,125,.12);
-  --lumen:       #b8a27d;
-  --veil:        #b3a08a;
+  --fresco:       #b8a27d;
+  --glyph:        #b3a08a;
 
   /* status */
   --green:       #34d399;
@@ -95,8 +95,8 @@
     --accent-ink:  #fbf9f4;
     --accent-light:rgba(138,106,47,.12);
     --accent-lt:   rgba(138,106,47,.12);
-    --lumen:       #8a6a2f;
-    --veil:        #8a7355;
+    --fresco:       #8a6a2f;
+    --glyph:        #8a7355;
 
     /* status — darkened for legibility on cream */
     --green:       #0f8c5f;

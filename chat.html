@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script src="/assets/storage-migrate.js"></script>
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Chat — Axion Labs</title>
-  <meta name="description" content="Create a free Axion account and chat with Lumen in your browser.">
+  <title>Chat — Sennoric</title>
+  <meta name="description" content="Create a free Sennoric account and chat with Fresco in your browser.">
   <link rel="canonical" href="https://axion.amplifiedsmp.org/chat">
-  <meta property="og:title" content="Chat — Axion Labs">
-  <meta property="og:description" content="Create a free Axion account and chat with Lumen in your browser.">
+  <meta property="og:title" content="Chat — Sennoric">
+  <meta property="og:description" content="Create a free Sennoric account and chat with Fresco in your browser.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://axion.amplifiedsmp.org/chat">
   <meta property="og:image" content="https://axion.amplifiedsmp.org/assets/logo-512.png">
@@ -1381,9 +1382,6 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.json">
-  <!-- Not deferred: the inline model-picker script below reads
-       window.AxionModelLifecycle synchronously while building the catalog. -->
-  <script src="/assets/model-lifecycle.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1395,7 +1393,7 @@
 <!-- Auth overlay -->
 <div id="auth-overlay">
   <div class="auth-card">
-    <div class="auth-logo"><img src="/assets/logo-spiral.svg" alt="Axion"><span>Axion</span></div>
+    <div class="auth-logo"><img src="/assets/logo-spiral.svg" alt="Sennoric"><span>Sennoric</span></div>
     <div class="auth-title" id="auth-title">Sign in</div>
     <div class="auth-sub" id="auth-sub">Sign in to start chatting. Your conversations sync across all your devices.</div>
 
@@ -1452,7 +1450,7 @@
   <div class="sidebar-top">
     <div class="sidebar-brand-row">
       <a href="/" class="sidebar-brand">
-        <img src="/assets/logo-spiral.svg" alt=""> Axion
+        <img src="/assets/logo-spiral.svg" alt=""> Sennoric
       </a>
       <button class="sidebar-icon-btn" type="button" onclick="toggleChatSearch()" title="Search conversations" aria-label="Search conversations" aria-controls="chat-search" aria-expanded="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
@@ -1693,7 +1691,7 @@
       </div>
       <div class="share-field">
         <div class="share-row-label" style="margin-bottom:6px">Prompt</div>
-        <textarea id="scheduled-editor-prompt" placeholder="What should Axion do when this fires?" style="width:100%;min-height:120px;padding:8px 10px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font:inherit;resize:vertical"></textarea>
+        <textarea id="scheduled-editor-prompt" placeholder="What should Sennoric do when this fires?" style="width:100%;min-height:120px;padding:8px 10px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font:inherit;resize:vertical"></textarea>
       </div>
       <div style="display:flex;align-items:center;gap:12px">
         <button type="button" class="trash-btn" onclick="saveScheduled()">Save</button>
@@ -1734,8 +1732,8 @@
             <button class="model-trigger" id="model-trigger" type="button" onclick="toggleModelMenu()" aria-haspopup="menu" aria-expanded="false" aria-controls="model-menu">
               <span class="model-trigger-mark" aria-hidden="true"></span>
               <span class="model-trigger-copy">
-                <span class="model-trigger-name" id="model-trigger-name">Lumen 1.2.5</span>
-                <span class="model-trigger-provider" id="model-trigger-provider">Axion Labs</span>
+                <span class="model-trigger-name" id="model-trigger-name">Fresco 1.2.5</span>
+                <span class="model-trigger-provider" id="model-trigger-provider">Sennoric</span>
               </span>
               <span class="model-chevron" aria-hidden="true"></span>
             </button>
@@ -1743,9 +1741,9 @@
               <div class="model-menu-head">
                 <div>
                   <div class="model-menu-title">Choose a model</div>
-                  <div class="model-menu-subtitle">Models currently served by Axion</div>
+                  <div class="model-menu-subtitle">Models currently served by Sennoric</div>
                 </div>
-                <span class="model-menu-brand">Axion</span>
+                <span class="model-menu-brand">Sennoric</span>
               </div>
               <div class="model-options" id="model-options"></div>
               <div class="model-menu-foot">
@@ -1777,7 +1775,7 @@
           <span>Brainstorm</span>
         </button>
       </div>
-      <div class="input-hint">These are AIs and can make mistakes. Please double check everything. Free Axion account required · <a href="/usage">view included usage</a>.</div>
+      <div class="input-hint">These are AIs and can make mistakes. Please double check everything. Free Sennoric account required · <a href="/usage">view included usage</a>.</div>
     </div>
   </div>
 </div>
@@ -1787,8 +1785,8 @@
 <script>
   const API = 'https://api.amplifiedsmp.org'
 
-  let sessionToken = localStorage.getItem('axion_token') || null
-  let userEmail = localStorage.getItem('axion_email') || null
+  let sessionToken = localStorage.getItem('sennoric_token') || null
+  let userEmail = localStorage.getItem('sennoric_email') || null
   let streaming = false
   let abortCtrl = null    // AbortController for the in-flight completion (stop button)
   let stopRequested = false   // also cancels pending tool cards + the automatic tool-call loop, not just the current fetch
@@ -1801,7 +1799,7 @@
     if (sandboxModeLoaded || !sessionToken) return
     sandboxModeLoaded = true
     try {
-      const res = await axionFetch(`${API}/dashboard/prefs`, { headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/dashboard/prefs`, { headers: authHeaders() })
       if (res.ok) { const data = await res.json(); sandboxMode = data.sandbox_mode === 'auto' ? 'auto' : 'ask' }
     } catch {}
   }
@@ -1820,41 +1818,30 @@
   function generationActive(c) { return !!c?.generation && ACTIVE_GENERATION_STATUSES.has(c.generation.status) }
   function uid() { return 'c-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7) }
 
-  // Model selector
+  // Model selector. Object keys are the wire-level model ids sent as
+  // `model` in chat completion requests — they stay 'lumen'/'veil' even
+  // though the tiers are branded Fresco/Glyph everywhere a person reads them.
   const MODEL_CATALOG = {
     lumen: {
-      label: 'Lumen 1.2.5',
-      provider: 'Axion Labs',
+      label: 'Fresco 1.2.5',
+      provider: 'Sennoric',
       description: 'Flagship 8B model for general chat, writing, and code.',
       tags: ['General', 'Writing', 'Code'],
       recommended: true,
     },
     veil: {
-      label: 'Veil 1.1',
-      provider: 'Axion Labs',
-      description: 'Legacy 3B model built for quick, lightweight conversations.',
-      tags: ['Fast', 'Legacy'],
+      label: 'Glyph 1.1',
+      provider: 'Sennoric',
+      description: 'Small, fast 3B model built for quick, lightweight conversations.',
+      tags: ['Fast'],
     },
   }
 
-  // Veil's deprecation and retirement dates live in model-lifecycle.js, the
-  // same source index.html, models.html, and veil.html read. Mirror it here so
-  // the picker can't drift from the rest of the site.
-  const VEIL_LIFECYCLE = (window.AxionModelLifecycle || {}).veil || null
-  if (VEIL_LIFECYCLE) {
-    MODEL_CATALOG.veil.description = VEIL_LIFECYCLE.chatDescription
-    if (VEIL_LIFECYCLE.isDeprecated) {
-      // Badge drives both, so an offline Veil reads "Offline" in the tag and the
-      // status rather than tagging "Deprecated" next to a status of "Offline".
-      MODEL_CATALOG.veil.tags = [VEIL_LIFECYCLE.badge]
-      MODEL_CATALOG.veil.statusLabel = VEIL_LIFECYCLE.badge
-    }
-  }
-  // Once retired, Veil stops being offered at all — its model card stays up on
-  // /models, but it is no longer an endpoint anyone can pick.
-  const LEGACY_MODEL_IDS = VEIL_LIFECYCLE && VEIL_LIFECYCLE.isRetired ? [] : ['veil']
+  // Kept alongside the live /v1/models response as a fallback so Glyph still
+  // shows in the picker even before the endpoint's model list catches up.
+  const FALLBACK_MODEL_IDS = ['veil']
   let availableModels = new Map([['lumen', { id: 'lumen', owned_by: 'axion-labs' }]])
-  let selectedModel = localStorage.getItem('axion_chat_model') || 'lumen'
+  let selectedModel = localStorage.getItem('sennoric_chat_model') || 'lumen'
   if (!availableModels.has(selectedModel)) selectedModel = 'lumen'
 
   function friendlyModelName(id) {
@@ -1869,8 +1856,8 @@
     const record = availableModels.get(id)
     return MODEL_CATALOG[id] || {
       label: friendlyModelName(id),
-      provider: record?.owned_by === 'axion-labs' ? 'Axion Labs' : friendlyModelName(record?.owned_by || 'Axion'),
-      description: 'Available through Axion’s hosted API.',
+      provider: record?.owned_by === 'axion-labs' ? 'Sennoric' : friendlyModelName(record?.owned_by || 'Sennoric'),
+      description: 'Available through Sennoric’s hosted API.',
       tags: ['Hosted'],
     }
   }
@@ -1880,10 +1867,10 @@
     if (!options) return
 
     const liveIds = [...availableModels.keys()]
-    const ids = [...liveIds, ...LEGACY_MODEL_IDS.filter(id => !availableModels.has(id))]
+    const ids = [...liveIds, ...FALLBACK_MODEL_IDS.filter(id => !availableModels.has(id))]
     if (!availableModels.has(selectedModel)) {
       selectedModel = liveIds[0] || 'lumen'
-      localStorage.setItem('axion_chat_model', selectedModel)
+      localStorage.setItem('sennoric_chat_model', selectedModel)
     }
 
     const selected = modelDetails(selectedModel)
@@ -1927,7 +1914,7 @@
   function setModel(id) {
     if (!availableModels.has(id)) return
     selectedModel = id
-    localStorage.setItem('axion_chat_model', id)
+    localStorage.setItem('sennoric_chat_model', id)
     saveModelServer(id)
     renderModelPicker()
     toggleModelMenu(false)
@@ -1937,7 +1924,7 @@
   // Fire-and-forget: the model choice already took effect locally, this just
   // makes it follow the account to other devices/windows.
   function saveModelServer(id) {
-    axionFetch(`${API}/settings`, {
+    sennoricFetch(`${API}/settings`, {
       method: 'PUT',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ selected_model: id }),
@@ -1946,12 +1933,12 @@
 
   async function fetchSettingsServer() {
     try {
-      const res = await axionFetch(`${API}/settings`, { headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/settings`, { headers: authHeaders() })
       if (!res.ok) return
       const data = await res.json()
       if (data.selected_model && availableModels.has(data.selected_model)) {
         selectedModel = data.selected_model
-        localStorage.setItem('axion_chat_model', selectedModel)
+        localStorage.setItem('sennoric_chat_model', selectedModel)
       }
     } catch {}
   }
@@ -2020,7 +2007,7 @@
   // Server sync
   async function fetchChatList() {
     try {
-      const res = await axionFetch(`${API}/chats`, { headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/chats`, { headers: authHeaders() })
       if (!res.ok) return
       const data = await res.json()
       chats = (data.chats || []).map(c => ({
@@ -2037,7 +2024,7 @@
   async function fetchChatMessages(c, { force = false } = {}) {
     if (c.loaded && !force) return
     try {
-      const res = await axionFetch(`${API}/chats/${c.id}`, { headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/chats/${c.id}`, { headers: authHeaders() })
       if (!res.ok) return
       const data = await res.json()
       c.messages = data.messages || []
@@ -2058,7 +2045,7 @@
     try {
       const body = { title: c.title, updated: c.updated }
       if (typeof c.title_rev === 'number') body.expected_title_rev = c.title_rev
-      const res = await axionFetch(`${API}/chats/${c.id}`, {
+      const res = await sennoricFetch(`${API}/chats/${c.id}`, {
         method: 'PUT',
         headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify(body),
@@ -2076,11 +2063,11 @@
     } catch {}
   }
   async function deleteChatServer(id) {
-    try { await axionFetch(`${API}/chats/${id}`, { method: 'DELETE', headers: authHeaders() }) } catch {}
+    try { await sennoricFetch(`${API}/chats/${id}`, { method: 'DELETE', headers: authHeaders() }) } catch {}
   }
   async function setPinnedServer(id, pinned) {
     try {
-      const res = await axionFetch(`${API}/chats/${id}/pin`, {
+      const res = await sennoricFetch(`${API}/chats/${id}/pin`, {
         method: 'PUT',
         headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ pinned }),
@@ -2091,7 +2078,7 @@
   }
   async function assignProjectServer(id, projectId) {
     try {
-      const res = await axionFetch(`${API}/chats/${id}/project`, {
+      const res = await sennoricFetch(`${API}/chats/${id}/project`, {
         method: 'PUT',
         headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ project_id: projectId }),
@@ -2102,7 +2089,7 @@
   // Fire-and-forget: an unsent draft is best-effort persistence, not
   // something worth blocking typing or a chat switch on.
   function saveDraftServer(id, content) {
-    axionFetch(`${API}/chats/${id}/draft`, {
+    sennoricFetch(`${API}/chats/${id}/draft`, {
       method: 'PUT',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ content }),
@@ -2111,7 +2098,7 @@
   // Appends one message and returns { seq, updated }, or null on failure.
   async function appendMessageServer(c, message) {
     try {
-      const res = await axionFetch(`${API}/chats/${c.id}/messages`, {
+      const res = await sennoricFetch(`${API}/chats/${c.id}/messages`, {
         method: 'POST',
         headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify(message),
@@ -2125,7 +2112,7 @@
   // since messages are always appended in order with no gaps.
   async function truncateMessagesServer(c, fromSeq) {
     try {
-      await axionFetch(`${API}/chats/${c.id}/messages?from_seq=${fromSeq}`, {
+      await sennoricFetch(`${API}/chats/${c.id}/messages?from_seq=${fromSeq}`, {
         method: 'DELETE',
         headers: authHeaders(),
       })
@@ -2379,7 +2366,7 @@
   async function branchChat(idx) {
     const source = currentChat(); if (!source) return
     const fromSeq = idx + 1
-    const res = await axionFetch(`${API}/chats/${source.id}/branch`, {
+    const res = await sennoricFetch(`${API}/chats/${source.id}/branch`, {
       method: 'POST',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ from_seq: fromSeq }),
@@ -2431,7 +2418,7 @@
     toggleDrawer(false)
     document.getElementById('trash-panel-body').innerHTML = '<div class="trash-empty">Loading…</div>'
     try {
-      const res = await axionFetch(`${API}/chats/trash`, { headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/chats/trash`, { headers: authHeaders() })
       _trash = res.ok ? ((await res.json()).chats || []) : []
     } catch { _trash = [] }
     renderTrashList()
@@ -2461,7 +2448,7 @@
 
   async function restoreFromTrash(id) {
     try {
-      const res = await axionFetch(`${API}/chats/${id}/restore`, { method: 'POST', headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/chats/${id}/restore`, { method: 'POST', headers: authHeaders() })
       if (!res.ok) return
     } catch { return }
     _trash = _trash.filter(c => c.id !== id)
@@ -2472,7 +2459,7 @@
 
   async function deleteForever(id) {
     try {
-      const res = await axionFetch(`${API}/chats/${id}/permanent`, { method: 'DELETE', headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/chats/${id}/permanent`, { method: 'DELETE', headers: authHeaders() })
       if (!res.ok) return
     } catch { return }
     _trash = _trash.filter(c => c.id !== id)
@@ -2481,7 +2468,7 @@
 
   async function emptyTrash() {
     try {
-      const res = await axionFetch(`${API}/chats/trash`, { method: 'DELETE', headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/chats/trash`, { method: 'DELETE', headers: authHeaders() })
       if (!res.ok) return
     } catch { return }
     _trash = []
@@ -2493,7 +2480,7 @@
 
   async function fetchProjects() {
     try {
-      const res = await axionFetch(`${API}/projects`, { headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/projects`, { headers: authHeaders() })
       if (!res.ok) return
       _projects = (await res.json()).projects || []
     } catch {}
@@ -2545,7 +2532,7 @@
       row.remove()
       if (!name) return
       try {
-        const res = await axionFetch(`${API}/projects`, {
+        const res = await sennoricFetch(`${API}/projects`, {
           method: 'POST',
           headers: authHeaders({ 'Content-Type': 'application/json' }),
           body: JSON.stringify({ name }),
@@ -2578,7 +2565,7 @@
       const v = input.value.trim()
       if (v && v !== p.name) {
         try {
-          const res = await axionFetch(`${API}/projects/${id}`, {
+          const res = await sennoricFetch(`${API}/projects/${id}`, {
             method: 'PUT',
             headers: authHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify({ name: v }),
@@ -2599,7 +2586,7 @@
 
   async function deleteProject(id) {
     try {
-      const res = await axionFetch(`${API}/projects/${id}`, { method: 'DELETE', headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/projects/${id}`, { method: 'DELETE', headers: authHeaders() })
       if (!res.ok) return
     } catch { return }
     _projects = _projects.filter(p => p.id !== id)
@@ -2642,7 +2629,7 @@
     document.getElementById('share-overlay').style.display = ''
     document.getElementById('share-panel-body').innerHTML = 'Loading…'
     try {
-      const res = await axionFetch(`${API}${shareApiPath()}`, { headers: authHeaders() })
+      const res = await sennoricFetch(`${API}${shareApiPath()}`, { headers: authHeaders() })
       _share = res.ok ? await res.json() : null
     } catch { _share = null }
     renderSharePanel()
@@ -2719,7 +2706,7 @@
   async function createOrUpdateShare(body) {
     if (!_shareResourceId) return
     try {
-      const res = await axionFetch(`${API}${shareApiPath()}`, {
+      const res = await sennoricFetch(`${API}${shareApiPath()}`, {
         method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify(body),
       })
       if (!res.ok) return
@@ -2731,7 +2718,7 @@
   async function revokeShareServer() {
     if (!_shareResourceId) return
     try {
-      const res = await axionFetch(`${API}${shareApiPath()}`, { method: 'DELETE', headers: authHeaders() })
+      const res = await sennoricFetch(`${API}${shareApiPath()}`, { method: 'DELETE', headers: authHeaders() })
       if (!res.ok && res.status !== 404) return
     } catch { return }
     _share = null
@@ -2756,7 +2743,7 @@
     toggleDrawer(false)
     document.getElementById('artifacts-panel-body').innerHTML = '<div class="trash-empty">Loading…</div>'
     try {
-      const res = await axionFetch(`${API}/artifacts`, { headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/artifacts`, { headers: authHeaders() })
       _artifacts = res.ok ? ((await res.json()).artifacts || []) : []
     } catch { _artifacts = [] }
     renderArtifactsList()
@@ -2809,7 +2796,7 @@
       row.remove()
       if (!title) { renderArtifactsList(); return }
       try {
-        const res = await axionFetch(`${API}/artifacts`, {
+        const res = await sennoricFetch(`${API}/artifacts`, {
           method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }),
           body: JSON.stringify({ title, kind, content: '' }),
         })
@@ -2838,7 +2825,7 @@
     document.getElementById('artifact-editor-overlay').style.display = ''
     document.getElementById('artifact-editor-status').textContent = 'Loading…'
     try {
-      const res = await axionFetch(`${API}/artifacts/${id}`, { headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/artifacts/${id}`, { headers: authHeaders() })
       if (!res.ok) { closeArtifactEditor(); return }
       const a = await res.json()
       document.getElementById('artifact-editor-title').value = a.title
@@ -2871,7 +2858,7 @@
     const title = document.getElementById('artifact-editor-title').value.trim() || 'Untitled'
     const content = document.getElementById('artifact-editor-content').value
     try {
-      const res = await axionFetch(`${API}/artifacts/${id}`, {
+      const res = await sennoricFetch(`${API}/artifacts/${id}`, {
         method: 'PUT', headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ title, content }),
       })
@@ -2885,7 +2872,7 @@
     const id = _currentArtifactId
     if (!id) return
     try {
-      const res = await axionFetch(`${API}/artifacts/${id}`, { method: 'DELETE', headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/artifacts/${id}`, { method: 'DELETE', headers: authHeaders() })
       if (!res.ok) return
     } catch { return }
     _artifacts = _artifacts.filter(a => a.id !== id)
@@ -2906,7 +2893,7 @@
     document.getElementById('scheduled-overlay').style.display = ''
     document.getElementById('scheduled-panel-body').innerHTML = '<div class="trash-empty">Loading…</div>'
     try {
-      const res = await axionFetch(`${API}/scheduled`, { headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/scheduled`, { headers: authHeaders() })
       _scheduled = res.ok ? ((await res.json()).scheduled || []) : []
     } catch { _scheduled = [] }
     renderScheduledList()
@@ -2957,7 +2944,7 @@
     document.getElementById('scheduled-delete-btn').style.display = ''
     document.getElementById('scheduled-editor-status').textContent = 'Loading…'
     try {
-      const res = await axionFetch(`${API}/scheduled/${id}`, { headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/scheduled/${id}`, { headers: authHeaders() })
       if (!res.ok) { closeScheduledEditor(); return }
       const s = await res.json()
       document.getElementById('scheduled-editor-name').value = s.name
@@ -2988,7 +2975,7 @@
     status.textContent = 'Saving…'
     const isNew = !_currentScheduledId
     try {
-      const res = await axionFetch(
+      const res = await sennoricFetch(
         isNew ? `${API}/scheduled` : `${API}/scheduled/${_currentScheduledId}`,
         {
           method: isNew ? 'POST' : 'PUT',
@@ -3013,7 +3000,7 @@
     const id = _currentScheduledId
     if (!id) return
     try {
-      const res = await axionFetch(`${API}/scheduled/${id}`, { method: 'DELETE', headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/scheduled/${id}`, { method: 'DELETE', headers: authHeaders() })
       if (!res.ok) return
     } catch { return }
     _scheduled = _scheduled.filter(s => s.id !== id)
@@ -3387,7 +3374,7 @@
     path.style.stroke = `hsl(${THINKING_SPIRAL_HUES[index % THINKING_SPIRAL_HUES.length]} 79% 56%)`
   }
   const THINKING_SPIRAL = `
-    <span class="thinking-spiral" role="status" aria-label="Axion is thinking">
+    <span class="thinking-spiral" role="status" aria-label="Sennoric is thinking">
       <svg viewBox="0 0 200 200" fill="none" aria-hidden="true">
         <path
           d="${THINKING_SPIRAL_PATHS[0]}"
@@ -3477,7 +3464,7 @@
 
   async function executeSandboxCode(code, language, chatId, signal) {
     try {
-      const res = await axionFetch(`${API}/v1/sandbox/execute`, {
+      const res = await sennoricFetch(`${API}/v1/sandbox/execute`, {
         method: 'POST',
         headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ code, language, chat_id: chatId }),
@@ -3746,7 +3733,7 @@
   async function sendMessage() {
     if (streaming) return
     if (!sessionToken) {
-      showAuthenticationRequired('Create a free Axion account or sign in to chat.')
+      showAuthenticationRequired('Create a free Sennoric account or sign in to chat.')
       return
     }
     const input = document.getElementById('user-input')
@@ -3843,7 +3830,7 @@
   // its own message rows, so the caller must have already appended/truncated
   // whatever this turn needs before calling this.
   async function startGeneration(c) {
-    const res = await axionFetch(`${API}/chats/${c.id}/generations`, {
+    const res = await sennoricFetch(`${API}/chats/${c.id}/generations`, {
       method: 'POST',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ model: selectedModel, tools: toolsForChat(c) }),
@@ -3863,7 +3850,7 @@
   // this tab attached, so joining late — or reopening the page tomorrow —
   // shows the whole reply rather than the tail of it.
   async function streamGeneration(c, generationId, live, messagesEl, onText) {
-    // Native fetch, not axionFetch: the wrapper drops its abort listener once
+    // Native fetch, not sennoricFetch: the wrapper drops its abort listener once
     // response headers arrive (see assets/fetch-timeout.js), which is fine for
     // a normal request but means Stop would never detach a long-lived stream.
     // The completions endpoint is read the same way for the same reason.
@@ -3919,7 +3906,7 @@
   // again..." loop instead of looping forever.
   async function generateReply(c, depth = 0, existingGenerationId = null) {
     if (!sessionToken) {
-      showAuthenticationRequired('Create a free Axion account or sign in to chat.')
+      showAuthenticationRequired('Create a free Sennoric account or sign in to chat.')
       return
     }
     if (depth === 0) stopRequested = false
@@ -4093,7 +4080,7 @@
       const endpoint = authMode === 'signin' ? '/auth/login' : '/auth/register'
       const body = { email, password, turnstile: turnstileToken }
       if (authMode === 'signup') body.name = document.getElementById('input-name')?.value || ''
-      const res = await axionFetch(`${API}${endpoint}`, {
+      const res = await sennoricFetch(`${API}${endpoint}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
         credentials: 'include',
@@ -4109,9 +4096,9 @@
         return
       }
       sessionToken = data.token; userEmail = data.email || email
-      localStorage.setItem('axion_token', sessionToken)
-      localStorage.setItem('axion_email', userEmail)
-      AxionAccountProfile.clear()
+      localStorage.setItem('sennoric_token', sessionToken)
+      localStorage.setItem('sennoric_email', userEmail)
+      SennoricAccountProfile.clear()
       showApp()
     } catch { showErr('Network error — try again.') }
     finally {
@@ -4124,22 +4111,23 @@
   function logout() {
     sessionToken = null; userEmail = null
     chats = []; currentId = null
+    localStorage.removeItem('sennoric_token'); localStorage.removeItem('sennoric_email')
     localStorage.removeItem('axion_token'); localStorage.removeItem('axion_email')
-    AxionAccountProfile.clear()
+    SennoricAccountProfile.clear()
     document.getElementById('auth-overlay').style.display = 'flex'
   }
 
   function showAuthenticationRequired(message) {
     logout()
-    showErr(message || 'Create a free Axion account or sign in to continue.')
+    showErr(message || 'Create a free Sennoric account or sign in to continue.')
   }
 
   async function loadAccountProfile() {
     const avatar = document.getElementById('acct-avatar')
-    AxionAccountProfile.renderAvatar(avatar, userEmail, AxionAccountProfile.cachedAvatar())
+    SennoricAccountProfile.renderAvatar(avatar, userEmail, SennoricAccountProfile.cachedAvatar())
     try {
-      const account = await AxionAccountProfile.fetchAccount(sessionToken)
-      AxionAccountProfile.renderAvatar(avatar, userEmail, account.avatar_url)
+      const account = await SennoricAccountProfile.fetchAccount(sessionToken)
+      SennoricAccountProfile.renderAvatar(avatar, userEmail, account.avatar_url)
       document.getElementById('acct-plan').textContent = account.plan === 'pro' ? 'Pro plan' : 'Free tier'
     } catch {}
   }
@@ -4152,7 +4140,7 @@
     if (!chats.some(generationActive)) { stopGenerationPolling(); return }
     generationPollInFlight = true
     try {
-      const res = await axionFetch(`${API}/chats`, { headers: authHeaders() })
+      const res = await sennoricFetch(`${API}/chats`, { headers: authHeaders() })
       if (!res.ok) return
       const data = await res.json()
       let changed = false
@@ -4212,15 +4200,15 @@
       const em = decodeURIComponent(hash.get('email') || '')
       history.replaceState(null, '', location.pathname)
       sessionToken = tok; userEmail = em
-      localStorage.setItem('axion_token', tok); localStorage.setItem('axion_email', em)
-      AxionAccountProfile.clear()
+      localStorage.setItem('sennoric_token', tok); localStorage.setItem('sennoric_email', em)
+      SennoricAccountProfile.clear()
       showApp(); return
     }
     const openChatId = hash.get('openChat')
     if (openChatId) history.replaceState(null, '', location.pathname)
     if (!sessionToken) return   // show auth overlay
     try {
-      const res = await axionFetch(`${API}/dashboard/keys`, { headers: { Authorization: `Bearer ${sessionToken}` } })
+      const res = await sennoricFetch(`${API}/dashboard/keys`, { headers: { Authorization: `Bearer ${sessionToken}` } })
       if (!res.ok) { showAuthenticationRequired('Your session expired. Sign in again to continue.'); return }
       await showApp()
       if (openChatId) switchChat(openChatId)

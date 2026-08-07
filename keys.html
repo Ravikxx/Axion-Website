@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script src="/assets/storage-migrate.js"></script>
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>API Keys — Axion Labs</title>
+  <title>API Keys — Sennoric</title>
   <meta name="robots" content="noindex, nofollow">
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <link rel="stylesheet" href="/assets/theme-dark.css">
@@ -421,9 +422,9 @@
 <!-- Auth screen (shown when not logged in) -->
 <div id="auth-screen">
   <div class="auth-card">
-    <div class="auth-logo"><img src="/assets/logo-spiral.svg" alt="Axion" style="height:26px;width:auto;object-fit:contain;display:inline-block;vertical-align:-5px;margin-right:6px"><span>Axion</span></div>
+    <div class="auth-logo"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:26px;width:auto;object-fit:contain;display:inline-block;vertical-align:-5px;margin-right:6px"><span>Sennoric</span></div>
     <div class="auth-title" id="auth-title">Sign in</div>
-    <div class="auth-sub" id="auth-sub">Access your Axion API keys</div>
+    <div class="auth-sub" id="auth-sub">Access your Sennoric API keys</div>
 
     <div class="auth-error" id="auth-error"></div>
 
@@ -480,7 +481,7 @@
 <div id="forgot-password-screen" class="overlay-screen" style="display:none">
   <div class="auth-card">
     <div id="forgot-form-wrap">
-      <div class="auth-logo"><img src="/assets/logo-spiral.svg" alt="Axion" style="height:26px;width:auto;object-fit:contain;display:inline-block;vertical-align:-5px;margin-right:6px"><span>Axion</span></div>
+      <div class="auth-logo"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:26px;width:auto;object-fit:contain;display:inline-block;vertical-align:-5px;margin-right:6px"><span>Sennoric</span></div>
       <div class="auth-title">Reset your password</div>
       <div class="auth-sub">Enter your email and we'll send you a link to reset it.</div>
 
@@ -503,7 +504,7 @@
     </div>
 
     <div id="forgot-success-wrap" style="display:none;text-align:center">
-      <div class="auth-logo"><img src="/assets/logo-spiral.svg" alt="Axion" style="height:26px;width:auto;object-fit:contain;display:inline-block;vertical-align:-5px;margin-right:6px"><span>Axion</span></div>
+      <div class="auth-logo"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:26px;width:auto;object-fit:contain;display:inline-block;vertical-align:-5px;margin-right:6px"><span>Sennoric</span></div>
       <div class="auth-title" style="margin-top:20px">Check your inbox</div>
       <p class="auth-sub" id="forgot-success-text"></p>
       <div class="auth-toggle">
@@ -516,7 +517,7 @@
 <!-- Reset password screen (opened via a #reset=TOKEN link from the email) -->
 <div id="reset-password-screen" class="overlay-screen" style="display:none">
   <div class="auth-card">
-    <div class="auth-logo"><img src="/assets/logo-spiral.svg" alt="Axion" style="height:26px;width:auto;object-fit:contain;display:inline-block;vertical-align:-5px;margin-right:6px"><span>Axion</span></div>
+    <div class="auth-logo"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:26px;width:auto;object-fit:contain;display:inline-block;vertical-align:-5px;margin-right:6px"><span>Sennoric</span></div>
     <div class="auth-title">Choose a new password</div>
     <div class="auth-sub">Enter a new password for your account.</div>
 
@@ -540,8 +541,8 @@
 <!-- Dashboard (sidebar layout) -->
 <aside class="sidebar" id="sidebar" style="display:none">
   <a href="/" class="sidebar-logo">
-    <img src="/assets/logo-spiral.svg" alt="Axion" style="height:26px;width:auto;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:0">
-    Axion
+    <img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:26px;width:auto;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:0">
+    Sennoric
   </a>
 
   <div class="nav-section">
@@ -646,9 +647,9 @@
         resp = client.chat.completions.create(model="lumen", messages=[{"role":"user","content":"Hello"}])
       </div>
       <div class="code-block">
-        <span class="comment"># Axion CLI</span><br>
+        <span class="comment"># Sennoric CLI</span><br>
         <span class="prompt">› </span>/axion-key axion-sk-…<br>
-        <span class="prompt">› </span>/model lumen
+        <span class="prompt">› </span>/model fresco
       </div>
     </div>
   </div>
@@ -684,7 +685,7 @@
 <div class="modal-backdrop" id="device-modal">
   <div class="modal">
     <h3>Authorize CLI access</h3>
-    <p>A terminal session is requesting access to your Axion account. Only confirm if you just ran <code style="font-family:monospace;font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:3px">axion login</code>.</p>
+    <p>A terminal session is requesting access to your Sennoric account. Only confirm if you just ran <code style="font-family:monospace;font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:3px">axion login</code>.</p>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="denyDevice()">Deny</button>
       <button class="modal-create" onclick="authorizeDevice()">Authorize</button>
@@ -728,7 +729,7 @@
 <div class="modal-backdrop" id="accept-invite-modal">
   <div class="modal">
     <h3>Team invitation</h3>
-    <p id="accept-invite-desc">You've been invited to join a team on Axion Labs.</p>
+    <p id="accept-invite-desc">You've been invited to join a team on Sennoric.</p>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="declineInvite()">Decline</button>
       <button class="modal-create" onclick="acceptInvite()">Join team</button>
@@ -772,7 +773,7 @@
   let _resetToken = null;
   let authMode = 'signin';
   let currentUser = null;
-  let sessionToken = localStorage.getItem('axion_token') || null;
+  let sessionToken = localStorage.getItem('sennoric_token') || null;
   let keys = [];
   let accountState = null;
   let usageCountdownTimer = null;
@@ -783,7 +784,7 @@
     authMode = authMode === 'signin' ? 'signup' : 'signin';
     const isSignup = authMode === 'signup';
     document.getElementById('auth-title').textContent = isSignup ? 'Create account' : 'Sign in';
-    document.getElementById('auth-sub').textContent = isSignup ? 'Start using the Axion API' : 'Access your Axion API keys';
+    document.getElementById('auth-sub').textContent = isSignup ? 'Start using the Sennoric API' : 'Access your Sennoric API keys';
     document.getElementById('auth-submit').textContent = isSignup ? 'Create account' : 'Sign in';
     document.getElementById('auth-toggle-text').textContent = isSignup ? 'Already have an account?' : "Don't have an account?";
     document.getElementById('auth-toggle-link').textContent = isSignup ? 'Sign in' : 'Sign up';
@@ -849,7 +850,7 @@
     const btn = document.getElementById('forgot-submit');
     btn.textContent = 'Sending…'; btn.disabled = true;
     try {
-      const res = await axionFetch(API + '/auth/forgot-password', {
+      const res = await sennoricFetch(API + '/auth/forgot-password', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, turnstile: _turnstileTokenForgot }),
       });
@@ -883,7 +884,7 @@
     const btn = document.getElementById('reset-submit');
     btn.textContent = 'Updating…'; btn.disabled = true;
     try {
-      const res = await axionFetch(API + '/auth/reset-password', {
+      const res = await sennoricFetch(API + '/auth/reset-password', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: _resetToken, password }),
       });
@@ -891,7 +892,7 @@
       if (!res.ok) throw new Error(data.error || 'Something went wrong.');
       _resetToken = null;
       document.getElementById('reset-password-screen').querySelector('.auth-card').innerHTML = `
-        <div class="auth-logo"><img src="/assets/logo-spiral.svg" alt="Axion" style="height:26px;width:auto;object-fit:contain;display:inline-block;vertical-align:-5px;margin-right:6px"><span>Axion</span></div>
+        <div class="auth-logo"><img src="/assets/logo-spiral.svg" alt="Sennoric" style="height:26px;width:auto;object-fit:contain;display:inline-block;vertical-align:-5px;margin-right:6px"><span>Sennoric</span></div>
         <div class="auth-title" style="margin-top:20px">Password updated</div>
         <p class="auth-sub">You've been signed out everywhere for security. Sign in with your new password.</p>
         <button class="btn-full btn-primary-full" onclick="backToSignIn()">Back to sign in</button>`;
@@ -918,7 +919,7 @@
       const endpoint = authMode === 'signin' ? '/auth/login' : '/auth/register';
       const body = { email, password, turnstile: _turnstileToken };
       if (authMode === 'signup') body.name = document.getElementById('input-name')?.value || '';
-      const res = await axionFetch(API + endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), credentials: 'include' });
+      const res = await sennoricFetch(API + endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), credentials: 'include' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Something went wrong.');
       if (data.pending) {
@@ -930,22 +931,22 @@
         return;
       }
       sessionToken = data.token;
-      localStorage.setItem('axion_token', sessionToken);
-      localStorage.setItem('axion_email', data.email || email);
-      AxionAccountProfile.clear();
+      localStorage.setItem('sennoric_token', sessionToken);
+      localStorage.setItem('sennoric_email', data.email || email);
+      SennoricAccountProfile.clear();
       currentUser = { email: data.email || email };
       // Pick up pending device code stored before auth
-      const storedDevice = sessionStorage.getItem('axion_pending_device')
-      if (storedDevice) { pendingDeviceCode = storedDevice; sessionStorage.removeItem('axion_pending_device') }
+      const storedDevice = sessionStorage.getItem('sennoric_pending_device')
+      if (storedDevice) { pendingDeviceCode = storedDevice; sessionStorage.removeItem('sennoric_pending_device') }
 
       // Pick up any invite stored before auth
-      const storedInvite = sessionStorage.getItem('axion_pending_invite');
-      const storedOrg = sessionStorage.getItem('axion_pending_invite_org');
+      const storedInvite = sessionStorage.getItem('sennoric_pending_invite');
+      const storedOrg = sessionStorage.getItem('sennoric_pending_invite_org');
       if (storedInvite) {
         pendingInviteToken = storedInvite;
         pendingInviteOrgId = storedOrg;
-        sessionStorage.removeItem('axion_pending_invite');
-        sessionStorage.removeItem('axion_pending_invite_org');
+        sessionStorage.removeItem('sennoric_pending_invite');
+        sessionStorage.removeItem('sennoric_pending_invite_org');
       }
       await showDashboard();
     } catch (err) {
@@ -961,8 +962,8 @@
   function logout() {
     currentUser = null; keys = []; accountState = null; sessionToken = null;
     currentOrg = null; orgs = [];
-    localStorage.removeItem('axion_token'); localStorage.removeItem('axion_email');
-    AxionAccountProfile.clear();
+    localStorage.removeItem('sennoric_token'); localStorage.removeItem('sennoric_email');
+    SennoricAccountProfile.clear();
     document.getElementById('sidebar').style.display = 'none';
     document.getElementById('main-panel').style.display = 'none';
     document.getElementById('auth-screen').style.display = 'flex';
@@ -975,10 +976,10 @@
     document.getElementById('sidebar').style.display = 'flex';
     document.getElementById('main-panel').style.display = 'flex';
     document.getElementById('sidebar-email').textContent = currentUser.email;
-    AxionAccountProfile.renderAvatar(
+    SennoricAccountProfile.renderAvatar(
       document.getElementById('sidebar-avatar'),
       currentUser.email,
-      AxionAccountProfile.cachedAvatar(),
+      SennoricAccountProfile.cachedAvatar(),
     );
     loadKeys();
     loadDailyChart();
@@ -1000,15 +1001,15 @@
   async function loadKeys() {
     try {
       const [keysRes, accountRes] = await Promise.all([
-        axionFetch(API + '/dashboard/keys', { headers: { Authorization: `Bearer ${sessionToken}` } }),
-        axionFetch(API + '/dashboard/account', { headers: { Authorization: `Bearer ${sessionToken}` } }),
+        sennoricFetch(API + '/dashboard/keys', { headers: { Authorization: `Bearer ${sessionToken}` } }),
+        sennoricFetch(API + '/dashboard/account', { headers: { Authorization: `Bearer ${sessionToken}` } }),
       ]);
       if (!keysRes.ok) throw new Error('Session expired');
       const keysData = await keysRes.json();
       accountState = accountRes.ok ? await accountRes.json() : null;
       if (accountState) {
-        AxionAccountProfile.cacheAvatar(accountState.avatar_url || '');
-        AxionAccountProfile.renderAvatar(
+        SennoricAccountProfile.cacheAvatar(accountState.avatar_url || '');
+        SennoricAccountProfile.renderAvatar(
           document.getElementById('sidebar-avatar'),
           currentUser.email,
           accountState.avatar_url,
@@ -1144,7 +1145,7 @@
     const name = document.getElementById('new-key-name').value.trim();
     if (!name) { document.getElementById('new-key-name').focus(); return; }
     try {
-      const res = await axionFetch(API + '/dashboard/keys', {
+      const res = await sennoricFetch(API + '/dashboard/keys', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionToken}` },
         body: JSON.stringify({ label: name }),
@@ -1181,7 +1182,7 @@
     if (revokeTarget === null) return;
     const key = keys[revokeTarget];
     try {
-      const res = await axionFetch(API + '/dashboard/keys/' + key.id, { method: 'DELETE', headers: { Authorization: `Bearer ${sessionToken}` } });
+      const res = await sennoricFetch(API + '/dashboard/keys/' + key.id, { method: 'DELETE', headers: { Authorization: `Bearer ${sessionToken}` } });
       if (!res.ok) throw new Error('Failed to revoke');
       keys.splice(revokeTarget, 1); renderKeys(); renderUsage();
     } catch (e) { alert(e.message); }
@@ -1207,7 +1208,7 @@
   // Daily chart
   async function loadDailyChart() {
     try {
-      const res = await axionFetch(API + '/dashboard/daily', { headers: { Authorization: `Bearer ${sessionToken}` } })
+      const res = await sennoricFetch(API + '/dashboard/daily', { headers: { Authorization: `Bearer ${sessionToken}` } })
       if (!res.ok) return
       const { daily } = await res.json()
       if (!daily?.length) return
@@ -1268,7 +1269,7 @@
   async function authorizeDevice() {
     if (!pendingDeviceCode) return
     try {
-      const res = await axionFetch(API + '/auth/device/authorize', {
+      const res = await sennoricFetch(API + '/auth/device/authorize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionToken}` },
         body: JSON.stringify({ code: pendingDeviceCode }),
@@ -1292,7 +1293,7 @@
 
   async function loadOrgs() {
     try {
-      const res = await axionFetch(API + '/orgs', { headers: { Authorization: `Bearer ${sessionToken}` } });
+      const res = await sennoricFetch(API + '/orgs', { headers: { Authorization: `Bearer ${sessionToken}` } });
       if (!res.ok) return;
       const data = await res.json();
       orgs = data.orgs || [];
@@ -1321,7 +1322,7 @@
 
   async function viewOrg(orgId) {
     try {
-      const res = await axionFetch(`${API}/orgs/${orgId}`, { headers: { Authorization: `Bearer ${sessionToken}` } });
+      const res = await sennoricFetch(`${API}/orgs/${orgId}`, { headers: { Authorization: `Bearer ${sessionToken}` } });
       if (!res.ok) return;
       const data = await res.json();
       currentOrg = data.org;
@@ -1415,7 +1416,7 @@
     const name = document.getElementById('new-org-name').value.trim();
     if (!name) { document.getElementById('new-org-name').focus(); return; }
     try {
-      const res = await axionFetch(API + '/orgs', {
+      const res = await sennoricFetch(API + '/orgs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionToken}` },
         body: JSON.stringify({ name }),
@@ -1440,7 +1441,7 @@
     const email = document.getElementById('invite-email').value.trim();
     if (!email) return;
     try {
-      const res = await axionFetch(`${API}/orgs/${currentOrg.id}/invite`, {
+      const res = await sennoricFetch(`${API}/orgs/${currentOrg.id}/invite`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionToken}` },
         body: JSON.stringify({ email }),
@@ -1456,7 +1457,7 @@
   async function removeMember(uid, email) {
     if (!confirm(`Remove ${email} from ${currentOrg.name}?`)) return;
     try {
-      const res = await axionFetch(`${API}/orgs/${currentOrg.id}/members/${uid}`, {
+      const res = await sennoricFetch(`${API}/orgs/${currentOrg.id}/members/${uid}`, {
         method: 'DELETE', headers: { Authorization: `Bearer ${sessionToken}` },
       });
       if (!res.ok) throw new Error((await res.json()).error);
@@ -1467,7 +1468,7 @@
   async function leaveOrg(uid) {
     if (!confirm(`Leave ${currentOrg.name}?`)) return;
     try {
-      await axionFetch(`${API}/orgs/${currentOrg.id}/members/${uid}`, {
+      await sennoricFetch(`${API}/orgs/${currentOrg.id}/members/${uid}`, {
         method: 'DELETE', headers: { Authorization: `Bearer ${sessionToken}` },
       });
       await loadOrgs();
@@ -1481,7 +1482,7 @@
 
   async function confirmDeleteOrg() {
     try {
-      const res = await axionFetch(`${API}/orgs/${currentOrg.id}`, {
+      const res = await sennoricFetch(`${API}/orgs/${currentOrg.id}`, {
         method: 'DELETE', headers: { Authorization: `Bearer ${sessionToken}` },
       });
       if (!res.ok) throw new Error((await res.json()).error);
@@ -1494,7 +1495,7 @@
   // Accept org invite
   function openAcceptInviteModal(orgName) {
     document.getElementById('accept-invite-desc').textContent =
-      `You've been invited to join ${orgName || 'a team'} on Axion Labs.`;
+      `You've been invited to join ${orgName || 'a team'} on Sennoric.`;
     document.getElementById('accept-invite-modal').classList.add('open');
   }
 
@@ -1507,7 +1508,7 @@
   async function acceptInvite() {
     if (!pendingInviteToken) return;
     try {
-      const res = await axionFetch(API + '/orgs/invite/accept', {
+      const res = await sennoricFetch(API + '/orgs/invite/accept', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionToken}` },
         body: JSON.stringify({ token: pendingInviteToken }),
@@ -1539,7 +1540,7 @@
     const name = document.getElementById('new-key-name').value.trim();
     if (!name) { document.getElementById('new-key-name').focus(); return; }
     try {
-      const res = await axionFetch(`${API}/orgs/${currentOrg.id}/keys`, {
+      const res = await sennoricFetch(`${API}/orgs/${currentOrg.id}/keys`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionToken}` },
         body: JSON.stringify({ label: name }),
@@ -1582,19 +1583,19 @@
       const tok = params.get('verified');
       const em = params.get('email');
       sessionToken = tok;
-      localStorage.setItem('axion_token', tok);
-      localStorage.setItem('axion_email', em || '');
-      AxionAccountProfile.clear();
+      localStorage.setItem('sennoric_token', tok);
+      localStorage.setItem('sennoric_email', em || '');
+      SennoricAccountProfile.clear();
       currentUser = { email: em || 'your account' };
 
       // Check for pending invite stored before OAuth redirect
-      const storedInvite = sessionStorage.getItem('axion_pending_invite');
-      const storedOrg = sessionStorage.getItem('axion_pending_invite_org');
+      const storedInvite = sessionStorage.getItem('sennoric_pending_invite');
+      const storedOrg = sessionStorage.getItem('sennoric_pending_invite_org');
       if (storedInvite) {
         pendingInviteToken = storedInvite;
         pendingInviteOrgId = storedOrg;
-        sessionStorage.removeItem('axion_pending_invite');
-        sessionStorage.removeItem('axion_pending_invite_org');
+        sessionStorage.removeItem('sennoric_pending_invite');
+        sessionStorage.removeItem('sennoric_pending_invite_org');
       } else {
         // Also check hash for invite (direct link that had #invite=... before OAuth)
         const inviteFromHash = params.get('invite');
@@ -1613,7 +1614,7 @@
       pendingDeviceCode = deviceCode
       history.replaceState(null, '', window.location.pathname)
     } else if (deviceCode && !sessionToken) {
-      sessionStorage.setItem('axion_pending_device', deviceCode)
+      sessionStorage.setItem('sennoric_pending_device', deviceCode)
       history.replaceState(null, '', window.location.pathname)
     }
 
@@ -1623,8 +1624,8 @@
     if (inviteToken) {
       if (!sessionToken) {
         // Not logged in — store invite, then let user auth
-        sessionStorage.setItem('axion_pending_invite', inviteToken);
-        if (inviteOrg) sessionStorage.setItem('axion_pending_invite_org', inviteOrg);
+        sessionStorage.setItem('sennoric_pending_invite', inviteToken);
+        if (inviteOrg) sessionStorage.setItem('sennoric_pending_invite_org', inviteOrg);
         history.replaceState(null, '', window.location.pathname);
         // Show auth normally — after login showDashboard picks up pending invite
         return;
@@ -1637,11 +1638,11 @@
 
     if (!sessionToken) return;
     try {
-      const res = await axionFetch(API + '/dashboard/keys', { headers: { Authorization: `Bearer ${sessionToken}` } });
-      if (!res.ok) { sessionToken = null; localStorage.removeItem('axion_token'); AxionAccountProfile.clear(); return; }
-      currentUser = { email: localStorage.getItem('axion_email') || 'your account' };
+      const res = await sennoricFetch(API + '/dashboard/keys', { headers: { Authorization: `Bearer ${sessionToken}` } });
+      if (!res.ok) { sessionToken = null; localStorage.removeItem('sennoric_token'); SennoricAccountProfile.clear(); return; }
+      currentUser = { email: localStorage.getItem('sennoric_email') || 'your account' };
       await showDashboard();
-    } catch { sessionToken = null; localStorage.removeItem('axion_token'); AxionAccountProfile.clear(); }
+    } catch { sessionToken = null; localStorage.removeItem('sennoric_token'); SennoricAccountProfile.clear(); }
   })();
 </script>
 <script src="/assets/profile.js"></script>
