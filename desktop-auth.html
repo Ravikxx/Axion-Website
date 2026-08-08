@@ -241,6 +241,9 @@
 
 <script>
   const API = 'https://api.amplifiedsmp.org'
+  // Keep this in lockstep with the protocol registered by Sennoric Desktop.
+  // A mismatch strands the owned auth modal before it can exchange the code.
+  const DESKTOP_CALLBACK_PROTOCOL = 'sennoric'
   // The PKCE challenge and state arrive in the URL fragment rather than the
   // query string so they never reach a server log or a Referer header.
   const STASH_KEY = 'sennoric_desktop_auth_request'
@@ -306,7 +309,7 @@
     // A custom-scheme navigation is what reopens the desktop app. If no handler
     // is registered the browser simply does nothing, which is why the page also
     // renders a terminal message rather than relying on the redirect alone.
-    location.href = `sennoric://auth?${params.toString()}`
+    location.href = `${DESKTOP_CALLBACK_PROTOCOL}://auth?${params.toString()}`
   }
 
   // Consent
