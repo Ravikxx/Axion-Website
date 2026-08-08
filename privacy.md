@@ -92,8 +92,8 @@ Contributing is opt-in. Nothing is submitted merely because a contribution promp
 - Disconnect an OAuth service with `/oauth revoke <service>`, or delete `~/.sennoric/oauth.json`.
 - Use your own provider keys or a local model through Ollama to keep inference off Sennoric's model endpoint.
 - Opt out of contribution prompts with `/contribute optout`, and delete local files under `~/.sennoric/donations/` yourself.
-- Sennoric is open source, so you can review the code at [github.com/Ravikxx/Axion](https://github.com/Ravikxx/Axion).
+- Sennoric is open source, so you can review the code at [github.com/Ravikxx/Sennoric](https://github.com/Ravikxx/Sennoric).
 
 ## Contact
 
-For questions, open an issue at [github.com/Ravikxx/Axion/issues](https://github.com/Ravikxx/Axion/issues) or visit [axion.amplifiedsmp.org](https://axion.amplifiedsmp.org).
+For questions, open an issue at [github.com/Ravikxx/Sennoric/issues](https://github.com/Ravikxx/Sennoric/issues) or visit [axion.amplifiedsmp.org](https://axion.amplifiedsmp.org).
