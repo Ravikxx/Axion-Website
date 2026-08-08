@@ -116,6 +116,12 @@ for (const page of pages) {
     if (!source.includes('`${API}/auth/${provider}?return_to=desktop`')) {
       fail(page, 'provider sign-in does not return to Desktop authorization')
     }
+    if (!source.includes("const DESKTOP_CALLBACK_PROTOCOL = 'sennoric'")) {
+      fail(page, 'callback protocol must match the protocol registered by shipped Desktop clients')
+    }
+    if (!source.includes('`${DESKTOP_CALLBACK_PROTOCOL}://auth?${params.toString()}`')) {
+      fail(page, 'authorization result is not handed back through the Desktop callback protocol')
+    }
   }
   if (/<div\b[^>]*\bonclick\s*=/i.test(source)) {
     fail(page, 'clickable div found; use a keyboard-accessible button or link')
