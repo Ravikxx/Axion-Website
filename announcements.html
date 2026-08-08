@@ -287,19 +287,18 @@
        subscribers, then stored server-side and rendered dynamically above by
        loadAnnouncements() — hidden here so it doesn't duplicate that render. -->
   <div class="announcement" style="display:none">
-    <h2>Introducing Sennoric</h2>
-    <p>Axion is now Sennoric. Same team, same models, same account — new name.</p>
-    <p>Lumen is now Fresco, and Veil is now Glyph. Nothing about how they work has changed: same endpoints, same model ids (model: "lumen" and model: "veil" still work exactly as before), same free account. Glyph also just moved onto a dedicated RunPod Serverless endpoint behind our Cloudflare Worker — same API, just its own infrastructure now. It's staying in the lineup for now; a third tier, Mosaic, is coming soon and will eventually take its place.</p>
-    <p>Your account, API keys, and chat history all carry over automatically. Nothing else changes.</p>
+    <h2>Correcting an Email We Just Sent — Glyph Is Not Retiring on August 17</h2>
+    <p>An announcement went out earlier today claiming Glyph 1.1 retires for good on August 17, 2026. That's wrong, and it went out by mistake, bundled into an unrelated update. This corrects it.</p>
+    <p>Glyph isn't on a fixed retirement schedule. It's staying up as part of the Sennoric lineup for now. A larger tier, Mosaic, is coming and will eventually take its place, but there's no retirement date set for Glyph, and there won't be one announced without real advance notice when there is.</p>
+    <p>If you're building on Glyph, keep building on it.</p>
   </div>
   <!-- end pending announcement -->
 
   <div class="announcement" style="display:none">
-    <h2>Glyph 1.1 Is Offline Early — Back July 30, Retiring August 17</h2>
-    <p>On July 20 we said Glyph 1.1 would be marked deprecated on July 25 and keep answering requests as normal until it retired on July 30. It hasn't. Glyph is offline now, ahead of that schedule, and if you were relying on those five days you didn't get them. That's our miss, and this is us correcting it rather than letting the dates on the site quietly disagree with reality.</p>
-    <p>The reason is compute. The hardware Glyph ran on is committed to re-running the Project Crucible 600M model, and we do not currently have enough spare capacity to keep both going. Rather than pretend otherwise, we would rather say plainly that a deprecated model lost its slot to an active one.</p>
-    <p>Glyph comes back online on July 30 and stays up until August 17, 2026, when it retires for good. That is a longer real migration window than the one we originally offered, not a shorter one. If you are still calling Glyph today, switch to Fresco now — model: "lumen", same OpenAI-compatible endpoint, same free Sennoric account — rather than waiting for it to return.</p>
-    <p>Glyph's model card stays up on the Models page permanently after retirement. It was our first model and the reason Fresco exists.</p>
+    <h2>Introducing Sennoric</h2>
+    <p>Axion is now Sennoric. Same team, same models, same account — new name.</p>
+    <p>Lumen is now Fresco, and Veil is now Glyph. Nothing about how they work has changed: same endpoints, same model ids (model: "lumen" and model: "veil" still work exactly as before), same free account. Glyph also just moved onto a dedicated RunPod Serverless endpoint behind our Cloudflare Worker — same API, just its own infrastructure now. It's staying in the lineup for now; a third tier, Mosaic, is coming soon and will eventually take its place.</p>
+    <p>Your account, API keys, and chat history all carry over automatically. Nothing else changes.</p>
   </div>
   <!-- end pending announcement -->
 
@@ -319,16 +318,34 @@
   </div>
   <!-- end pending announcement -->
 
-  <div class="announcement" style="display:none">
-    <h2>Glyph 1.1 Is Being Deprecated on July 25</h2>
-    <p>After moving off shared hosting onto our own servers, we've decided not to keep maintaining Glyph going forward. Fresco has grown into a faster, more capable model that covers everything Glyph did and more, so running both isn't worth the added complexity.</p>
-    <p>Glyph 1.1 will be marked deprecated starting July 25, 2026 — it'll keep responding to requests as usual, just no longer actively developed. On July 30, it'll be fully retired. Its model card stays up after that as a memory of where Sennoric started — Glyph was our first model, and Fresco wouldn't exist without it.</p>
-    <p>If you're calling Glyph directly, switch to Fresco (model: "lumen") before July 30 — same OpenAI-compatible endpoint and the same account-backed Free plan.</p>
-  </div>
-  <!-- end pending announcement -->
-
   <article class="ann notice lead open" data-cat="notice">
     <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="true">
+      <span class="ann-when">August 8, 2026</span>
+      <span class="ann-cat notice">Notice</span>
+      <span class="ann-title">Correcting an Email We Just Sent — Glyph Is Not Retiring on August 17</span>
+      <svg class="ann-chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ann-panel"><div class="ann-panel-inner">
+<p>
+      An announcement went out earlier today claiming Glyph 1.1 retires for good on August 17, 2026. That's
+      wrong, and it went out by mistake, bundled into an unrelated update. This corrects it.
+    </p>
+    <p style="margin-top:12px">
+      Glyph isn't on a fixed retirement schedule. It's staying up as part of the Sennoric lineup for now. A
+      larger tier, <strong>Mosaic</strong>, is coming and will eventually take its place, but there's no
+      retirement date set for Glyph, and there won't be one announced without real advance notice when there is.
+    </p>
+    <p style="margin-top:12px">
+      If you're building on Glyph, keep building on it.
+    </p>
+    <div class="ann-footer">
+      <a class="ann-link" href="/models">See the model lineup →</a>
+    </div>
+    </div></div>
+  </article>
+
+  <article class="ann notice" data-cat="notice">
+    <button class="ann-head" onclick="toggleAnn(this)" aria-expanded="false">
       <span class="ann-when">August 6, 2026</span>
       <span class="ann-cat notice">Notice</span>
       <span class="ann-title">Introducing Sennoric</span>
